@@ -45,7 +45,18 @@
     {%- else -%}
       <div class="header__logo">
     {%- endif -%}
-      <a href="{{ routes.root_url }}" class="header__logo-link">
+      {%- comment -%}
+        The width is carried on the link as a custom property rather than as a
+        `style` argument to image_tag: filter arguments are plain strings and
+        cannot interpolate Liquid.
+      {%- endcomment -%}
+      <a
+        href="{{ routes.root_url }}"
+        class="header__logo-link"
+        {% if has_logo %}
+          style="--logo-width: {{ section.settings.logo_width }}px;"
+        {% endif %}
+      >
         {%- if has_logo -%}
           {{
             section.settings.logo
@@ -54,8 +65,7 @@
               widths: '150, 300, 450, 600',
               sizes: '(max-width: 749px) 40vw, 20vw',
               alt: shop.name,
-              class: 'header__logo-image',
-              style: 'width: {{ section.settings.logo_width }}px'
+              class: 'header__logo-image'
           }}
         {%- else -%}
           <span class="header__logo-text">{{ shop.name }}</span>
@@ -205,6 +215,7 @@
   }
 
   .header__logo-image {
+    width: var(--logo-width, 140px);
     height: auto;
     max-width: 100%;
   }

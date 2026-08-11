@@ -146,7 +146,7 @@
         "type": "font_picker",
         "id": "type_heading_font",
         "label": "t:labels.heading_font",
-        "default": "eb_garamond_n4"
+        "default": "ebgaramond_n4"
       },
       {
         "type": "font_picker",
