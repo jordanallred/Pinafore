@@ -197,6 +197,14 @@
       --color-accent-rgb: {{ scheme.settings.accent.red }} {{ scheme.settings.accent.green }} {{ scheme.settings.accent.blue }};
       --color-accent-foreground: {{ scheme.settings.accent_label }};
 
+      /*
+       * Semantic, deliberately separate from the brand accent: a store can
+       * rebrand the accent to any hue without the sale signal following it and
+       * losing its meaning. Used as text, so it is held to 4.5:1.
+       */
+      --color-sale: {{ scheme.settings.sale }};
+      --color-sale-rgb: {{ scheme.settings.sale.red }} {{ scheme.settings.sale.green }} {{ scheme.settings.sale.blue }};
+
       /* Decorative hairlines. Not held to WCAG 1.4.11 — see check-contrast.py */
       --color-border: {{ scheme.settings.border }};
       /* Interactive control boundaries. Held to 3:1 against the background. */

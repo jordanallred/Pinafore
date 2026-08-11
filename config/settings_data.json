@@ -22,8 +22,9 @@
           "button": "#2E2A26",
           "button_label": "#FAF8F5",
           "secondary_button_label": "#2E2A26",
-          "accent": "#9C4F32",
+          "accent": "#35506E",
           "accent_label": "#FFFFFF",
+          "sale": "#8F3A2E",
           "border": "#DDD5CB",
           "border_control": "#8A8076",
           "shadow": "#2E2A26"
@@ -40,6 +41,7 @@
           "secondary_button_label": "#F5F1EC",
           "accent": "#E2C4A8",
           "accent_label": "#2E2A26",
+          "sale": "#E8907F",
           "border": "#4A443D",
           "border_control": "#8C8378",
           "shadow": "#000000"
@@ -54,8 +56,9 @@
           "button": "#3D2F27",
           "button_label": "#F3E7DF",
           "secondary_button_label": "#3D2F27",
-          "accent": "#9C4F32",
+          "accent": "#35506E",
           "accent_label": "#FFFFFF",
+          "sale": "#8F3A2E",
           "border": "#DCC8B9",
           "border_control": "#8A7566",
           "shadow": "#3D2F27"
@@ -72,6 +75,7 @@
           "secondary_button_label": "#F2F0E9",
           "accent": "#E2C4A8",
           "accent_label": "#2E2A26",
+          "sale": "#F5B4A4",
           "border": "#5A6B5E",
           "border_control": "#9FB09E",
           "shadow": "#1F2821"
@@ -86,8 +90,9 @@
           "button": "#2E2A26",
           "button_label": "#FFFFFF",
           "secondary_button_label": "#2E2A26",
-          "accent": "#9C4F32",
+          "accent": "#35506E",
           "accent_label": "#FFFFFF",
+          "sale": "#8F3A2E",
           "border": "#E4DED6",
           "border_control": "#8C8279",
           "shadow": "#2E2A26"
@@ -95,7 +100,7 @@
       }
     },
     "type_heading_font": "eb_garamond_n4",
-    "type_body_font": "nunito_sans_n4",
+    "type_body_font": "karla_n4",
     "type_body_size": 16,
     "type_heading_scale": 115,
     "type_heading_case": "none",

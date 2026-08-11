@@ -83,6 +83,7 @@
     "page_width": "Page width",
     "pinterest": "Pinterest",
     "predictive_search": "Enable search suggestions",
+    "sale": "Sale",
     "search_show_vendors": "Include brands in suggestions",
     "secondary_button_label": "Secondary button text",
     "shadow": "Shadow",
@@ -101,7 +102,8 @@
     "youtube": "YouTube"
   },
   "info": {
-    "accent": "Used for sale prices, badges, and focus outlines. Keep it distinct from your button color.",
+    "accent": "Used for badges, links, and focus outlines. Keep it distinct from your button color.",
+    "sale": "Used for sale prices and sale badges only, so it keeps its meaning if you change the accent. Keep it at least 4.5:1 against the background.",
     "border": "Hairlines between cards and rows. Decorative only, so it can be subtle.",
     "border_control": "Outlines around inputs, size buttons, and other controls. Keep this at least 3:1 against the background so it stays visible.",
     "corner_style": "Applies to cards, inputs, and images across the theme.",

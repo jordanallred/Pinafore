@@ -29,11 +29,12 @@ SCHEMES = {
         "muted-foreground":  "#6B6259",
         "border":            "#DDD5CB",
         "border-control":    "#8A8076",
-        "focus-ring":        "#9C4F32",
+        "focus-ring":        "#35506E",
         "button-background": "#2E2A26",
         "button-foreground": "#FAF8F5",
-        "accent-background": "#9C4F32",
+        "accent-background": "#35506E",
         "accent-foreground": "#FFFFFF",
+        "sale":              "#8F3A2E",
     },
     "2 Ink": {
         "background":        "#2E2A26",
@@ -46,6 +47,7 @@ SCHEMES = {
         "button-foreground": "#2E2A26",
         "accent-background": "#E2C4A8",
         "accent-foreground": "#2E2A26",
+        "sale":              "#E8907F",
     },
     "3 Blush": {
         "background":        "#F3E7DF",
@@ -53,11 +55,12 @@ SCHEMES = {
         "muted-foreground":  "#6E5A4C",
         "border":            "#DCC8B9",
         "border-control":    "#8A7566",
-        "focus-ring":        "#9C4F32",
+        "focus-ring":        "#35506E",
         "button-background": "#3D2F27",
         "button-foreground": "#F3E7DF",
-        "accent-background": "#9C4F32",
+        "accent-background": "#35506E",
         "accent-foreground": "#FFFFFF",
+        "sale":              "#8F3A2E",
     },
     "4 Sage": {
         "background":        "#3F5044",
@@ -70,6 +73,7 @@ SCHEMES = {
         "button-foreground": "#3F5044",
         "accent-background": "#E2C4A8",
         "accent-foreground": "#2E2A26",
+        "sale":              "#F5B4A4",
     },
     "5 Snow": {
         "background":        "#FFFFFF",
@@ -77,11 +81,12 @@ SCHEMES = {
         "muted-foreground":  "#665D54",
         "border":            "#E4DED6",
         "border-control":    "#8C8279",
-        "focus-ring":        "#9C4F32",
+        "focus-ring":        "#35506E",
         "button-background": "#2E2A26",
         "button-foreground": "#FFFFFF",
-        "accent-background": "#9C4F32",
+        "accent-background": "#35506E",
         "accent-foreground": "#FFFFFF",
+        "sale":              "#8F3A2E",
     },
 }
 
@@ -94,6 +99,9 @@ PAIRS = [
     ("border-control",    "background",        3.0, "control boundary (1.4.11)"),
     ("focus-ring",        "background",        3.0, "focus indicator (1.4.11)"),
     ("accent-background", "background",        3.0, "accent surface vs page"),
+    # `sale` is a semantic signal held separate from the brand accent, and it
+    # is used as text (struck-through compare-at prices), so it needs 4.5:1.
+    ("sale",              "background",        4.5, "sale price text"),
 ]
 
 fails = 0

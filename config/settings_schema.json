@@ -77,13 +77,20 @@
             "id": "accent",
             "label": "t:labels.accent_background",
             "info": "t:info.accent",
-            "default": "#9C4F32"
+            "default": "#35506E"
           },
           {
             "type": "color",
             "id": "accent_label",
             "label": "t:labels.accent_label",
             "default": "#FFFFFF"
+          },
+          {
+            "type": "color",
+            "id": "sale",
+            "label": "t:labels.sale",
+            "info": "t:info.sale",
+            "default": "#8F3A2E"
           },
           {
             "type": "header",
@@ -145,7 +152,7 @@
         "type": "font_picker",
         "id": "type_body_font",
         "label": "t:labels.body_font",
-        "default": "nunito_sans_n4"
+        "default": "karla_n4"
       },
       {
         "type": "header",
