@@ -43,7 +43,13 @@
     "surface": "Surface",
     "text": "Text",
     "theme": "Theme",
-    "typography": "Typography"
+    "typography": "Typography",
+    "account": "Account",
+    "cart_drawer": "Cart drawer",
+    "mega_menu": "Dropdown menus",
+    "menu_column": "Menu column",
+    "newsletter": "Newsletter",
+    "predictive_search": "Search suggestions"
   },
   "labels": {
     "accent_background": "Accent",
@@ -99,7 +105,17 @@
     "text_muted": "Secondary text",
     "text_style": "Text style",
     "tiktok": "TikTok",
-    "youtube": "YouTube"
+    "youtube": "YouTube",
+    "color_scheme": "Color scheme",
+    "heading": "Heading",
+    "logo": "Logo",
+    "logo_width": "Logo width",
+    "mega_columns": "Columns",
+    "sticky_header": "Keep header visible",
+    "show_gift_note": "Show gift note",
+    "show_accelerated_checkout": "Show express checkout buttons",
+    "show_policy_links": "Show policy links",
+    "show_powered_by": "Show “Powered by Shopify”"
   },
   "info": {
     "accent": "Used for badges, links, and focus outlines. Keep it distinct from your button color.",
@@ -120,7 +136,10 @@
     "show_second_image": "Shows the next product image when a customer hovers the card.",
     "show_vendor": "Useful for stores that carry multiple brands.",
     "social_link": "Paste the full link, including https://",
-    "text_muted": "Used for prices, captions, and helper text. Keep it at least 4.5:1 against the background."
+    "text_muted": "Used for prices, captions, and helper text. Keep it at least 4.5:1 against the background.",
+    "sticky_header": "The header stays at the top of the screen as customers scroll.",
+    "show_gift_note": "Lets customers add a message to their order. Useful for stores that ship a lot of gifts.",
+    "show_accelerated_checkout": "Shows Shop Pay, Apple Pay, and Google Pay in the cart. Turning this off will lower mobile conversion."
   },
   "options": {
     "alignment": {

@@ -1,0 +1,397 @@
+{% comment %}
+  Cart drawer.
+
+  A section rather than a snippet so `<pinafore-cart>` can re-render it
+  through the Section Rendering API (`?sections=cart-drawer,header`) after a
+  quantity change, instead of hand-patching the DOM from a JSON response.
+  Rendered once from layout/theme.liquid.
+
+  Everything here works without JavaScript: the quantity controls are real
+  form submits to /cart/change and the checkout button is a real form submit.
+{% endcomment %}
+
+<dialog
+  class="drawer drawer--end color-{{ section.settings.color_scheme }}"
+  id="CartDrawer"
+  scroll-lock
+  aria-label="{{ 'cart.title' | t }}"
+>
+  <pinafore-cart class="drawer__panel" data-item-count="{{ cart.item_count }}">
+    <div class="drawer__header">
+      <span class="drawer__title">
+        {{ 'cart.title' | t }}
+        {%- if cart.item_count > 0 %} ({{ cart.item_count }}){% endif -%}
+      </span>
+      <button class="button button--icon" type="button" data-drawer-close>
+        {% render 'icon', icon: 'close' %}
+        <span class="visually-hidden">{{ 'accessibility.close' | t }}</span>
+      </button>
+    </div>
+
+    {%- if cart.item_count == 0 -%}
+      <div class="drawer__body cart-empty">
+        <p class="cart-empty__text">{{ 'cart.empty' | t }}</p>
+        <a class="button" href="{{ routes.all_products_collection_url }}">
+          {{ 'cart.continue_shopping' | t }}
+        </a>
+      </div>
+    {%- else -%}
+      <div class="drawer__body">
+        <ul class="cart-items" role="list">
+          {%- for item in cart.items -%}
+            <li class="cart-item" data-line="{{ forloop.index }}">
+              <a class="cart-item__media" href="{{ item.url }}" tabindex="-1" aria-hidden="true">
+                {%- if item.image -%}
+                  {{
+                    item.image
+                    | image_url: width: 220
+                    | image_tag:
+                      widths: '110, 220',
+                      sizes: '110px',
+                      alt: '',
+                      loading: 'lazy'
+                  }}
+                {%- endif -%}
+              </a>
+
+              <div class="cart-item__detail">
+                {%- if item.product.vendor != blank -%}
+                  <span class="cart-item__vendor">{{ item.product.vendor }}</span>
+                {%- endif -%}
+                <a class="cart-item__title" href="{{ item.url }}">{{ item.product.title }}</a>
+
+                {%- unless item.product.has_only_default_variant -%}
+                  <span class="cart-item__variant">{{ item.variant.title }}</span>
+                {%- endunless -%}
+
+                {%- if item.selling_plan_allocation -%}
+                  <span class="cart-item__plan">{{ item.selling_plan_allocation.selling_plan.name }}</span>
+                {%- endif -%}
+
+                {%- comment -%}
+                  Line-level discounts have to be visible in the drawer, or the
+                  total looks wrong to the customer before checkout explains it.
+                {%- endcomment -%}
+                {%- for discount in item.line_level_discount_allocations -%}
+                  <span class="cart-item__discount">
+                    {{ discount.discount_application.title }}
+                    (&minus;{{ discount.amount | money }})
+                  </span>
+                {%- endfor -%}
+
+                <div class="cart-item__foot">
+                  <div class="qty">
+                    <a
+                      class="qty__button"
+                      href="{{ routes.cart_change_url }}?line={{ forloop.index }}&quantity={{ item.quantity | minus: 1 }}"
+                      data-qty-change
+                      aria-label="{{ 'cart.decrease' | t: title: item.product.title }}"
+                    >
+                      {% render 'icon', icon: 'minus', size: '0.9rem' %}
+                    </a>
+                    <span class="qty__value" data-qty-value>{{ item.quantity }}</span>
+                    <a
+                      class="qty__button"
+                      href="{{ routes.cart_change_url }}?line={{ forloop.index }}&quantity={{ item.quantity | plus: 1 }}"
+                      data-qty-change
+                      aria-label="{{ 'cart.increase' | t: title: item.product.title }}"
+                    >
+                      {% render 'icon', icon: 'plus', size: '0.9rem' %}
+                    </a>
+                  </div>
+
+                  {% render 'price', product: item, context: 'line' %}
+                </div>
+
+                <a
+                  class="cart-item__remove"
+                  href="{{ routes.cart_change_url }}?line={{ forloop.index }}&quantity=0"
+                  data-qty-change
+                >
+                  {{ 'cart.remove' | t }}
+                  <span class="visually-hidden">{{ item.product.title }}</span>
+                </a>
+              </div>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        {%- if section.settings.show_gift_note -%}
+          {%- comment -%}
+            Gifting is a large share of a children's boutique's orders, and a
+            grandparent shipping direct needs the note at the point they're
+            already thinking about it. Uses the native cart note, so no app.
+          {%- endcomment -%}
+          <details class="gift-note">
+            <summary class="gift-note__summary">
+              {% render 'icon', icon: 'gift', size: '1.1rem' %}
+              {{ 'cart.gift_note' | t }}
+            </summary>
+            <label class="visually-hidden" for="CartNote">{{ 'cart.gift_note' | t }}</label>
+            <textarea
+              class="field gift-note__field"
+              id="CartNote"
+              name="note"
+              rows="3"
+              form="CartDrawerForm"
+              placeholder="{{ 'cart.gift_note_placeholder' | t }}"
+            >{{ cart.note }}</textarea>
+          </details>
+        {%- endif -%}
+      </div>
+
+      <div class="drawer__footer">
+        <form action="{{ routes.cart_url }}" method="post" id="CartDrawerForm" novalidate>
+          <div class="cart-total">
+            <span>{{ 'cart.subtotal' | t }}</span>
+            <span class="cart-total__value">{{ cart.total_price | money_with_currency }}</span>
+          </div>
+
+          {%- if cart.cart_level_discount_applications.size > 0 -%}
+            {%- for discount in cart.cart_level_discount_applications -%}
+              <div class="cart-total cart-total--discount">
+                <span>{{ discount.title }}</span>
+                <span>&minus;{{ discount.total_allocated_amount | money }}</span>
+              </div>
+            {%- endfor -%}
+          {%- endif -%}
+
+          <p class="cart-note-text">{{ 'cart.taxes_note' | t }}</p>
+
+          <button class="button button--full" type="submit" name="checkout">
+            {{ 'cart.checkout' | t }}
+          </button>
+
+          {%- if section.settings.show_accelerated_checkout -%}
+            {%- comment -%}
+              Accelerated checkout sits directly under the primary button and is
+              on by default. On mobile this is the single largest conversion
+              lever in the drawer.
+            {%- endcomment -%}
+            <div class="cart-accelerated">
+              {{ content_for_additional_checkout_buttons }}
+            </div>
+          {%- endif -%}
+
+          <a class="cart-viewcart" href="{{ routes.cart_url }}">{{ 'cart.view_cart' | t }}</a>
+        </form>
+      </div>
+    {%- endif -%}
+  </pinafore-cart>
+</dialog>
+
+{% stylesheet %}
+  .cart-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    text-align: center;
+  }
+
+  .cart-empty__text {
+    color: var(--color-foreground-muted);
+  }
+
+  .cart-items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cart-item {
+    display: grid;
+    grid-template-columns: 5.5rem 1fr;
+    gap: var(--space-sm);
+    padding-block: var(--space-sm);
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--color-border) 0 var(--seam-dash),
+      transparent var(--seam-dash) calc(var(--seam-dash) + var(--seam-gap))
+    );
+    background-repeat: no-repeat;
+    background-size: 100% var(--seam-weight);
+    background-position: bottom left;
+  }
+
+  .cart-item:last-child {
+    background-image: none;
+  }
+
+  .cart-item__media img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border-radius: var(--radius-media);
+  }
+
+  .cart-item__detail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+  }
+
+  .cart-item__vendor {
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-foreground-muted);
+  }
+
+  .cart-item__title {
+    font-family: var(--font-heading--family);
+    font-size: var(--text-base);
+    line-height: var(--leading-snug);
+    text-decoration: none;
+  }
+
+  .cart-item__variant,
+  .cart-item__plan {
+    font-size: var(--text-xs);
+    color: var(--color-foreground-muted);
+  }
+
+  .cart-item__discount {
+    font-size: var(--text-xs);
+    color: var(--color-sale);
+  }
+
+  .cart-item__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2xs);
+    margin-top: var(--space-2xs);
+    flex-wrap: wrap;
+  }
+
+  .qty {
+    display: flex;
+    align-items: center;
+    border: var(--border-width) solid var(--color-border-control);
+    border-radius: var(--radius-control);
+  }
+
+  .qty__button {
+    display: grid;
+    place-items: center;
+    /* Slightly under the 44px floor is acceptable here only because the row
+       also exposes a full-size Remove link; the stepper is not the sole path. */
+    width: 2rem;
+    height: 2rem;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .qty__value {
+    min-width: 1.75rem;
+    text-align: center;
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cart-item__remove {
+    align-self: flex-start;
+    font-size: var(--text-xs);
+    color: var(--color-foreground-muted);
+    text-underline-offset: 0.2em;
+  }
+
+  .gift-note {
+    margin-top: var(--space-md);
+  }
+
+  .gift-note__summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    min-height: var(--tap-target);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .gift-note__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .gift-note__field {
+    width: 100%;
+    padding: var(--space-2xs);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    border: var(--border-width) solid var(--color-border-control);
+    resize: vertical;
+  }
+
+  .cart-total {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    font-size: var(--text-md);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .cart-total__value {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }
+
+  .cart-total--discount {
+    font-size: var(--text-sm);
+    color: var(--color-sale);
+  }
+
+  .cart-note-text {
+    font-size: var(--text-xs);
+    color: var(--color-foreground-muted);
+    margin-bottom: var(--space-sm);
+  }
+
+  .cart-accelerated {
+    margin-top: var(--space-2xs);
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .cart-viewcart {
+    display: block;
+    text-align: center;
+    margin-top: var(--space-sm);
+    font-size: var(--text-sm);
+    color: var(--color-foreground-muted);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.cart_drawer",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_gift_note",
+      "label": "t:labels.show_gift_note",
+      "info": "t:info.show_gift_note",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_accelerated_checkout",
+      "label": "t:labels.show_accelerated_checkout",
+      "info": "t:info.show_accelerated_checkout",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme_1"
+    }
+  ]
+}
+{% endschema %}

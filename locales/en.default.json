@@ -9,7 +9,8 @@
     "account": "Account",
     "previous": "Previous",
     "next": "Next",
-    "loading": "Loading"
+    "loading": "Loading",
+    "primary_navigation": "Primary"
   },
   "404": {
     "title": "404",
@@ -29,7 +30,16 @@
     "checkout": "Checkout",
     "title": "Cart",
     "update": "Update",
-    "remove": "Remove"
+    "remove": "Remove",
+    "empty": "Your cart is empty.",
+    "continue_shopping": "Continue shopping",
+    "subtotal": "Subtotal",
+    "taxes_note": "Taxes and shipping calculated at checkout.",
+    "view_cart": "View cart",
+    "increase": "Add one {{ title }}",
+    "decrease": "Remove one {{ title }}",
+    "gift_note": "Add a gift note",
+    "gift_note_placeholder": "Write a message to include with this order"
   },
   "customers": {
     "login": {
@@ -59,6 +69,22 @@
     "placeholder": "Search articles, pages, or products",
     "submit": "Search",
     "no_results_html": "No results found for {{ terms }}",
-    "results_for_html": "{{ count }} results found for {{ terms }}"
+    "results_for_html": "{{ count }} results found for {{ terms }}",
+    "brands": "Brands",
+    "collections": "Collections",
+    "products": "Products",
+    "view_all": "See all results"
+  },
+  "newsletter": {
+    "email": "Email address",
+    "submit": "Sign up",
+    "success": "Thanks for signing up."
+  },
+  "products": {
+    "price": {
+      "from": "From",
+      "regular_price": "Regular price",
+      "sale_price": "Sale price"
+    }
   }
 }

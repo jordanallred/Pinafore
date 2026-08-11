@@ -13,13 +13,44 @@
   "sections": {
     "footer": {
       "type": "footer",
+      "blocks": {
+        "shop": {
+          "type": "menu",
+          "settings": {
+            "heading": "Shop",
+            "menu": "main-menu"
+          }
+        },
+        "help": {
+          "type": "menu",
+          "settings": {
+            "heading": "Help",
+            "menu": "footer"
+          }
+        },
+        "about": {
+          "type": "text",
+          "settings": {
+            "heading": "About",
+            "text": "<p>Share what makes your shop worth driving across town for.</p>"
+          }
+        },
+        "newsletter": {
+          "type": "newsletter",
+          "settings": {
+            "heading": "Stay in the loop",
+            "text": "<p>New arrivals, preorder dates, and the occasional sale.</p>"
+          }
+        }
+      },
+      "block_order": ["shop", "help", "about", "newsletter"],
       "settings": {
-        "menu": "",
-        "show_payment_icons": true
+        "show_payment_icons": true,
+        "show_policy_links": true,
+        "show_powered_by": false,
+        "color_scheme": "scheme_2"
       }
     }
   },
-  "order": [
-    "footer"
-  ]
+  "order": ["footer"]
 }

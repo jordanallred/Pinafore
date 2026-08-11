@@ -56,5 +56,14 @@
     </main>
 
     {% sections 'footer-group' %}
+
+    {% comment %}
+      Rendered at the layout level because it is a section (so the Section
+      Rendering API can refresh it) and sections cannot be nested inside the
+      header section that opens it.
+    {% endcomment %}
+    {% section 'cart-drawer' %}
+
+    <script src="{{ 'pinafore.js' | asset_url }}" defer></script>
   </body>
 </html>

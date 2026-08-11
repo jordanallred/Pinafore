@@ -1,0 +1,225 @@
+{% comment %}
+  Predictive search results.
+
+  Fetched by <pinafore-search> as
+  /search/suggest?q=…&section_id=predictive-search, so the markup is rendered
+  by Liquid rather than assembled in JavaScript. That keeps money formatting,
+  translations and image sizing identical to the rest of the theme.
+
+  Brands are derived from the vendors of the matched products. Shopify's
+  predictive search has no vendor resource, but on a store carrying ~60 labels
+  "Properly Tied" is a search someone actually types, so the vendors of the
+  matches are surfaced as their own shortcut into a filtered collection.
+{% endcomment %}
+
+{% liquid
+  assign products = predictive_search.resources.products
+  assign collections = predictive_search.resources.collections
+  assign queries = predictive_search.resources.queries
+
+  assign show_vendors = false
+  if settings.search_show_vendors and products.size > 0
+    assign show_vendors = true
+  endif
+%}
+
+{%- if predictive_search.performed -%}
+  {%- if products.size == 0 and collections.size == 0 and queries.size == 0 -%}
+    <p class="psearch__empty">
+      {{ 'search.no_results_html' | t: terms: predictive_search.terms }}
+    </p>
+  {%- else -%}
+    <div class="psearch">
+      {%- if show_vendors -%}
+        {%- comment -%} Dedupe vendors while preserving relevance order. {%- endcomment -%}
+        {%- assign seen_vendors = '' -%}
+        {%- capture vendor_markup -%}
+          {%- for product in products -%}
+            {%- assign vendor = product.vendor -%}
+            {%- assign needle = '|' | append: vendor | append: '|' -%}
+            {%- unless vendor == blank or seen_vendors contains needle -%}
+              {%- assign seen_vendors = seen_vendors | append: needle -%}
+              <li>
+                <a
+                  class="psearch__chip"
+                  href="{{ routes.all_products_collection_url }}?filter.p.vendor={{ vendor | url_encode }}"
+                >
+                  {{ vendor }}
+                </a>
+              </li>
+            {%- endunless -%}
+          {%- endfor -%}
+        {%- endcapture -%}
+
+        {%- if vendor_markup != blank -%}
+          <section class="psearch__group">
+            <h2 class="psearch__heading">{{ 'search.brands' | t }}</h2>
+            <ul class="psearch__chips" role="list">{{ vendor_markup }}</ul>
+          </section>
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- if collections.size > 0 -%}
+        <section class="psearch__group">
+          <h2 class="psearch__heading">{{ 'search.collections' | t }}</h2>
+          <ul class="psearch__chips" role="list">
+            {%- for collection in collections -%}
+              <li><a class="psearch__chip" href="{{ collection.url }}">{{ collection.title }}</a></li>
+            {%- endfor -%}
+          </ul>
+        </section>
+      {%- endif -%}
+
+      {%- if products.size > 0 -%}
+        <section class="psearch__group">
+          <h2 class="psearch__heading">{{ 'search.products' | t }}</h2>
+          <ul class="psearch__products" role="list">
+            {%- for product in products -%}
+              <li>
+                <a class="psearch__product" href="{{ product.url }}">
+                  <span class="psearch__media">
+                    {%- if product.featured_image -%}
+                      {{
+                        product.featured_image
+                        | image_url: width: 160
+                        | image_tag:
+                          widths: '80, 160',
+                          sizes: '80px',
+                          alt: '',
+                          loading: 'lazy'
+                      }}
+                    {%- endif -%}
+                  </span>
+                  <span class="psearch__product-detail">
+                    {%- if product.vendor != blank -%}
+                      <span class="psearch__vendor">{{ product.vendor }}</span>
+                    {%- endif -%}
+                    <span class="psearch__title">{{ product.title }}</span>
+                    {% render 'price', product: product, show_from: true %}
+                  </span>
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </section>
+      {%- endif -%}
+
+      <a class="psearch__all" href="{{ routes.search_url }}?q={{ predictive_search.terms | url_encode }}">
+        {{ 'search.view_all' | t }}
+        {% render 'icon', icon: 'arrow-right', size: '1rem' %}
+      </a>
+    </div>
+  {%- endif -%}
+{%- endif -%}
+
+{% stylesheet %}
+  .psearch {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .psearch__empty {
+    color: var(--color-foreground-muted);
+  }
+
+  .psearch__heading {
+    font-family: var(--font-body--family);
+    font-size: var(--text-2xs);
+    font-weight: 700;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-foreground-muted);
+    margin-bottom: var(--space-2xs);
+  }
+
+  .psearch__chips {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs);
+  }
+
+  .psearch__chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap-target);
+    padding-inline: var(--space-xs);
+    border: var(--border-width) solid var(--color-border-control);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    text-decoration: none;
+  }
+
+  .psearch__chip:hover {
+    background-color: rgb(var(--color-foreground-rgb) / 0.06);
+  }
+
+  .psearch__products {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2xs);
+    grid-template-columns: repeat(auto-fill, minmax(min(17rem, 100%), 1fr));
+  }
+
+  .psearch__product {
+    display: grid;
+    grid-template-columns: 3.5rem 1fr;
+    gap: var(--space-2xs);
+    align-items: center;
+    padding: var(--space-3xs);
+    border-radius: var(--radius-card);
+    text-decoration: none;
+  }
+
+  .psearch__product:hover {
+    background-color: rgb(var(--color-foreground-rgb) / 0.06);
+  }
+
+  .psearch__media img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border-radius: var(--radius-media);
+  }
+
+  .psearch__product-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+  }
+
+  .psearch__vendor {
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-foreground-muted);
+  }
+
+  .psearch__title {
+    font-family: var(--font-heading--family);
+    font-size: var(--text-base);
+    line-height: var(--leading-snug);
+  }
+
+  .psearch__all {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3xs);
+    min-height: var(--tap-target);
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.predictive_search",
+  "settings": []
+}
+{% endschema %}

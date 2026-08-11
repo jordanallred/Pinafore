@@ -1,0 +1,91 @@
+{% doc %}
+  Renders an inline SVG icon.
+
+  Icons are inlined rather than sprited from an asset file: they are small,
+  they avoid a second request, and inlining lets them inherit `currentColor`
+  so they follow whichever color scheme their section is using.
+
+  All icons are drawn on a 24x24 grid with a 1.5 stroke and no fill, so they
+  sit consistently next to text at any size.
+
+  @param {string} icon - Icon name
+  @param {string} [size] - CSS size, defaults to 1.25rem
+  @param {string} [class] - Extra class on the svg
+
+  @example
+  {% render 'icon', icon: 'search' %}
+  {% render 'icon', icon: 'cart', size: '1.5rem' %}
+{% enddoc %}
+
+{% liquid
+  assign size = size | default: '1.25rem'
+%}
+
+<svg
+  class="icon icon--{{ icon }} {{ class }}"
+  style="--icon-size: {{ size }};"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+>
+  {%- case icon -%}
+    {%- when 'search' -%}
+      <circle cx="11" cy="11" r="7"/><path d="M20 20l-4.35-4.35"/>
+    {%- when 'cart' -%}
+      <path d="M6.5 8h11l1 12h-13z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>
+    {%- when 'account' -%}
+      <circle cx="12" cy="8.5" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/>
+    {%- when 'menu' -%}
+      <path d="M4 7h16M4 12h16M4 17h16"/>
+    {%- when 'close' -%}
+      <path d="M6 6l12 12M18 6L6 18"/>
+    {%- when 'chevron-down' -%}
+      <path d="M6 9.5l6 6 6-6"/>
+    {%- when 'chevron-right' -%}
+      <path d="M9.5 6l6 6-6 6"/>
+    {%- when 'chevron-left' -%}
+      <path d="M14.5 6l-6 6 6 6"/>
+    {%- when 'arrow-right' -%}
+      <path d="M4 12h16M14 6l6 6-6 6"/>
+    {%- when 'minus' -%}
+      <path d="M5 12h14"/>
+    {%- when 'plus' -%}
+      <path d="M12 5v14M5 12h14"/>
+    {%- when 'check' -%}
+      <path d="M5 12.5l4.5 4.5L19 7"/>
+    {%- when 'ruler' -%}
+      <rect x="2.5" y="8" width="19" height="8" rx="1"/>
+      <path d="M7 8v3M12 8v4M17 8v3"/>
+    {%- when 'truck' -%}
+      <path d="M2.5 7h11v10h-11z"/><path d="M13.5 10h4l3 3v4h-7z"/>
+      <circle cx="6.5" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/>
+    {%- when 'gift' -%}
+      <rect x="3" y="9" width="18" height="11" rx="1"/><path d="M3 13h18M12 9v11"/>
+      <path d="M12 9S10.5 4.5 8 5.5 10 9 12 9zM12 9s1.5-4.5 4-3.5S14 9 12 9z"/>
+    {%- when 'instagram' -%}
+      <rect x="3.5" y="3.5" width="17" height="17" rx="5"/>
+      <circle cx="12" cy="12" r="4"/><circle cx="17" cy="7" r=".9" fill="currentColor" stroke="none"/>
+    {%- when 'facebook' -%}
+      <path d="M14.5 8.5h2.5V5h-2.5A3.5 3.5 0 0 0 11 8.5V11H8.5v3.5H11V21h3.5v-6.5H17l.5-3.5h-3V9a.5.5 0 0 1 .5-.5z"/>
+    {%- when 'tiktok' -%}
+      <path d="M15 3.5v10.8a3.7 3.7 0 1 1-3.7-3.7"/><path d="M15 3.5a5 5 0 0 0 5 5"/>
+    {%- when 'pinterest' -%}
+      <circle cx="12" cy="12" r="8.5"/><path d="M10.5 20l2-8.5"/><path d="M9 10.5c0-2 1.5-3.3 3.3-3.3 1.9 0 3.2 1.3 3.2 3.1 0 2.3-1.3 4-3 4-.9 0-1.6-.7-1.4-1.6"/>
+    {%- when 'youtube' -%}
+      <rect x="2.5" y="6" width="19" height="12" rx="3.5"/>
+      <path d="M10.5 9.5l4.5 2.5-4.5 2.5z"/>
+  {%- endcase -%}
+</svg>
+
+{% stylesheet %}
+  .icon {
+    width: var(--icon-size, 1.25rem);
+    height: var(--icon-size, 1.25rem);
+    flex: none;
+  }
+{% endstylesheet %}

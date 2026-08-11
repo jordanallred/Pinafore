@@ -1,0 +1,110 @@
+{% doc %}
+  Search sheet.
+
+  The form is a real GET to /search, so submitting works with no JavaScript
+  and the results page is a normal, linkable URL. `<pinafore-search>` layers
+  suggestions on top by fetching sections/predictive-search.liquid.
+
+  @param {object} section - The header section, for the color scheme
+{% enddoc %}
+
+<dialog
+  class="drawer drawer--top color-{{ section.settings.color_scheme }}"
+  id="SearchDrawer"
+  scroll-lock
+  aria-label="{{ 'search.title' | t }}"
+>
+  <pinafore-search
+    class="drawer__panel"
+    {% if settings.search_predictive_enabled %}
+      data-predictive
+    {% endif %}
+    data-show-vendors="{{ settings.search_show_vendors }}"
+  >
+    <form
+      class="search-form"
+      action="{{ routes.search_url }}"
+      method="get"
+      role="search"
+      data-search-form
+    >
+      <input type="hidden" name="options[prefix]" value="last">
+
+      <label class="visually-hidden" for="SearchInput">{{ 'search.title' | t }}</label>
+      {% render 'icon', icon: 'search', class: 'search-form__icon' %}
+      <input
+        class="search-form__input"
+        id="SearchInput"
+        type="search"
+        name="q"
+        value="{{ search.terms | escape }}"
+        placeholder="{{ 'search.placeholder' | t }}"
+        autocomplete="off"
+        autocorrect="off"
+        spellcheck="false"
+        data-search-input
+        aria-expanded="false"
+        aria-controls="SearchResults"
+      >
+      <button class="button button--icon" type="button" data-drawer-close>
+        {% render 'icon', icon: 'close' %}
+        <span class="visually-hidden">{{ 'accessibility.close' | t }}</span>
+      </button>
+    </form>
+
+    <div class="drawer__body">
+      {%- comment -%}
+        Suggestions are injected here. Politeness is "polite" so results are
+        announced without interrupting the person still typing.
+      {%- endcomment -%}
+      <div id="SearchResults" data-search-results aria-live="polite"></div>
+    </div>
+  </pinafore-search>
+</dialog>
+
+{% stylesheet %}
+  .search-form {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding: var(--space-2xs) var(--space-md);
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--color-border) 0 var(--seam-dash),
+      transparent var(--seam-dash) calc(var(--seam-dash) + var(--seam-gap))
+    );
+    background-repeat: no-repeat;
+    background-size: 100% var(--seam-weight);
+    background-position: bottom left;
+  }
+
+  .search-form__icon {
+    color: var(--color-foreground-muted);
+  }
+
+  .search-form__input {
+    flex: 1;
+    min-height: var(--tap-target);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-foreground);
+    font-family: var(--font-heading--family);
+    font-size: var(--text-lg);
+  }
+
+  .search-form__input:focus {
+    outline: none;
+  }
+
+  /* The sheet edge carries the focus indicator, so the bare input can drop
+     its own ring without losing the keyboard affordance. */
+  .search-form:focus-within {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: -2px;
+  }
+
+  .search-form__input::placeholder {
+    color: var(--color-foreground-muted);
+  }
+{% endstylesheet %}
