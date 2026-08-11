@@ -37,14 +37,14 @@
             "type": "color",
             "id": "text",
             "label": "t:labels.text",
-            "default": "#2E2A26"
+            "default": "#262A30"
           },
           {
             "type": "color",
             "id": "text_muted",
             "label": "t:labels.text_muted",
             "info": "t:info.text_muted",
-            "default": "#6B6259"
+            "default": "#61666E"
           },
           {
             "type": "header",
@@ -54,7 +54,7 @@
             "type": "color",
             "id": "button",
             "label": "t:labels.button_background",
-            "default": "#2E2A26"
+            "default": "#262A30"
           },
           {
             "type": "color",
@@ -66,7 +66,7 @@
             "type": "color",
             "id": "secondary_button_label",
             "label": "t:labels.secondary_button_label",
-            "default": "#2E2A26"
+            "default": "#262A30"
           },
           {
             "type": "header",
@@ -101,20 +101,20 @@
             "id": "border",
             "label": "t:labels.border",
             "info": "t:info.border",
-            "default": "#DDD5CB"
+            "default": "#D6D8DC"
           },
           {
             "type": "color",
             "id": "border_control",
             "label": "t:labels.border_control",
             "info": "t:info.border_control",
-            "default": "#8A8076"
+            "default": "#7C828A"
           },
           {
             "type": "color",
             "id": "shadow",
             "label": "t:labels.shadow",
-            "default": "#2E2A26"
+            "default": "#262A30"
           }
         ],
         "role": {

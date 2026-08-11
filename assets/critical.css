@@ -372,6 +372,59 @@ a {
   background-color: rgb(var(--color-foreground-rgb) / 0.06);
 }
 
+/* ---------------------------------------------------------------- Seam */
+
+/**
+ * The stitched rule. Used everywhere this theme would otherwise reach for a
+ * 1px solid border: under the header, between collection rows, around the
+ * brand directory, between product accordions.
+ *
+ * Drawn as a repeating gradient so a single element carries it — no
+ * pseudo-element, no image request. `.seam` is a standalone divider;
+ * `.seam-block-end` and friends stitch one edge of an existing element.
+ */
+.seam,
+.seam-block-start,
+.seam-block-end {
+  --seam-image: repeating-linear-gradient(
+    90deg,
+    var(--color-border) 0 var(--seam-dash),
+    transparent var(--seam-dash) calc(var(--seam-dash) + var(--seam-gap))
+  );
+}
+
+.seam {
+  height: var(--seam-weight);
+  border: 0;
+  background-image: var(--seam-image);
+}
+
+/* Backgrounds compose, so an edge seam never fights an element's own fill. */
+.seam-block-end {
+  background-image: var(--seam-image);
+  background-repeat: no-repeat;
+  background-size: 100% var(--seam-weight);
+  background-position: bottom left;
+}
+
+.seam-block-start {
+  background-image: var(--seam-image);
+  background-repeat: no-repeat;
+  background-size: 100% var(--seam-weight);
+  background-position: top left;
+}
+
+/* Vertical run, for column rules and drawer edges. */
+.seam--vertical {
+  width: var(--seam-weight);
+  height: auto;
+  background-image: repeating-linear-gradient(
+    0deg,
+    var(--color-border) 0 var(--seam-dash),
+    transparent var(--seam-dash) calc(var(--seam-dash) + var(--seam-gap))
+  );
+}
+
 /* --------------------------------------------------------------- Media */
 .media {
   position: relative;
