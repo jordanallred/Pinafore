@@ -1,0 +1,105 @@
+{% doc %}
+  Size guide trigger and drawer, resolved per vendor.
+
+  A boutique carrying ~60 labels has ~60 different ideas of what a 3T is, and
+  fit uncertainty is the biggest single driver of returns in children's
+  apparel. The guide resolves in order:
+
+    1. a product-level metafield  (custom.size_guide) — per-item override
+    2. a vendor metaobject        (size_guide, keyed by the vendor handle)
+    3. the section's fallback page
+
+  All three are native Shopify data, so nothing here needs an app.
+
+  @param {object} product - The product
+{% enddoc %}
+
+{% liquid
+  assign guide = product.metafields.custom.size_guide
+
+  unless guide
+    assign vendor_handle = product.vendor | handleize
+    assign vendor_guide = shop.metaobjects.size_guide[vendor_handle]
+    if vendor_guide
+      assign guide = vendor_guide.chart
+    endif
+  endunless
+
+  assign guide_id = 'SizeGuide-' | append: product.id
+%}
+
+{%- if guide != blank -%}
+  <button
+    class="size-guide__trigger"
+    type="button"
+    aria-controls="{{ guide_id }}"
+    data-drawer-open="{{ guide_id }}"
+  >
+    {% render 'icon', icon: 'ruler', size: '1rem' %}
+    {{ 'products.size_guide' | t }}
+  </button>
+
+  <dialog class="drawer drawer--end" id="{{ guide_id }}" scroll-lock aria-label="{{ 'products.size_guide' | t }}">
+    <div class="drawer__panel">
+      <div class="drawer__header">
+        <span class="drawer__title">
+          {{ 'products.size_guide' | t }}
+          {%- if product.vendor != blank %} &middot; {{ product.vendor }}{% endif -%}
+        </span>
+        <button class="button button--icon" type="button" data-drawer-close>
+          {% render 'icon', icon: 'close' %}
+          <span class="visually-hidden">{{ 'accessibility.close' | t }}</span>
+        </button>
+      </div>
+      <div class="drawer__body">
+        <div class="size-guide__content rte">{{ guide }}</div>
+      </div>
+    </div>
+  </dialog>
+{%- endif -%}
+
+{% stylesheet %}
+  .size-guide__trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    /* Inline with the option label, so it is deliberately not a 44px block;
+       it sits beside a control rather than being a primary action. */
+    padding: 0.25rem 0;
+    background: none;
+    border: 0;
+    color: var(--color-foreground-muted);
+    font-family: inherit;
+    font-size: var(--text-xs);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+  }
+
+  .size-guide__trigger:hover {
+    color: var(--color-foreground);
+  }
+
+  /* Vendor charts arrive as merchant-authored rich text, so the table styling
+     has to be defensive about markup we do not control. */
+  .size-guide__content table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .size-guide__content th,
+  .size-guide__content td {
+    padding: var(--space-3xs) var(--space-2xs);
+    text-align: left;
+    border-bottom: var(--border-width) solid var(--color-border);
+  }
+
+  .size-guide__content th {
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-foreground-muted);
+  }
+{% endstylesheet %}

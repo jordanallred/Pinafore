@@ -247,6 +247,186 @@
     }
   });
 
+  /* ------------------------------------------------------------- gallery */
+
+  customElements.define('pinafore-gallery', class extends HTMLElement {
+    connectedCallback() {
+      this.track = this.querySelector('[data-gallery-track]');
+      if (!this.track) return;
+
+      this.slides = Array.prototype.slice.call(this.querySelectorAll('[data-media-id]'));
+      this.dots = Array.prototype.slice.call(this.querySelectorAll('[data-dot]'));
+      this.thumbs = Array.prototype.slice.call(this.querySelectorAll('[data-thumb]'));
+
+      // Which slide is showing is derived from scroll position rather than
+      // tracked in state, so a swipe, a thumbnail click and a deep link all
+      // converge on the same answer.
+      if (this.slides.length > 1) {
+        var observer = new IntersectionObserver(this.onIntersect.bind(this), {
+          root: this.track,
+          threshold: 0.6
+        });
+        this.slides.forEach(function (slide) { observer.observe(slide); });
+      }
+
+      this.addEventListener('click', this.onThumbClick.bind(this));
+    }
+
+    onIntersect(entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (!entries[i].isIntersecting) continue;
+        this.setActive(this.slides.indexOf(entries[i].target));
+      }
+    }
+
+    onThumbClick(event) {
+      var thumb = event.target.closest('[data-thumb]');
+      if (!thumb) return;
+      event.preventDefault();
+      var id = thumb.getAttribute('data-media-id');
+      var slide = this.querySelector('[data-media-id="' + id + '"]');
+      if (slide) slide.scrollIntoView({ block: 'nearest', inline: 'center' });
+    }
+
+    setActive(index) {
+      if (index < 0) return;
+      this.dots.forEach(function (dot, i) { dot.classList.toggle('is-active', i === index); });
+      this.thumbs.forEach(function (t, i) { t.classList.toggle('is-active', i === index); });
+    }
+
+    // Called by <pinafore-variants> when the chosen variant has its own image.
+    showMedia(mediaId) {
+      var slide = this.querySelector('[data-media-id="' + mediaId + '"]');
+      if (slide) slide.scrollIntoView({ block: 'nearest', inline: 'center' });
+    }
+  });
+
+  /* ------------------------------------------------------------ variants */
+
+  customElements.define('pinafore-variants', class extends HTMLElement {
+    connectedCallback() {
+      var data = this.querySelector('[data-variant-data]');
+      if (!data) return;
+
+      try {
+        this.variants = JSON.parse(data.textContent);
+      } catch (e) {
+        return;
+      }
+
+      this.addEventListener('change', this.onChange.bind(this));
+    }
+
+    get selectedOptions() {
+      return Array.prototype.map.call(
+        this.querySelectorAll('.variants__input:checked'),
+        function (input) { return input.value; }
+      );
+    }
+
+    onChange() {
+      var chosen = this.selectedOptions;
+      var match = null;
+
+      for (var i = 0; i < this.variants.length; i++) {
+        var v = this.variants[i];
+        var hit = true;
+        for (var j = 0; j < chosen.length; j++) {
+          if (v.options[j] !== chosen[j]) { hit = false; break; }
+        }
+        if (hit) { match = v; break; }
+      }
+
+      this.updateLabels(chosen);
+      if (!match) {
+        this.markUnavailable();
+        return;
+      }
+
+      this.updateUrl(match);
+      this.updateMedia(match);
+      // Price, availability, installments and pickup all depend on the
+      // variant, so the section is re-rendered rather than patched field by
+      // field — one source of truth, and money stays formatted by Liquid.
+      this.refreshSection(match);
+    }
+
+    updateLabels(chosen) {
+      var values = this.querySelectorAll('[data-option-value]');
+      for (var i = 0; i < values.length; i++) {
+        if (chosen[i] !== undefined) values[i].textContent = chosen[i];
+      }
+    }
+
+    markUnavailable() {
+      var button = document.querySelector('[data-atc]');
+      var label = document.querySelector('[data-atc-text]');
+      if (button) button.disabled = true;
+      if (label) label.textContent = label.getAttribute('data-unavailable-text') || label.textContent;
+    }
+
+    updateUrl(variant) {
+      if (!window.history.replaceState) return;
+      var url = new URL(window.location.href);
+      url.searchParams.set('variant', variant.id);
+      window.history.replaceState({}, '', url.toString());
+    }
+
+    updateMedia(variant) {
+      if (!variant.featured_media) return;
+      var gallery = document.querySelector('pinafore-gallery');
+      if (gallery && gallery.showMedia) gallery.showMedia(variant.featured_media.id);
+    }
+
+    refreshSection(variant) {
+      var section = this.getAttribute('data-section');
+      var url = this.getAttribute('data-url');
+      if (!section || !url) return;
+
+      fetch(url + '?variant=' + variant.id + '&section_id=' + section)
+        .then(function (r) { return r.text(); })
+        .then(function (html) {
+          var doc = new DOMParser().parseFromString(html, 'text/html');
+
+          // Swap only the parts that actually depend on the variant. The
+          // picker itself is left alone so focus stays where the customer
+          // put it.
+          ['[data-price]', '[data-pickup]'].forEach(function (sel) {
+            var fresh = doc.querySelector(sel);
+            var live = document.querySelector(sel);
+            if (fresh && live) live.innerHTML = fresh.innerHTML;
+          });
+
+          var freshButton = doc.querySelector('[data-atc]');
+          var liveButton = document.querySelector('[data-atc]');
+          if (freshButton && liveButton) {
+            liveButton.disabled = freshButton.disabled;
+            liveButton.innerHTML = freshButton.innerHTML;
+          }
+
+          var idInput = document.querySelector('[data-variant-id]');
+          if (idInput) idInput.value = variant.id;
+        })
+        .catch(function () { /* the form still carries a valid variant id */ });
+    }
+  });
+
+  /* ----------------------------------------------------------- sticky ATC */
+
+  customElements.define('pinafore-sticky-atc', class extends HTMLElement {
+    connectedCallback() {
+      var target = document.querySelector('[data-atc]');
+      if (!target) return;
+
+      var self = this;
+      // Shown only once the real button has left the viewport, so the bar
+      // never covers the control it is standing in for.
+      new IntersectionObserver(function (entries) {
+        self.hidden = entries[0].isIntersecting;
+      }, { rootMargin: '0px 0px -80px 0px' }).observe(target);
+    }
+  });
+
   /* -------------------------------------------------------------- search */
 
   customElements.define('pinafore-search', class extends HTMLElement {

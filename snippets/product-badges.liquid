@@ -1,0 +1,90 @@
+{% doc %}
+  Renders the status badges for a product or a specific variant.
+
+  Preorder is inferred rather than tagged: a variant that is purchasable while
+  out of stock is on backorder, which is exactly what a boutique's seasonal
+  preorder drop looks like in Shopify's data model. That means the badge is
+  correct with no app, no tag discipline, and no merchant training — the
+  Theme Store forbids app-dependent features, and asking a shop owner to
+  maintain a "preorder" tag by hand is how badges go stale.
+
+  @param {object} product - The product
+  @param {object} [variant] - A specific variant; defaults to product scope
+
+  @example
+  {% render 'product-badges', product: product %}
+{% enddoc %}
+
+{% liquid
+  assign target = variant | default: product.selected_or_first_available_variant
+
+  assign is_preorder = false
+  if target.available and target.inventory_management != blank and target.inventory_quantity <= 0 and target.inventory_policy == 'continue'
+    assign is_preorder = true
+  endif
+
+  assign is_sold_out = false
+  unless product.available
+    assign is_sold_out = true
+  endunless
+
+  assign is_on_sale = false
+  if product.compare_at_price > product.price and product.available
+    assign is_on_sale = true
+  endif
+
+  assign savings = 0
+  if is_on_sale
+    assign savings = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price
+  endif
+%}
+
+{%- if is_sold_out and settings.card_show_sold_out_badge -%}
+  <span class="badge badge--muted">{{ 'products.sold_out' | t }}</span>
+{%- elsif is_preorder and settings.card_show_preorder_badge -%}
+  <span class="badge badge--accent">{{ 'products.preorder' | t }}</span>
+{%- elsif is_on_sale and settings.card_show_sale_badge -%}
+  <span class="badge badge--sale">
+    {%- if savings >= 5 -%}
+      {{ 'products.percent_off' | t: percent: savings }}
+    {%- else -%}
+      {{ 'products.on_sale' | t }}
+    {%- endif -%}
+  </span>
+{%- endif -%}
+
+{% stylesheet %}
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-control);
+    font-size: var(--text-2xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .badge--muted {
+    background-color: var(--color-foreground);
+    color: var(--color-background);
+  }
+
+  .badge--accent {
+    background-color: var(--color-accent);
+    color: var(--color-accent-foreground);
+  }
+
+  /*
+   * Takes the scheme background as its label color rather than a literal
+   * white: --color-sale is validated at 4.5:1 against the background in
+   * every scheme, so this pairing passes by construction. A hardcoded white
+   * would be unreadable on the light salmon the dark schemes use.
+   */
+  .badge--sale {
+    background-color: var(--color-sale);
+    color: var(--color-background);
+  }
+{% endstylesheet %}

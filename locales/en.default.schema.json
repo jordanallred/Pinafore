@@ -49,7 +49,14 @@
     "mega_menu": "Dropdown menus",
     "menu_column": "Menu column",
     "newsletter": "Newsletter",
-    "predictive_search": "Search suggestions"
+    "predictive_search": "Search suggestions",
+    "vendor": "Brand",
+    "price": "Price",
+    "variant_picker": "Variant picker",
+    "buy_buttons": "Buy buttons",
+    "pickup": "Pickup availability",
+    "description": "Description",
+    "accordion": "Accordion row"
   },
   "labels": {
     "accent_background": "Accent",
@@ -115,7 +122,11 @@
     "show_gift_note": "Show gift note",
     "show_accelerated_checkout": "Show express checkout buttons",
     "show_policy_links": "Show policy links",
-    "show_powered_by": "Show “Powered by Shopify”"
+    "show_powered_by": "Show “Powered by Shopify”",
+    "show_quantity": "Show quantity selector",
+    "show_preorder_note": "Show preorder shipping note",
+    "sticky_atc": "Sticky add to cart on mobile",
+    "show_size_guide": "Show size guide"
   },
   "info": {
     "accent": "Used for badges, links, and focus outlines. Keep it distinct from your button color.",
@@ -139,7 +150,10 @@
     "text_muted": "Used for prices, captions, and helper text. Keep it at least 4.5:1 against the background.",
     "sticky_header": "The header stays at the top of the screen as customers scroll.",
     "show_gift_note": "Lets customers add a message to their order. Useful for stores that ship a lot of gifts.",
-    "show_accelerated_checkout": "Shows Shop Pay, Apple Pay, and Google Pay in the cart. Turning this off will lower mobile conversion."
+    "show_accelerated_checkout": "Shows Shop Pay, Apple Pay, and Google Pay in the cart. Turning this off will lower mobile conversion.",
+    "show_preorder_note": "Tells customers when a preordered item ships.",
+    "sticky_atc": "A compact buy bar appears at the bottom of the screen once the main button scrolls away.",
+    "show_size_guide": "Shows a size chart next to the size options, pulled from the product or its brand."
   },
   "options": {
     "alignment": {

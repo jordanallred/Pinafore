@@ -1,0 +1,205 @@
+{% doc %}
+  Product media gallery.
+
+  On phones this is a scroll-snap strip: native momentum, native pinch zoom,
+  and no carousel library. On desktop it becomes a thumbnail rail beside a
+  main stage. Both are the same DOM — only CSS changes — so there is no
+  duplicate markup and no layout shift when the breakpoint flips.
+
+  @param {object} product - The product
+  @param {string} [ratio] - Aspect ratio override
+{% enddoc %}
+
+{% liquid
+  assign media_ratio = ratio | default: settings.style_media_ratio
+%}
+
+<pinafore-gallery
+  class="gallery"
+  data-media-count="{{ product.media.size }}"
+  style="--media-ratio: {{ media_ratio }};"
+>
+  <div class="gallery__stage" data-gallery-track role="group" aria-label="{{ 'products.media.gallery' | t }}">
+    {%- for media in product.media -%}
+      {%- liquid
+        # Filter arguments are plain values, so anything needing a filter
+        # chain has to be resolved into a variable first.
+        assign media_alt = media.alt | default: product.title | escape
+
+        # The first slide is the LCP candidate on a product page: it loads
+        # eagerly at high priority, everything after it stays lazy.
+        if forloop.first
+          assign media_loading = 'eager'
+          assign media_priority = 'high'
+        else
+          assign media_loading = 'lazy'
+          assign media_priority = 'auto'
+        endif
+      -%}
+      <div
+        class="gallery__slide media media--ratio"
+        data-media-id="{{ media.id }}"
+        id="Slide-{{ media.id }}"
+      >
+        {%- case media.media_type -%}
+          {%- when 'image' -%}
+            {{
+              media
+              | image_url: width: 1600
+              | image_tag:
+                widths: '400, 600, 800, 1000, 1400, 1600',
+                sizes: '(min-width: 990px) 50vw, 100vw',
+                alt: media_alt,
+                loading: media_loading,
+                fetchpriority: media_priority,
+                class: 'gallery__image'
+            }}
+          {%- when 'video' -%}
+            {{ media | video_tag: image_size: '1600x', controls: true, muted: false }}
+          {%- when 'external_video' -%}
+            {{ media | external_video_tag }}
+          {%- when 'model' -%}
+            {{ media | model_viewer_tag }}
+          {%- else -%}
+            {{ media | media_tag }}
+        {%- endcase -%}
+      </div>
+    {%- else -%}
+      <div class="gallery__slide media media--ratio">
+        {{ 'product-1' | placeholder_svg_tag: 'gallery__placeholder' }}
+      </div>
+    {%- endfor -%}
+  </div>
+
+  {%- if product.media.size > 1 -%}
+    {%- comment -%}
+      Dots on phones, thumbnails on desktop. Both are real anchors to the
+      slide, so they work as in-page navigation before JavaScript runs.
+    {%- endcomment -%}
+    <div class="gallery__dots" aria-hidden="true">
+      {%- for media in product.media -%}
+        <span class="gallery__dot{% if forloop.first %} is-active{% endif %}" data-dot></span>
+      {%- endfor -%}
+    </div>
+
+    <ul class="gallery__thumbs" role="list">
+      {%- for media in product.media -%}
+        <li>
+          <a
+            class="gallery__thumb{% if forloop.first %} is-active{% endif %}"
+            href="#Slide-{{ media.id }}"
+            data-thumb
+            data-media-id="{{ media.id }}"
+            aria-label="{{ 'products.media.go_to' | t: index: forloop.index }}"
+          >
+            {{
+              media.preview_image
+              | image_url: width: 240
+              | image_tag:
+                widths: '120, 240',
+                sizes: '80px',
+                alt: '',
+                loading: 'lazy'
+            }}
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+</pinafore-gallery>
+
+{% stylesheet %}
+  .gallery {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .gallery__stage {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    overscroll-behavior-x: contain;
+    gap: var(--space-3xs);
+    /* Hide the scrollbar without disabling scrolling. */
+    scrollbar-width: none;
+  }
+
+  .gallery__stage::-webkit-scrollbar {
+    display: none;
+  }
+
+  .gallery__slide {
+    flex: 0 0 100%;
+    scroll-snap-align: center;
+  }
+
+  .gallery__image,
+  .gallery__slide img,
+  .gallery__slide video,
+  .gallery__placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .gallery__dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.35rem;
+    padding-top: var(--space-3xs);
+  }
+
+  .gallery__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--radius-full);
+    background-color: var(--color-foreground);
+    opacity: 0.25;
+    transition: opacity var(--duration-fast) var(--ease-out);
+  }
+
+  .gallery__dot.is-active {
+    opacity: 1;
+  }
+
+  .gallery__thumbs {
+    display: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    .gallery__dots {
+      display: none;
+    }
+
+    .gallery__thumbs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3xs);
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .gallery__thumb {
+      display: block;
+      width: 4.5rem;
+      border-radius: var(--radius-media);
+      overflow: hidden;
+      /* Transparent by default so the active state does not shift layout. */
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+      transition: outline-color var(--duration-fast) var(--ease-out);
+    }
+
+    .gallery__thumb.is-active {
+      outline-color: var(--color-foreground);
+    }
+
+    .gallery__thumb img {
+      width: 100%;
+      aspect-ratio: var(--media-ratio);
+      object-fit: cover;
+    }
+  }
+{% endstylesheet %}

@@ -85,6 +85,24 @@
       "from": "From",
       "regular_price": "Regular price",
       "sale_price": "Sale price"
+    },
+    "add_to_cart": "Add to cart",
+    "sold_out": "Sold out",
+    "on_sale": "Sale",
+    "percent_off": "{{ percent }}% off",
+    "preorder": "Preorder",
+    "preorder_add": "Preorder now",
+    "preorder_note": "Preorder — ships when this style arrives.",
+    "quantity": "Quantity",
+    "size_guide": "Size guide",
+    "product_variants": "Options",
+    "media": {
+      "gallery": "Product images",
+      "go_to": "Go to image {{ index }}"
+    },
+    "pickup": {
+      "available": "Pickup available",
+      "unavailable": "Pickup is not available for this item right now."
     }
   }
 }
