@@ -1,9 +1,13 @@
 {
   "general": {
     "404": "Not found",
+    "accent": "Accent",
+    "accents": "Accents",
     "article": "Article",
+    "badges": "Badges",
     "block": "Block",
     "blog": "Blog",
+    "buttons": "Buttons",
     "cart": "Cart",
     "collection": "Collection",
     "collections": "Collections",
@@ -13,42 +17,108 @@
     "column": "Column",
     "content": "Content",
     "custom_section": "Custom section",
+    "favicon": "Favicon",
     "fonts": "Fonts",
     "footer": "Footer",
     "group": "Group",
     "header": "Header",
     "layout": "Layout",
+    "lines": "Lines and borders",
     "main": "Main",
+    "motion": "Motion",
     "page": "Page",
     "password": "Password",
     "primary": "Primary",
     "product": "Product",
+    "product_card": "Product cards",
     "row": "Row",
+    "scale": "Scale",
     "search": "Search",
     "secondary": "Secondary",
     "section": "Section",
     "settings": "Settings",
+    "shapes": "Shapes",
     "sidebar": "Sidebar",
+    "social": "Social media",
+    "surface": "Surface",
     "text": "Text",
     "theme": "Theme",
     "typography": "Typography"
   },
   "labels": {
+    "accent_background": "Accent",
+    "accent_label": "Accent text",
     "alignment": "Alignment",
     "background": "Background",
+    "background_gradient": "Background gradient",
+    "body_font": "Body font",
+    "body_size": "Body size",
+    "border": "Divider",
+    "border_control": "Control border",
+    "button_background": "Button",
+    "button_label": "Button text",
+    "button_shape": "Button shape",
+    "corner_style": "Corners",
+    "customer_account_menu": "Customer account menu",
+    "density": "Spacing",
+    "eyebrow_font": "Eyebrow font",
+    "facebook": "Facebook",
+    "favicon": "Favicon image",
     "foreground": "Foreground",
     "grid_gap": "Grid spacing",
     "grid_item_width": "Grid item width",
+    "heading_case": "Heading case",
+    "heading_font": "Heading font",
+    "heading_letter_spacing": "Heading letter spacing",
+    "heading_scale": "Heading size",
     "input_corner_radius": "Input corner radius",
+    "instagram": "Instagram",
     "layout_direction": "Layout direction",
+    "media_ratio": "Image shape",
     "menu": "Menu",
-    "customer_account_menu": "Customer account menu",
+    "motion_image_zoom": "Zoom images on hover",
+    "motion_reveal": "Reveal sections on scroll",
     "padding": "Padding",
     "page_margin": "Page margin",
     "page_width": "Page width",
+    "pinterest": "Pinterest",
+    "predictive_search": "Enable search suggestions",
+    "search_show_vendors": "Include brands in suggestions",
+    "secondary_button_label": "Secondary button text",
+    "shadow": "Shadow",
     "show_payment_icons": "Show payment icons",
+    "show_preorder_badge": "Show preorder badge",
+    "show_quick_add": "Show quick add",
+    "show_sale_badge": "Show sale badge",
+    "show_second_image": "Show second image on hover",
+    "show_sold_out_badge": "Show sold out badge",
+    "show_swatches": "Show color swatches",
+    "show_vendor": "Show brand name",
+    "text": "Text",
+    "text_muted": "Secondary text",
     "text_style": "Text style",
-    "text": "Text"
+    "tiktok": "TikTok",
+    "youtube": "YouTube"
+  },
+  "info": {
+    "accent": "Used for sale prices, badges, and focus outlines. Keep it distinct from your button color.",
+    "border": "Hairlines between cards and rows. Decorative only, so it can be subtle.",
+    "border_control": "Outlines around inputs, size buttons, and other controls. Keep this at least 3:1 against the background so it stays visible.",
+    "corner_style": "Applies to cards, inputs, and images across the theme.",
+    "density": "Controls the space between and inside sections.",
+    "eyebrow_font": "The small uppercase label shown above headings.",
+    "favicon": "Shown in the browser tab. Use a square image, at least 180 x 180 px.",
+    "heading_scale": "Scales every heading relative to the body size.",
+    "media_ratio": "Portrait suits apparel. Natural keeps each image's own shape.",
+    "motion_reduced": "Motion is turned off automatically for visitors who ask their device to reduce it.",
+    "motion_reveal": "Sections fade in as they enter the viewport.",
+    "search_show_vendors": "Shows matching brands alongside products.",
+    "show_preorder_badge": "Shown on products that are available to preorder.",
+    "show_quick_add": "Lets customers add a product to the cart without leaving the collection.",
+    "show_second_image": "Shows the next product image when a customer hovers the card.",
+    "show_vendor": "Useful for stores that carry multiple brands.",
+    "social_link": "Paste the full link, including https://",
+    "text_muted": "Used for prices, captions, and helper text. Keep it at least 4.5:1 against the background."
   },
   "options": {
     "alignment": {
@@ -56,12 +126,40 @@
       "center": "Center",
       "right": "Right"
     },
+    "button_shape": {
+      "inherit": "Match corners",
+      "pill": "Pill"
+    },
+    "case": {
+      "none": "As typed",
+      "uppercase": "Uppercase"
+    },
+    "corners": {
+      "sharp": "Sharp",
+      "soft": "Soft",
+      "round": "Round"
+    },
+    "density": {
+      "compact": "Compact",
+      "default": "Default",
+      "spacious": "Spacious"
+    },
     "direction": {
       "horizontal": "Horizontal",
       "vertical": "Vertical"
     },
+    "font_role": {
+      "body": "Body font",
+      "heading": "Heading font"
+    },
+    "media_ratio": {
+      "natural": "Natural",
+      "square": "Square",
+      "portrait": "Portrait"
+    },
     "page_width": {
       "narrow": "Narrow",
+      "medium": "Medium",
       "wide": "Wide"
     },
     "size": {
@@ -72,6 +170,9 @@
       "title": "Title",
       "subtitle": "Subtitle",
       "normal": "Normal text"
-    },
+    }
+  },
+  "units": {
+    "hundredth_em": "/100 em"
   }
 }

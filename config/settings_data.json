@@ -5,8 +5,118 @@
  * This file may be updated by the Shopify admin theme editor
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
+ *
+ * Color values here are validated by tools/check-contrast.py.
+ * Re-run it after changing any scheme.
  * ------------------------------------------------------------
  */
 {
-  "current": {}
+  "current": {
+    "color_schemes": {
+      "scheme_1": {
+        "settings": {
+          "background": "#FAF8F5",
+          "background_gradient": "",
+          "text": "#2E2A26",
+          "text_muted": "#6B6259",
+          "button": "#2E2A26",
+          "button_label": "#FAF8F5",
+          "secondary_button_label": "#2E2A26",
+          "accent": "#9C4F32",
+          "accent_label": "#FFFFFF",
+          "border": "#DDD5CB",
+          "border_control": "#8A8076",
+          "shadow": "#2E2A26"
+        }
+      },
+      "scheme_2": {
+        "settings": {
+          "background": "#2E2A26",
+          "background_gradient": "",
+          "text": "#F5F1EC",
+          "text_muted": "#B6ADA2",
+          "button": "#F5F1EC",
+          "button_label": "#2E2A26",
+          "secondary_button_label": "#F5F1EC",
+          "accent": "#E2C4A8",
+          "accent_label": "#2E2A26",
+          "border": "#4A443D",
+          "border_control": "#8C8378",
+          "shadow": "#000000"
+        }
+      },
+      "scheme_3": {
+        "settings": {
+          "background": "#F3E7DF",
+          "background_gradient": "",
+          "text": "#3D2F27",
+          "text_muted": "#6E5A4C",
+          "button": "#3D2F27",
+          "button_label": "#F3E7DF",
+          "secondary_button_label": "#3D2F27",
+          "accent": "#9C4F32",
+          "accent_label": "#FFFFFF",
+          "border": "#DCC8B9",
+          "border_control": "#8A7566",
+          "shadow": "#3D2F27"
+        }
+      },
+      "scheme_4": {
+        "settings": {
+          "background": "#3F5044",
+          "background_gradient": "",
+          "text": "#F2F0E9",
+          "text_muted": "#B9C4B8",
+          "button": "#F2F0E9",
+          "button_label": "#3F5044",
+          "secondary_button_label": "#F2F0E9",
+          "accent": "#E2C4A8",
+          "accent_label": "#2E2A26",
+          "border": "#5A6B5E",
+          "border_control": "#9FB09E",
+          "shadow": "#1F2821"
+        }
+      },
+      "scheme_5": {
+        "settings": {
+          "background": "#FFFFFF",
+          "background_gradient": "",
+          "text": "#2E2A26",
+          "text_muted": "#665D54",
+          "button": "#2E2A26",
+          "button_label": "#FFFFFF",
+          "secondary_button_label": "#2E2A26",
+          "accent": "#9C4F32",
+          "accent_label": "#FFFFFF",
+          "border": "#E4DED6",
+          "border_control": "#8C8279",
+          "shadow": "#2E2A26"
+        }
+      }
+    },
+    "type_heading_font": "eb_garamond_n4",
+    "type_body_font": "nunito_sans_n4",
+    "type_body_size": 16,
+    "type_heading_scale": 115,
+    "type_heading_case": "none",
+    "type_heading_letter_spacing": -1,
+    "type_eyebrow_font": "body",
+    "max_page_width": "90rem",
+    "min_page_margin": 20,
+    "layout_density": "spacious",
+    "style_corners": "soft",
+    "style_button_shape": "inherit",
+    "style_media_ratio": "portrait",
+    "card_show_vendor": true,
+    "card_show_second_image": true,
+    "card_show_swatches": true,
+    "card_show_quick_add": true,
+    "card_show_sale_badge": true,
+    "card_show_preorder_badge": true,
+    "card_show_sold_out_badge": true,
+    "motion_reveal": true,
+    "motion_image_zoom": true,
+    "search_predictive_enabled": true,
+    "search_show_vendors": true
+  }
 }

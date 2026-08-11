@@ -1,21 +1,41 @@
 <!doctype html>
 <html lang="{{ request.locale.iso_code }}">
   <head>
-    {% # Inlined CSS Variables %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="{{ settings.color_schemes.scheme_1.settings.background }}">
+    <link rel="canonical" href="{{ canonical_url }}">
+
+    {% if settings.favicon != blank %}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+      <link rel="apple-touch-icon" href="{{ settings.favicon | image_url: width: 180, height: 180 }}">
+    {% endif %}
+
+    {% # Inlined design tokens. Must precede any stylesheet that consumes them. %}
     {% render 'css-variables' %}
 
     {% comment %}
       Font preloading:
-      1. Preconnect to font CDN for faster connection
-      2. Preload only the critical font variant (base weight)
-      3. Additional variants load on-demand via @font-face
+      1. Preconnect to the font CDN so the handshake overlaps with HTML parsing.
+      2. Preload only the two base variants actually used above the fold.
+         Bold and italic variants load on demand via the @font-face rules
+         emitted in css-variables.
     {% endcomment %}
-    {% unless settings.type_primary_font.system? %}
+    {% liquid
+      assign preconnect_fonts = false
+      unless settings.type_body_font.system? and settings.type_heading_font.system?
+        assign preconnect_fonts = true
+      endunless
+    %}
+    {%- if preconnect_fonts -%}
       <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
-
-      {% comment %} Preload the base font variant for initial page render {% endcomment %}
-      {{ settings.type_primary_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
-    {% endunless %}
+    {%- endif -%}
+    {%- unless settings.type_body_font.system? -%}
+      {{ settings.type_body_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
+    {%- endunless -%}
+    {%- unless settings.type_heading_font.system? -%}
+      {{ settings.type_heading_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
+    {%- endunless -%}
 
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
@@ -26,10 +46,14 @@
     {{ content_for_header }}
   </head>
 
-  <body>
+  <body class="template-{{ request.page_type | handle }}">
+    <a class="skip-to-content" href="#MainContent">{{ 'accessibility.skip_to_content' | t }}</a>
+
     {% sections 'header-group' %}
 
-    {{ content_for_layout }}
+    <main id="MainContent" role="main" tabindex="-1">
+      {{ content_for_layout }}
+    </main>
 
     {% sections 'footer-group' %}
   </body>

@@ -1,4 +1,16 @@
 {
+  "accessibility": {
+    "skip_to_content": "Skip to content",
+    "close": "Close",
+    "menu": "Menu",
+    "search": "Search",
+    "cart": "Cart",
+    "cart_count": "{{ count }} items in cart",
+    "account": "Account",
+    "previous": "Previous",
+    "next": "Next",
+    "loading": "Loading"
+  },
   "404": {
     "title": "404",
     "not_found": "Page not found.",
