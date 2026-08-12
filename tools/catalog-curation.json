@@ -297,97 +297,135 @@
     "Apple Red": {
       "hex": "#B0201F",
       "base": "Red",
-      "base_id": 13
+      "base_id": 13,
+      "pattern": "Solid",
+      "pattern_id": 2874
     },
     "Rose": {
       "hex": "#C97B84",
       "base": "Pink",
-      "base_id": 11
+      "base_id": 11,
+      "pattern": "Solid",
+      "pattern_id": 2874
     },
     "Pink": {
       "hex": "#E79BAE",
       "base": "Pink",
-      "base_id": 11
+      "base_id": 11,
+      "pattern": "Solid",
+      "pattern_id": 2874
     },
     "Light Pink": {
       "hex": "#F2C6D0",
       "base": "Pink",
-      "base_id": 11
+      "base_id": 11,
+      "pattern": "Solid",
+      "pattern_id": 2874
     },
     "Pink Gingham": {
       "hex": "#EFB6C4",
       "base": "Pink",
-      "base_id": 11
+      "base_id": 11,
+      "pattern": "Checkered",
+      "pattern_id": 2868
     },
     "Pink Mouse Ears": {
       "hex": "#F0B9C6",
       "base": "Pink",
-      "base_id": 11
+      "base_id": 11,
+      "pattern": "Characters",
+      "pattern_id": 2867
     },
     "Brown": {
       "hex": "#6B4A2F",
       "base": "Brown",
-      "base_id": 7
+      "base_id": 7,
+      "pattern": "Solid",
+      "pattern_id": 2874
     },
     "Chestnut": {
       "hex": "#6B4423",
       "base": "Brown",
-      "base_id": 7
+      "base_id": 7,
+      "pattern": "Solid",
+      "pattern_id": 2874
     },
     "Driftwood Brown": {
       "hex": "#7A6A5A",
       "base": "Brown",
-      "base_id": 7
+      "base_id": 7,
+      "pattern": "Solid",
+      "pattern_id": 2874
     },
     "Cheetah": {
       "hex": "#C8A165",
       "base": "Brown",
-      "base_id": 7
+      "base_id": 7,
+      "pattern": "Animal",
+      "pattern_id": 24478
     },
     "Ecru": {
       "hex": "#D9CFC0",
       "base": "Beige",
-      "base_id": 6
+      "base_id": 6,
+      "pattern": "Solid",
+      "pattern_id": 2874
     },
     "Navy": {
       "hex": "#1F2A44",
       "base": "Navy",
-      "base_id": 15
+      "base_id": 15,
+      "pattern": "Solid",
+      "pattern_id": 2874
     },
     "Navy Peony": {
       "hex": "#2C3E5C",
       "base": "Navy",
-      "base_id": 15
+      "base_id": 15,
+      "pattern": "Floral",
+      "pattern_id": 2871
     },
     "Light Blue": {
       "hex": "#A9C9E8",
       "base": "Blue",
-      "base_id": 2
+      "base_id": 2,
+      "pattern": "Solid",
+      "pattern_id": 2874
     },
     "Blue Gingham": {
       "hex": "#7FA8D0",
       "base": "Blue",
-      "base_id": 2
+      "base_id": 2,
+      "pattern": "Checkered",
+      "pattern_id": 2868
     },
     "Blue Mouse Ears": {
       "hex": "#8FB4D9",
       "base": "Blue",
-      "base_id": 2
+      "base_id": 2,
+      "pattern": "Characters",
+      "pattern_id": 2867
     },
     "Baby Blue Seersucker": {
       "hex": "#A8C8E0",
       "base": "Blue",
-      "base_id": 2
+      "base_id": 2,
+      "pattern": "Striped",
+      "pattern_id": 2875
     },
     "Grey Seersucker": {
       "hex": "#B0B4B8",
       "base": "Gray",
-      "base_id": 8
+      "base_id": 8,
+      "pattern": "Striped",
+      "pattern_id": 2875
     },
     "Lilac Seersucker": {
       "hex": "#C3B0D9",
       "base": "Purple",
-      "base_id": 12
+      "base_id": 12,
+      "pattern": "Striped",
+      "pattern_id": 2875
     }
   },
   "_colors_not_mapped": {

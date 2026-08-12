@@ -271,9 +271,21 @@
     white-space: nowrap;
   }
 
+  /*
+   * A selected colour swatch must keep showing its colour. The generic
+   * checked rule fills the control with the foreground, which turned the
+   * chosen swatch into a dark square — Apple Red rendered as ink. Selection
+   * is shown with a ring instead.
+   */
   .variants__options--swatch .variants__input:checked + .variants__swatch {
+    background-color: var(--swatch, var(--color-background));
     outline: 2px solid var(--color-foreground);
     outline-offset: 2px;
+  }
+
+  .variants__options--swatch .variants__swatch.is-unavailable {
+    /* Keep the colour visible while still reading as unavailable. */
+    opacity: 0.45;
   }
 
   .variants__select {
