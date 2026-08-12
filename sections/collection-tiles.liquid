@@ -152,6 +152,12 @@
     flex-direction: column;
     gap: 0.1rem;
     padding: var(--space-md) var(--space-sm) var(--space-sm);
+    /*
+     * Literal white, deliberately not --color-foreground. This label sits on
+     * the black scrim below, over a photograph, so it is white in every colour
+     * scheme. Tokenising it would resolve to near-black on the light schemes
+     * and disappear into the scrim.
+     */
     color: #fff;
     background: linear-gradient(
       to top,

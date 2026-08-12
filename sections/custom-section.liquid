@@ -1,4 +1,14 @@
-<div class="custom-section full-width">
+{% comment %}
+  Generic block container, kept from the Skeleton scaffold because a boutique
+  genuinely needs a free-form band for landing pages.
+
+  It originally carried neither a colour scheme nor section spacing, so any
+  merchant who added it got a band that ignored the theme's ground colours and
+  butted straight against its neighbours. Both are now wired up, which is what
+  keeps this section from reintroducing the inconsistency the redesign removed.
+{% endcomment %}
+
+<div class="custom-section band color-{{ section.settings.color_scheme }} full-width section-spacing">
   {% if section.settings.background_image %}
     <div class="custom-section__background">
       {{ section.settings.background_image | image_url: width: 2000 | image_tag }}
@@ -49,6 +59,12 @@
       "type": "image_picker",
       "id": "background_image",
       "label": "t:labels.background"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme_1"
     }
   ],
   "presets": [

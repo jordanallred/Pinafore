@@ -1,6 +1,9 @@
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+{% doc %}
+  SEO and social meta. Document-level meta (charset, viewport, theme-color,
+  favicon) belongs to layout/theme.liquid and is deliberately not repeated here
+  — both files previously emitted charset, viewport AND a canonical link, so
+  every page shipped two competing <link rel="canonical"> tags.
+{% enddoc %}
 
 {%- liquid
   assign og_title = page_title | default: shop.name
@@ -91,6 +94,54 @@
   {%- if current_page != 1 %} &ndash; Page {{ current_page }}{% endif -%}
   {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
 </title>
+
+{%- liquid
+  # Faceted URLs are near-duplicates of the collection they refine, and the
+  # combinations multiply. Shopify's own faceted-navigation guidance treats
+  # facets as supplementary refinement rather than indexable destinations, so
+  # any collection view with an active filter is kept out of the index.
+  #
+  # `follow` matters: products are reached from the unfiltered collection, so
+  # nothing is orphaned by this.
+  assign suppress_index = false
+
+  for filter in collection.filters
+    if filter.active_values.size > 0
+      assign suppress_index = true
+      break
+    endif
+    if filter.type == 'price_range' and filter.min_value.value != nil
+      assign suppress_index = true
+      break
+    endif
+    if filter.type == 'price_range' and filter.max_value.value != nil
+      assign suppress_index = true
+      break
+    endif
+  endfor
+
+  # /collections/<x>/<tag> is the same duplication in path form.
+  if current_tags
+    assign suppress_index = true
+  endif
+
+  # Internal search results carry no standalone value and are classic index
+  # bloat.
+  if request.page_type == 'search'
+    assign suppress_index = true
+  endif
+-%}
+
+{%- comment -%}
+  Pagination is deliberately NOT suppressed. Google drops crawling of a page it
+  has settled on as noindex, at which point `follow` stops being honoured and
+  the products that live only on page 2+ lose their internal links. Paginated
+  pages stay indexable with a self-referencing canonical.
+{%- endcomment -%}
+
+{%- if suppress_index -%}
+  <meta name="robots" content="noindex,follow">
+{%- endif -%}
 
 <link
   rel="canonical"

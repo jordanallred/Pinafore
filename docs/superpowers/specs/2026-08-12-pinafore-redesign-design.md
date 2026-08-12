@@ -84,8 +84,24 @@ not a color problem.
 ### P7 — Scaffold leftovers
 
 `sections/hello-world.liquid` carries hardcoded `#f6f6f7`, `#eef3ff`, `8px` and
-`4px`. `assets/critical.css:199` hardcodes a `2px` radius.
-`sections/collection-tiles.liquid:155` hardcodes `#fff`.
+`4px`, and is referenced by no template. Delete.
+
+`sections/custom-section.liquid` is Skeleton scaffold but merchant-addable via
+presets, and carried neither a colour scheme nor section spacing — so adding it
+would produce a band outside the system. Wire both up rather than delete.
+
+`assets/critical.css` sets `border-radius: 2px` inside `:focus-visible`. This is
+worse than a hardcoded value: it restyles the *element's own* corners on focus,
+so a 10px chip snapped to 2px when focused. Browsers already draw `outline`
+following the element's radius, so the declaration is removed outright.
+
+`snippets/product-card.liquid` carries `.card__swatch` / `.card__swatch-more`
+rules for classes the markup never renders (it renders `.card__variant`). Dead.
+
+**Withdrawn:** `sections/collection-tiles.liquid:155` `color: #fff` was recorded
+as a defect. It is correct — the label sits on a black scrim over a photograph,
+so it must be white in every scheme; tokenising it would resolve to near-black
+on light schemes and vanish. A comment is added so it is not "fixed" later.
 
 ## Direction
 
@@ -257,10 +273,17 @@ Three defects found in `snippets/meta-tags.liquid` and `layout/theme.liquid`:
    `meta-tags.liquid` also adds a legacy `X-UA-Compatible`. Deduplicate.
 3. **No robots meta anywhere.** Every facet combination is currently indexable.
 
-Fix: emit `<meta name="robots" content="noindex,follow">` when a collection has
-active filters or is beyond page 1, and keep the canonical pointing at the
-unfiltered collection. `follow` preserves link equity flow to products while
-keeping the combinations out of the index.
+Fix: `meta-tags.liquid` owns SEO/social meta, `theme.liquid` owns document meta,
+and the canonical is emitted exactly once. `<meta name="robots"
+content="noindex,follow">` is emitted when a collection has active filters
+(including price-range bounds), when the URL is a `/collections/<x>/<tag>` path,
+or on internal search results.
+
+**Pagination is deliberately excluded**, correcting an earlier draft of this
+spec. Once Google settles on a page as `noindex` it stops crawling it, and
+`follow` stops being honoured — so noindexing page 2+ eventually strips the
+internal links to products that appear only deep in a collection. Paginated
+pages stay indexable with a self-referencing canonical.
 
 ### D8 — Cleanup
 
