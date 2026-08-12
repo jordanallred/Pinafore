@@ -152,7 +152,9 @@
     "name": "Name",
     "overlay": "Image darkening",
     "products_shown": "Products shown",
-    "show_view_all": "Show “View all” link"
+    "show_view_all": "Show “View all” link",
+    "show_image": "Show featured image",
+    "show_author": "Show author"
   },
   "info": {
     "accent": "Used for badges, links, and focus outlines. Keep it distinct from your button color.",

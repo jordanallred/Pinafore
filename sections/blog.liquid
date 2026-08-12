@@ -1,35 +1,70 @@
 {% comment %}
-  This section is used in the blog template to render the blog page listing all
-  articles within a blog.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/blog
+  Blog listing. For a boutique this is where sizing guides, brand stories and
+  drop announcements live, so it is built to be read rather than skimmed.
 {% endcomment %}
 
-<h1>{{ blog.title }}</h1>
+{% paginate blog.articles by section.settings.per_page %}
+  <div class="blog color-{{ section.settings.color_scheme }}">
+    <header class="blog__header">
+      <h1 class="blog__title">{{ blog.title }}</h1>
+    </header>
 
-{% paginate blog.articles by 5 %}
-  {% for article in blog.articles %}
-    <div>
-      {% if article.image %}
-        {{ article.image | image_url: width: 1000 | image_tag }}
-      {% endif %}
-      <h2>
-        {{ article.title | link_to: article.url }}
-      </h2>
-      {% assign date = article.published_at | time_tag: format: 'date' %}
-      <p>{{ 'blog.article_metadata_html' | t: date: date, author: article.author }}</p>
-      <p>{{ article.excerpt }}</p>
-    </div>
-  {% endfor %}
+    {%- if blog.articles.size > 0 -%}
+      <ul class="blog__list" style="--grid-columns: {{ section.settings.columns }};" role="list">
+        {%- for article in blog.articles -%}
+          <li>{% render 'article-card', article: article, lazy: forloop.first %}</li>
+        {%- endfor -%}
+      </ul>
 
-  {%- if paginate.pages > 1 -%}
-    {{- paginate | default_pagination -}}
-  {%- endif -%}
+      {%- if paginate.pages > 1 -%}
+        {% render 'pagination', paginate: paginate %}
+      {%- endif -%}
+    {%- else -%}
+      <p class="blog__empty">{{ 'blog.empty' | t }}</p>
+    {%- endif -%}
+  </div>
 {% endpaginate %}
+
+{% stylesheet %}
+  .blog {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding-block: var(--space-lg);
+  }
+
+  .blog__title {
+    margin: 0;
+  }
+
+  .blog__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-lg) var(--space-md);
+    grid-template-columns: 1fr;
+  }
+
+  @media screen and (min-width: 750px) {
+    .blog__list {
+      grid-template-columns: repeat(var(--grid-columns, 3), minmax(0, 1fr));
+    }
+  }
+
+  .blog__empty {
+    color: var(--color-foreground-muted);
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:general.blog",
-  "settings": []
+  "settings": [
+    { "type": "range", "id": "columns", "label": "t:labels.columns_desktop", "min": 2, "max": 4, "step": 1, "default": 3 },
+    { "type": "range", "id": "per_page", "label": "t:labels.per_page", "min": 6, "max": 24, "step": 3, "default": 12 },
+    { "type": "color_scheme", "id": "color_scheme", "label": "t:labels.color_scheme", "default": "scheme_1" }
+  ],
+  "disabled_on": { "groups": ["header", "footer"] }
 }
 {% endschema %}
