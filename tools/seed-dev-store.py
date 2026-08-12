@@ -170,18 +170,25 @@ def main():
             'variants': build_variants(product, location_id),
         }
 
-        if not args.no_images and product.get('image_seed'):
-            # Seeded placeholders at a 3:4 portrait ratio, matching the theme's
-            # default media shape. Stand-ins, not real product photography.
-            seed = product['image_seed']
-            payload['files'] = [
-                {
+        if not args.no_images:
+            # Real product photography from the live store when available,
+            # because a childrenswear theme cannot be judged against stock
+            # photos — the design rests on how smocking and pale product shots
+            # sit against the palette.
+            src = product.get('image_url')
+            if src:
+                payload['files'] = [{
+                    'originalSource': src,
+                    'contentType': 'IMAGE',
+                    'alt': product['title'],
+                }]
+            elif product.get('image_seed'):
+                seed = product['image_seed']
+                payload['files'] = [{
                     'originalSource': f'https://picsum.photos/seed/{seed}-{n}/1200/1600',
                     'contentType': 'IMAGE',
                     'alt': product['title'],
-                }
-                for n in (1, 2)
-            ]
+                } for n in (1, 2)]
 
         res = run_graphql(args.store, PRODUCT_SET, {'input': payload},
                           mutation=True, dry_run=args.dry_run)

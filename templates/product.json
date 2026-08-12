@@ -11,10 +11,57 @@
   "sections": {
     "main": {
       "type": "product",
-      "settings": {}
+      "blocks": {
+        "vendor": { "type": "vendor", "settings": {} },
+        "title": { "type": "title", "settings": {} },
+        "badges": { "type": "badges", "settings": {} },
+        "price": {
+          "type": "price",
+          "settings": { "show_preorder_note": true }
+        },
+        "variant_picker": { "type": "variant_picker", "settings": {} },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_quantity": false,
+            "show_dynamic_checkout": true
+          }
+        },
+        "pickup": { "type": "pickup", "settings": {} },
+        "description": { "type": "description", "settings": {} },
+        "shipping": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Shipping and returns",
+            "content": "<p>Free shipping on orders over $100. Returns accepted within 30 days on unworn items with tags attached.</p>"
+          }
+        },
+        "fabric": {
+          "type": "accordion",
+          "settings": {
+            "heading": "Fabric and care",
+            "content": "<p>Machine wash cold on gentle, tumble dry low. Wash with like colors.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "vendor",
+        "title",
+        "badges",
+        "price",
+        "variant_picker",
+        "buy_buttons",
+        "pickup",
+        "description",
+        "shipping",
+        "fabric"
+      ],
+      "settings": {
+        "sticky_atc": true,
+        "show_size_guide": true,
+        "color_scheme": "scheme_1"
+      }
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["main"]
 }
