@@ -17,7 +17,8 @@
   assign heading = section.settings.heading
 %}
 
-<div class="brands color-{{ section.settings.color_scheme }} section-spacing">
+<div class="brands-band band color-{{ section.settings.color_scheme }} full-width section-spacing">
+  <div class="brands band__inner">
   {%- if heading != blank -%}
     <header class="brands__header">
       {%- if section.settings.eyebrow != blank -%}
@@ -104,6 +105,7 @@
       <p class="brands__empty">{{ 'collections.no_brands' | t }}</p>
     {%- endif -%}
   {%- endif -%}
+</div>
 </div>
 
 {% stylesheet %}

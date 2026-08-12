@@ -12,7 +12,8 @@
   assign limit = section.settings.product_limit
 %}
 
-<div class="featured color-{{ section.settings.color_scheme }} section-spacing">
+<div class="featured-band band color-{{ section.settings.color_scheme }} full-width section-spacing">
+  <div class="featured band__inner">
   <header class="featured__header">
     <div class="featured__heading-group">
       {%- if section.settings.eyebrow != blank -%}
@@ -49,6 +50,7 @@
   {%- else -%}
     <p class="featured__empty">{{ 'collections.pick_a_collection' | t }}</p>
   {%- endif -%}
+</div>
 </div>
 
 {% stylesheet %}

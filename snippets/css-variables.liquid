@@ -126,11 +126,15 @@
     --space-3xl: calc(7.5rem * var(--density));
 
     /*
-     * Vertical rhythm between sections. The upper bound is deliberately
-     * modest: it is multiplied by density, and at spacious (1.25) a 6rem cap
-     * produced 120px of dead space above and below a single row of chips.
+     * HALF the gap between two sections, not the whole gap.
+     *
+     * Sections sit flush against each other, so each contributes its own
+     * padding to the same boundary and the visible gap is always double this
+     * value. At the previous 4rem cap and spacious density that meant 80px a
+     * side — a 160px void between every section, and a shop-by-size band that
+     * was 160px of padding around 179px of content.
      */
-    --section-spacing: calc(clamp(2rem, 1.2rem + 3vw, 4rem) * var(--density));
+    --section-spacing: calc(clamp(1.5rem, 1rem + 1.8vw, 2.5rem) * var(--density));
 
     /* Layout -------------------------------------------------------- */
     --page-width: {{ settings.max_page_width }};

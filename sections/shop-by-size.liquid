@@ -20,7 +20,8 @@
   assign filter_key = section.settings.filter_key | default: 'filter.v.option.size'
 %}
 
-<div class="sizes color-{{ section.settings.color_scheme }} section-spacing">
+<div class="sizes-band band color-{{ section.settings.color_scheme }} full-width section-spacing">
+  <div class="sizes band__inner">
   <header class="sizes__header">
     {%- if section.settings.eyebrow != blank -%}
       <span class="eyebrow">{{ section.settings.eyebrow }}</span>
@@ -46,6 +47,7 @@
       </li>
     {%- endfor -%}
   </ul>
+</div>
 </div>
 
 {% stylesheet %}

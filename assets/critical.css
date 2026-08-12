@@ -304,6 +304,31 @@ a {
   padding-block: var(--section-spacing);
 }
 
+/**
+ * A full-bleed band with inset content.
+ *
+ * A section that paints a background MUST be full-bleed. Applying a colour
+ * scheme to an element sitting in the section's content column paints only
+ * that column, which renders as a floating rectangle with the page ground
+ * either side rather than as a band. Every scheme-bearing section on the
+ * homepage had this.
+ *
+ * Usage: `.band` carries the scheme and spans the viewport; `.band__inner`
+ * holds the content to the same column as the header and footer.
+ */
+.band {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+.band__inner {
+  width: min(
+    calc(var(--page-width) - var(--page-margin) * 2),
+    calc(100% - var(--page-margin) * 2)
+  );
+  margin-inline: auto;
+}
+
 .stack {
   display: flex;
   flex-direction: column;

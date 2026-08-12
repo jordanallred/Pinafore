@@ -11,7 +11,8 @@
   A review app can still render alongside via its own app block.
 {% endcomment %}
 
-<div class="reviews color-{{ section.settings.color_scheme }} section-spacing">
+<div class="reviews-band band color-{{ section.settings.color_scheme }} full-width section-spacing">
+  <div class="reviews band__inner">
   {%- if section.settings.heading != blank -%}
     <header class="reviews__header reviews__header--{{ section.settings.alignment }}">
       {%- if section.settings.eyebrow != blank -%}
@@ -68,6 +69,7 @@
       </li>
     {%- endfor -%}
   </ul>
+</div>
 </div>
 
 {% stylesheet %}
