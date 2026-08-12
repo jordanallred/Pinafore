@@ -60,10 +60,15 @@ def run_graphql(store, query, variables=None, mutation=False, dry_run=False):
         print(f'  No JSON in response: {out.strip()[:300]}')
         return None
     try:
-        return json.loads(out[start:])
+        parsed = json.loads(out[start:])
     except json.JSONDecodeError as exc:
         print(f'  Unparseable response ({exc}): {out[start:start + 300]}')
         return None
+
+    # `shopify store execute` prints the result already unwrapped, without the
+    # GraphQL `data` envelope. Accept either shape so this keeps working if
+    # that changes.
+    return parsed.get('data', parsed) if isinstance(parsed, dict) else parsed
 
 
 LOCATION_QUERY = """
@@ -141,7 +146,7 @@ def main():
     if not args.dry_run:
         print('Resolving primary location...')
         res = run_graphql(args.store, LOCATION_QUERY)
-        nodes = (((res or {}).get('data') or {}).get('locations') or {}).get('nodes') or []
+        nodes = ((res or {}).get('locations') or {}).get('nodes') or []
         if not nodes:
             print('  Could not resolve a location. Has `shopify store auth` been run?')
             return 1
@@ -185,7 +190,7 @@ def main():
                   f"({len(payload['variants'])} variants, {product['vendor']})")
             continue
 
-        result = ((res or {}).get('data') or {}).get('productSet') or {}
+        result = (res or {}).get('productSet') or {}
         errors = result.get('userErrors') or []
         if errors:
             failed += 1
@@ -215,7 +220,7 @@ def main():
         if args.dry_run:
             print(f"  [dry-run] {coll['title']}  (tag = {coll['rule_tag']})")
             continue
-        result = ((res or {}).get('data') or {}).get('collectionCreate') or {}
+        result = (res or {}).get('collectionCreate') or {}
         errors = result.get('userErrors') or []
         if errors:
             print(f"  FAILED  {coll['title']}: {errors[0].get('message')}")

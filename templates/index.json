@@ -25,6 +25,7 @@
     "new-arrivals": {
       "type": "featured-collection",
       "settings": {
+        "collection": "new-arrivals",
         "eyebrow": "Just landed",
         "heading": "New this week",
         "product_limit": 8,
@@ -72,6 +73,7 @@
     "best-sellers": {
       "type": "featured-collection",
       "settings": {
+        "collection": "best-sellers",
         "eyebrow": "Most loved",
         "heading": "Best sellers",
         "product_limit": 8,
