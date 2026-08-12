@@ -274,5 +274,123 @@
     "Bob & Blossom BROTHER Denim Sweatshirt": "Brother Denim Sweatshirt",
     "Bob & Blossom BROTHER Fern Sweatshirt": "Brother Fern Sweatshirt",
     "Bob & Blossom BROTHER Sage Short Sleeve T-Shirt": "Brother Short Sleeve T-Shirt, Sage"
+  },
+  "_taxonomy_note": "Hand-written. Product type -> Shopify taxonomy category, and colour value -> hex + taxonomy base colour. The base colour is what makes filtering usable: Search & Discovery groups a Color filter around it, so a shopper clicking Red gets Apple Red and Rose without knowing any vendor's naming. Verified base-colour IDs come from TaxonomyAttribute/1 on this store.",
+  "categories": {
+    "Shoes": "aa-8-11",
+    "Dresses": "aa-1-25-3",
+    "Tops": "aa-1-25-9",
+    "Bloomers": "aa-1-25-1",
+    "Bubbles": "aa-1-25-10",
+    "Rompers": "aa-1-25-10",
+    "Sets": "aa-1-25-10",
+    "Pajamas": "aa-1-25-6",
+    "Sleepwear": "aa-1-25-6",
+    "Socks": "aa-1-25-7",
+    "Hats": "aa-2-17",
+    "Bags": "lb-1",
+    "Nap mats": "lb-1",
+    "Outerwear": "aa-1-25-4",
+    "Apparel": "aa-1-25-9"
+  },
+  "colors": {
+    "Apple Red": {
+      "hex": "#B0201F",
+      "base": "Red",
+      "base_id": 13
+    },
+    "Rose": {
+      "hex": "#C97B84",
+      "base": "Pink",
+      "base_id": 11
+    },
+    "Pink": {
+      "hex": "#E79BAE",
+      "base": "Pink",
+      "base_id": 11
+    },
+    "Light Pink": {
+      "hex": "#F2C6D0",
+      "base": "Pink",
+      "base_id": 11
+    },
+    "Pink Gingham": {
+      "hex": "#EFB6C4",
+      "base": "Pink",
+      "base_id": 11
+    },
+    "Pink Mouse Ears": {
+      "hex": "#F0B9C6",
+      "base": "Pink",
+      "base_id": 11
+    },
+    "Brown": {
+      "hex": "#6B4A2F",
+      "base": "Brown",
+      "base_id": 7
+    },
+    "Chestnut": {
+      "hex": "#6B4423",
+      "base": "Brown",
+      "base_id": 7
+    },
+    "Driftwood Brown": {
+      "hex": "#7A6A5A",
+      "base": "Brown",
+      "base_id": 7
+    },
+    "Cheetah": {
+      "hex": "#C8A165",
+      "base": "Brown",
+      "base_id": 7
+    },
+    "Ecru": {
+      "hex": "#D9CFC0",
+      "base": "Beige",
+      "base_id": 6
+    },
+    "Navy": {
+      "hex": "#1F2A44",
+      "base": "Navy",
+      "base_id": 15
+    },
+    "Navy Peony": {
+      "hex": "#2C3E5C",
+      "base": "Navy",
+      "base_id": 15
+    },
+    "Light Blue": {
+      "hex": "#A9C9E8",
+      "base": "Blue",
+      "base_id": 2
+    },
+    "Blue Gingham": {
+      "hex": "#7FA8D0",
+      "base": "Blue",
+      "base_id": 2
+    },
+    "Blue Mouse Ears": {
+      "hex": "#8FB4D9",
+      "base": "Blue",
+      "base_id": 2
+    },
+    "Baby Blue Seersucker": {
+      "hex": "#A8C8E0",
+      "base": "Blue",
+      "base_id": 2
+    },
+    "Grey Seersucker": {
+      "hex": "#B0B4B8",
+      "base": "Gray",
+      "base_id": 8
+    },
+    "Lilac Seersucker": {
+      "hex": "#C3B0D9",
+      "base": "Purple",
+      "base_id": 12
+    }
+  },
+  "_colors_not_mapped": {
+    "Alabama / Auburn / South Alabama": "Teams, not colours. The Scarlet & Gold Cheer Dress keeps an unlinked 'Team' option — linking these to a colour metafield would put nonsense in a colour filter."
   }
 }
