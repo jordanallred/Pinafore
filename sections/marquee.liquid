@@ -1,0 +1,178 @@
+{% comment %}
+  Scrolling benefit bar.
+
+  Posh Peanut runs a band of trust statements under the hero — fabric claims,
+  shipping, social proof — separated by a small mark. It works because it says
+  several things in the height of one line, and because motion draws the eye
+  to a band that would otherwise read as fine print.
+
+  For a boutique the claims are different (60+ brands, free shipping, family
+  owned) but the device is the same, and it costs no JavaScript: the track is
+  duplicated once and translated with a CSS animation.
+{% endcomment %}
+
+{% liquid
+  assign speed = section.settings.speed | default: 40
+%}
+
+<div
+  class="marquee color-{{ section.settings.color_scheme }} full-width"
+  style="--marquee-duration: {{ speed }}s;"
+>
+  {%- comment -%}
+    The list is rendered twice so the loop is seamless. The duplicate is
+    aria-hidden, so a screen reader hears the statements once.
+  {%- endcomment -%}
+  <div class="marquee__viewport">
+    {%- for pass in (1..2) -%}
+      <ul
+        class="marquee__track"
+        role="list"
+        {% if pass == 2 %}
+          aria-hidden="true"
+        {% endif %}
+      >
+        {%- for block in section.blocks -%}
+          <li class="marquee__item" {{ block.shopify_attributes }}>
+            {%- if block.settings.text != blank -%}
+              <span class="marquee__text">{{ block.settings.text }}</span>
+            {%- endif -%}
+            <span class="marquee__mark" aria-hidden="true">
+              {% render 'icon', icon: 'plus', size: '0.7rem' %}
+            </span>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endfor -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .marquee {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    padding-block: var(--space-xs);
+    overflow: hidden;
+  }
+
+  .marquee__viewport {
+    display: flex;
+    width: max-content;
+  }
+
+  .marquee__track {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 var(--space-md);
+    animation: marquee-scroll var(--marquee-duration, 40s) linear infinite;
+  }
+
+  .marquee__item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    white-space: nowrap;
+  }
+
+  .marquee__text {
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+  }
+
+  .marquee__mark {
+    display: grid;
+    place-items: center;
+    color: var(--color-accent);
+  }
+
+  @keyframes marquee-scroll {
+    to {
+      transform: translateX(-100%);
+    }
+  }
+
+  .marquee:hover .marquee__track {
+    animation-play-state: paused;
+  }
+
+  /*
+   * Reduced motion stops the scroll outright rather than slowing it. The
+   * duplicate track is then redundant and would repeat every claim, so it is
+   * hidden and the list wraps instead.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee__viewport {
+      width: 100%;
+    }
+
+    .marquee__track {
+      animation: none;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--space-sm) var(--space-md);
+      padding-inline: var(--page-margin);
+    }
+
+    .marquee__track[aria-hidden='true'] {
+      display: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.marquee",
+  "tag": "section",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "t:labels.speed",
+      "info": "t:info.marquee_speed",
+      "min": 20,
+      "max": 90,
+      "step": 5,
+      "unit": "s",
+      "default": 40
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme_3"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "t:general.text",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:labels.text",
+          "default": "Free shipping over $100"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.marquee",
+      "blocks": [
+        { "type": "item", "settings": { "text": "Free shipping over $100" } },
+        { "type": "item", "settings": { "text": "60+ brands under one roof" } },
+        { "type": "item", "settings": { "text": "Fall preorder now open" } },
+        { "type": "item", "settings": { "text": "Family owned since 2013" } }
+      ]
+    }
+  ],
+  "disabled_on": { "groups": ["header", "footer"] }
+}
+{% endschema %}

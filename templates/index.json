@@ -202,14 +202,108 @@
         "t2",
         "t3"
       ]
+    },
+    "marquee": {
+      "type": "marquee",
+      "settings": {
+        "speed": 45,
+        "color_scheme": "scheme_3"
+      },
+      "blocks": {
+        "b1": {
+          "type": "item",
+          "settings": {
+            "text": "Free shipping over $100"
+          }
+        },
+        "b2": {
+          "type": "item",
+          "settings": {
+            "text": "60+ brands under one roof"
+          }
+        },
+        "b3": {
+          "type": "item",
+          "settings": {
+            "text": "Fall preorder now open"
+          }
+        },
+        "b4": {
+          "type": "item",
+          "settings": {
+            "text": "Smocked, monogrammed, gift wrapped"
+          }
+        }
+      },
+      "block_order": [
+        "b1",
+        "b2",
+        "b3",
+        "b4"
+      ]
+    },
+    "reviews": {
+      "type": "testimonials",
+      "settings": {
+        "eyebrow": "From our customers",
+        "heading": "What parents are saying",
+        "alignment": "center",
+        "color_scheme": "scheme_1"
+      },
+      "blocks": {
+        "r1": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "title": "Worth every penny",
+            "quote": "The smocking is beautiful and it survived a whole season of preschool.",
+            "author": "Meredith"
+          }
+        },
+        "r2": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "title": "My go-to for gifts",
+            "quote": "I have bought four of these for baby showers now. They always get the biggest reaction.",
+            "author": "Caroline"
+          }
+        },
+        "r3": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "title": "True to size",
+            "quote": "Ordered her usual 3T and it fit perfectly, with room to grow into next spring.",
+            "author": "Ashley"
+          }
+        },
+        "r4": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "title": "Shipped so fast",
+            "quote": "Ordered Monday, here Wednesday, and wrapped better than I would have done it.",
+            "author": "Jenna"
+          }
+        }
+      },
+      "block_order": [
+        "r1",
+        "r2",
+        "r3",
+        "r4"
+      ]
     }
   },
   "order": [
     "hero",
+    "marquee",
     "new-arrivals",
     "seasons",
     "shop-by-size",
     "brands",
+    "reviews",
     "best-sellers"
   ]
 }

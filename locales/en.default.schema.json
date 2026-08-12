@@ -63,7 +63,10 @@
     "shop_by_size": "Shop by size",
     "size": "Size",
     "featured_collection": "Featured collection",
-    "collection_tiles": "Collection tiles"
+    "collection_tiles": "Collection tiles",
+    "marquee": "Scrolling bar",
+    "reviews": "Customer reviews",
+    "review": "Review"
   },
   "labels": {
     "accent_background": "Accent",
@@ -156,7 +159,10 @@
     "show_view_all": "Show “View all” link",
     "show_image": "Show featured image",
     "show_author": "Show author",
-    "swatch_limit": "Variant thumbnails shown"
+    "swatch_limit": "Variant thumbnails shown",
+    "speed": "Scroll speed",
+    "rating": "Star rating",
+    "author": "Customer name"
   },
   "info": {
     "accent": "Used for badges, links, and focus outlines. Keep it distinct from your button color.",
@@ -193,7 +199,8 @@
     "overlay": "Darkens the image behind the text so it stays readable.",
     "size_collection": "Sizes link into this collection. Leave empty to search all products.",
     "tile_image": "Leave empty to use the collection's own image.",
-    "tile_heading": "Leave empty to use the collection's name."
+    "tile_heading": "Leave empty to use the collection's name.",
+    "marquee_speed": "Higher is slower. Motion stops automatically for visitors who ask their device to reduce it."
   },
   "options": {
     "alignment": {

@@ -1,0 +1,238 @@
+{% comment %}
+  Customer reviews with photographs.
+
+  Posh Peanut's strongest section is a rail of real customer photos with a
+  star rating, a short headline and a first name. It converts because it is
+  visibly other people's children in the clothes, not studio photography.
+
+  Deliberately not app-dependent: the Theme Store forbids that, and a boutique
+  migrating from another platform has review content in a spreadsheet long
+  before it has a reviews app. Blocks take an image, rating, quote and name.
+  A review app can still render alongside via its own app block.
+{% endcomment %}
+
+<div class="reviews color-{{ section.settings.color_scheme }} section-spacing">
+  {%- if section.settings.heading != blank -%}
+    <header class="reviews__header reviews__header--{{ section.settings.alignment }}">
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      <h2 class="reviews__heading">{{ section.settings.heading }}</h2>
+    </header>
+  {%- endif -%}
+
+  <ul class="reviews__rail" role="list">
+    {%- for block in section.blocks -%}
+      <li class="review" {{ block.shopify_attributes }}>
+        {%- if block.settings.image != blank -%}
+          <span class="review__media media">
+            {{
+              block.settings.image
+              | image_url: width: 700
+              | image_tag:
+                widths: '260, 400, 560, 700',
+                sizes: '(min-width: 750px) 22vw, 70vw',
+                alt: '',
+                loading: 'lazy',
+                class: 'review__image'
+            }}
+          </span>
+        {%- endif -%}
+
+        {%- if block.settings.rating > 0 -%}
+          {%- comment -%}
+            The star row is decorative; the rating is stated in text for
+            assistive tech so it is never conveyed by shape alone.
+          {%- endcomment -%}
+          <span class="review__stars" aria-hidden="true">
+            {%- for i in (1..block.settings.rating) -%}
+              {% render 'icon', icon: 'star', size: '0.85rem' %}
+            {%- endfor -%}
+          </span>
+          <span class="visually-hidden">
+            {{ 'reviews.rating' | t: rating: block.settings.rating }}
+          </span>
+        {%- endif -%}
+
+        {%- if block.settings.title != blank -%}
+          <p class="review__title">{{ block.settings.title }}</p>
+        {%- endif -%}
+
+        {%- if block.settings.quote != blank -%}
+          <blockquote class="review__quote">{{ block.settings.quote }}</blockquote>
+        {%- endif -%}
+
+        {%- if block.settings.author != blank -%}
+          <cite class="review__author">{{ block.settings.author }}</cite>
+        {%- endif -%}
+      </li>
+    {%- endfor -%}
+  </ul>
+</div>
+
+{% stylesheet %}
+  .reviews {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .reviews__header {
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .reviews__header--center {
+    text-align: center;
+    justify-items: center;
+  }
+
+  .reviews__heading {
+    margin: 0;
+    font-size: var(--text-2xl);
+  }
+
+  /*
+   * A rail rather than a grid: reviews are browsed, not audited, and the
+   * peeking next card is what tells someone there are more. Same treatment
+   * as the featured collection strip so the page has one scroll idiom.
+   */
+  .reviews__rail {
+    list-style: none;
+    margin-inline: calc(var(--page-margin) * -1);
+    padding: 0 var(--page-margin);
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(70vw, 1fr);
+    gap: var(--space-sm);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .reviews__rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    .reviews__rail {
+      grid-auto-columns: minmax(0, 1fr);
+      grid-auto-flow: row;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      overflow: visible;
+      margin-inline: 0;
+      padding-inline: 0;
+    }
+  }
+
+  .review {
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+  }
+
+  .review__media {
+    display: block;
+    aspect-ratio: 4 / 3;
+    margin-bottom: var(--space-2xs);
+  }
+
+  .review__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .review__stars {
+    display: flex;
+    gap: 0.1rem;
+    color: var(--color-accent);
+  }
+
+  .review__title {
+    font-weight: 700;
+    font-size: var(--text-sm);
+  }
+
+  .review__quote {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--color-foreground-muted);
+    line-height: var(--leading-normal);
+  }
+
+  .review__author {
+    font-style: normal;
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-foreground-muted);
+    margin-top: var(--space-3xs);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.reviews",
+  "tag": "section",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "t:labels.eyebrow" },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "What parents are saying"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "t:labels.alignment",
+      "options": [
+        { "value": "start", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme_1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "t:general.review",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "t:labels.image" },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "t:labels.rating",
+          "min": 0,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        { "type": "text", "id": "title", "label": "t:labels.heading" },
+        { "type": "textarea", "id": "quote", "label": "t:labels.text" },
+        { "type": "text", "id": "author", "label": "t:labels.author" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.reviews",
+      "blocks": [
+        { "type": "review" }, { "type": "review" },
+        { "type": "review" }, { "type": "review" }
+      ]
+    }
+  ],
+  "disabled_on": { "groups": ["header", "footer"] }
+}
+{% endschema %}

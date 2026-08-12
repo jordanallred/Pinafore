@@ -143,5 +143,8 @@
     "previous": "Previous page",
     "next": "Next page",
     "page": "page"
+  },
+  "reviews": {
+    "rating": "Rated {{ rating }} out of 5"
   }
 }
