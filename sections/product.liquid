@@ -61,7 +61,15 @@
                 boutique's higher-ticket items it materially affects checkout.
               {%- endcomment -%}
               <div class="product__installments">
-                {% form 'product', product, id: 'InstallmentForm-' | append: section.id %}
+                {%- comment -%}
+                  The id is captured first. A filter chain inside a tag
+                  argument makes Liquid read the piped expression as the next
+                  positional argument — here it took the id as the form type.
+                {%- endcomment -%}
+                {%- capture installment_form_id -%}
+                  InstallmentForm-{{ section.id }}
+                {%- endcapture -%}
+                {% form 'product', product, id: installment_form_id %}
                   <input type="hidden" name="id" value="{{ current.id }}">
                   {{ form | payment_terms }}
                 {% endform %}

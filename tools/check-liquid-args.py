@@ -28,6 +28,15 @@ SUSPECT = re.compile(r'^\s*(\w+):\s*[^\'"\n]*?\|\s*\w+\s*,\s*$')
 # A named argument whose value contains a pipe, on a line inside a filter call.
 INLINE = re.compile(r'\|\s*\w+:\s*[^,\n]*\|\s*\w+\s*,')
 
+# The same mistake inside a *tag* argument, e.g.
+#     {% form 'product', product, id: 'X-' | append: section.id %}
+# Liquid reads the piped expression as the next positional argument, so the
+# form type becomes the id. This one only surfaces at render time.
+TAG_ARG = re.compile(
+    r'\{%-?\s*(?:form|render|include|section|paginate|liquid)\b[^%]*?'
+    r'\b\w+:\s*[^,%]*?\|\s*\w+'
+)
+
 
 def main() -> int:
     root = pathlib.Path(__file__).resolve().parent.parent
@@ -38,7 +47,7 @@ def main() -> int:
             continue
         lines = path.read_text().splitlines()
         for i, line in enumerate(lines, 1):
-            if SUSPECT.match(line) or INLINE.search(line):
+            if SUSPECT.match(line) or INLINE.search(line) or TAG_ARG.search(line):
                 problems.append((path.relative_to(root), i, line.strip()))
 
     if not problems:
