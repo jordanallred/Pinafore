@@ -480,6 +480,29 @@ a {
   object-fit: cover;
 }
 
+/**
+ * Plate -----------------------------------------------------------------
+ * A constant ground for third-party product photography.
+ *
+ * This store resells brands that each shoot on their own background — white,
+ * grey, lavender, ecru. With `object-fit: cover` those grounds fill the tile
+ * edge to edge, so a grid renders as rectangles of differing colour butted
+ * against the band. That is what makes a multi-brand boutique read as a jumble.
+ *
+ * The plate does not erase a vendor's background; `contain` letterboxes it.
+ * What it fixes is the outer boundary: every tile is the same colour, the same
+ * radius and the same inset, so the eye reads a row of identical cards and the
+ * vendor's ground drops to an interior detail.
+ *
+ * The plate colour is deliberately independent of --color-background so that a
+ * band changing scheme never changes the product frame.
+ */
+.media--plate {
+  background-color: var(--color-media-plate);
+  /* Inset shadow, not a border: it must not participate in the aspect ratio. */
+  box-shadow: inset 0 0 0 var(--border-width) var(--color-media-plate-border);
+}
+
 /* -------------------------------------------------------------- Drawers */
 
 /**

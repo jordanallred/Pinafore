@@ -26,18 +26,16 @@
       assign density = 1
   endcase
 
-  {%- comment -%}
-    One radius family, three intensities.
-
-    Every preset keeps control ≤ card ≤ media within 2px of each other, so a
-    button nested in a card never reads as a different shape language. The
-    previous `round` preset paired a 999px control with a 16px card, which put
-    pills, cards, media and circles on screen simultaneously.
-
-    True circles are NOT a preset value. They are `--radius-round`, applied only
-    to swatches, icon-only buttons and quantity steppers — elements whose shape
-    carries meaning rather than style.
-  {%- endcomment -%}
+  # One radius family, three intensities.
+  #
+  # Every preset keeps control, card and media within 2px of each other, so a
+  # button nested in a card never reads as a different shape language. The
+  # previous `round` preset paired a 999px control with a 16px card, which put
+  # pills, cards, media and circles on screen simultaneously.
+  #
+  # True circles are NOT a preset value. They are `--radius-round`, applied
+  # only to swatches, icon-only buttons and quantity steppers — elements whose
+  # shape carries meaning rather than style.
   case settings.style_corners
     when 'sharp'
       assign radius_control = 0

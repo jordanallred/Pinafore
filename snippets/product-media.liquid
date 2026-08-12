@@ -37,7 +37,7 @@
         endif
       -%}
       <div
-        class="gallery__slide media media--ratio"
+        class="gallery__slide media media--ratio media--plate"
         data-media-id="{{ media.id }}"
         id="Slide-{{ media.id }}"
       >
@@ -65,7 +65,7 @@
         {%- endcase -%}
       </div>
     {%- else -%}
-      <div class="gallery__slide media media--ratio">
+      <div class="gallery__slide media media--ratio media--plate">
         {{ 'product-1' | placeholder_svg_tag: 'gallery__placeholder' }}
       </div>
     {%- endfor -%}
@@ -140,13 +140,19 @@
     scroll-snap-align: center;
   }
 
+  /*
+   * `contain` for the same reason as the product card: this catalogue is
+   * third-party photography with per-brand backgrounds, and cropping a
+   * boutique garment to fill a square loses the hem or collar that sells it.
+   */
   .gallery__image,
   .gallery__slide img,
   .gallery__slide video,
   .gallery__placeholder {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    padding: 4%;
   }
 
   .gallery__dots {
@@ -159,7 +165,7 @@
   .gallery__dot {
     width: 6px;
     height: 6px;
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-round);
     background-color: var(--color-foreground);
     opacity: 0.25;
     transition: opacity var(--duration-fast) var(--ease-out);

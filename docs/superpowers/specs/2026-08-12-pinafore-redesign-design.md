@@ -58,11 +58,16 @@ Blush also appears twice at arbitrary intervals.
 padding. But `sizes-band` is 279px tall in total, so padding dominates content.
 The hero is 979px of dark brown with no image behind it — a void above the fold.
 
-### P5 — Grid rows do not align
+### P5 — Grid alignment: no defect (withdrawn)
 
-Product titles that wrap to two lines ("Amelia Bloomer Pant Set, Pink
-Microgingham") push their price down, so prices sit at different heights across
-a row.
+Initially recorded as a defect after reading the rendered page. Reading
+`snippets/product-card.liquid` disproved it: `.card__vendor` reserves
+`min-height: 1.15em` and `.card__title` reserves `min-height: 2.4em` with
+`-webkit-line-clamp: 2`, so a two-line title cannot displace the price.
+Re-checking the collection screenshot confirms prices land within 1px across
+a row, including the two-line "Amelia Bloomer Pant Set, Pink Microgingham".
+
+No change required. Recorded so the claim is not reintroduced later.
 
 ### P6 — Mismatched product photography (highest leverage)
 
@@ -149,9 +154,17 @@ section background:
 - `--radius-media` corners and a 1px `--color-border` hairline, so a product
   shot on true white still reads as a card
 
-Result: every card is identical regardless of which brand supplied the photo.
-White-background photos blend into the plate; grey and lavender ones sit inside
-a consistent frame instead of clashing with cream.
+**What this does and does not fix.** It does not remove a vendor's photo
+background — `contain` letterboxes it rather than erasing it. What it fixes is
+that **every tile's outer boundary becomes identical**. Today images are
+`object-fit: cover`, so a vendor's white ground fills the tile edge-to-edge and
+a grey ground fills it with grey, producing rectangles of varying colour butted
+against cream at different sizes. With a constant plate and an inset `contain`
+fit, every card presents the same frame and the vendor's ground is demoted to an
+interior detail.
+
+Genuinely normalising the photography needs the merchant to reshoot or
+background-remove, which is out of scope here.
 
 ### D5 — Spacing and alignment
 
@@ -159,10 +172,16 @@ a consistent frame instead of clashing with cream.
   `clamp(2rem, 1.5rem + 2vw, 3.5rem)`, giving 4–7rem between bands.
 - Short bands (marquee, sizes, brands) take a reduced-padding modifier so
   padding never dominates their content.
-- Hero is capped at `72vh` and requires an image; with no image it falls back to
-  a cream editorial hero rather than a dark void.
-- Product card becomes a grid with the title area clamped to two lines and its
-  space reserved, so prices align across every row.
+- Hero: no arbitrary height cap. Reading `sections/hero.liquid` located the
+  actual defect — `min-height` applies the merchant's height setting whether or
+  not an image exists, and `.hero__content` is `align-self: end`, so a hero with
+  no photograph paints a full slab of scheme colour with the copy pinned to its
+  bottom edge. A `.hero--no-media` modifier drops `min-height` to 0 and centres
+  the content, making it a typographic band sized by its content. The full-bleed
+  treatment returns automatically once an image is set. The height setting is
+  left alone: at 75svh *with* an image it is a normal hero and overriding a
+  merchant's choice would be wrong.
+- Product card row alignment already works (see P5); left alone.
 
 ### D6 — Type
 
