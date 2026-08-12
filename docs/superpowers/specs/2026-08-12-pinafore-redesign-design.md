@@ -6,10 +6,13 @@
 
 ## Context
 
-Pinafore is the Shopify theme for a children's boutique carrying ~60 third-party
-brands. The merchandise is classic Southern children's clothing: smocked bubbles,
-gingham, Peter Pan collars, monogramming, gameday. That heritage — not generic
-pastel — is the source of the theme's visual identity.
+Pinafore is the Shopify theme for a multi-brand children's boutique. The
+storefront marquee claims "60+ brands under one roof"; the seeded catalog
+currently holds 47 products across 18 vendors, so the design must scale to the
+former while looking right at the latter. The merchandise is classic Southern
+children's clothing: smocked bubbles, gingham, Peter Pan collars, monogramming,
+gameday. That heritage — not generic pastel — is the source of the theme's
+visual identity.
 
 The theme already has a competent token layer in `snippets/css-variables.liquid`.
 The problem is not missing architecture; it is that the tokens resolve to values
@@ -63,8 +66,10 @@ a row.
 
 ### P6 — Mismatched product photography (highest leverage)
 
-Every one of ~60 brands supplies its own photo background: white, grey,
-lavender, ecru. Product media currently sits directly on the section background,
+Each vendor supplies its own photo background: white, grey, lavender, ecru —
+confirmed on the live collection page across Trotter Street Kids, Apple of My
+Isla, The Uptown Baby and Footmates. Product media currently sits directly on
+the section background,
 so each card renders as a visibly mismatched rectangle against cream. Neither
 reference site has this problem — both are single brands shooting one lookbook.
 
@@ -179,6 +184,62 @@ structure of both references (Lora + Montserrat; SangBleu + Serenity).
 
 Nothing else. No patterns or illustration competing with 60 brands' photography.
 
+### D9 — Navigation and discovery
+
+Navigation is reachable via the Admin GraphQL `menus` / `menuUpdate` API, so it
+is in scope. Current `main-menu` is Home / Catalog / Contact — placeholder.
+
+Per Shopify's faceted-navigation guidance, facets belong on category pages as
+*supplementary refinement*, not as primary discovery. A sitewide mega-menu is
+the strongest internal-link signal on the site, so it must point at real,
+indexable collections — never at filter URLs.
+
+**Structure:**
+
+```
+New · Girls ▾ · Boys ▾ · Baby ▾ · Shoes · Accessories ▾ · Brands ▾ · Sale
+```
+
+Shoes (3 products) and Collegiate (1) stay flat — a dropdown onto three items
+reads emptier than no dropdown.
+
+**Sub-items** are automated collections with `TAG AND TYPE` rules, so they
+self-maintain as inventory grows. Only intersections holding ≥3 products earn a
+page:
+
+| collection | rule | count |
+|---|---|---|
+| girls-dresses | tag Girls + type Dresses | 5 |
+| girls-bubbles | tag Girls + type Bubbles | 3 |
+| girls-bags | tag Girls + type Bags | 3 |
+| boys-hats | tag Boys + type Hats | 4 |
+| boys-tops | tag Boys + type Tops | 4 |
+| baby-dresses | tag Baby + type Dresses | 4 |
+| baby-rompers | tag Baby + type Rompers | 3 |
+| baby-pajamas | tag Baby + type Pajamas | 3 |
+| baby-outerwear | tag Baby + type Outerwear | 3 |
+
+Everything below the threshold (Girls/Socks 2, Boys/Shoes 1, Baby/Sets 2, …)
+stays reachable through facets only. The threshold is re-evaluated when the full
+catalog lands; these counts reflect the 47-product seed.
+
+**Brands** dropdown lists vendors, linking to `/collections/vendors?q=<vendor>`.
+
+### D10 — Indexation hygiene
+
+Three defects found in `snippets/meta-tags.liquid` and `layout/theme.liquid`:
+
+1. **Two canonical tags per page.** `theme.liquid:7` and `meta-tags.liquid:95`
+   both emit `<link rel="canonical">`. Remove the one in `theme.liquid`.
+2. **Duplicated head meta.** `charset` and `viewport` are emitted in both files;
+   `meta-tags.liquid` also adds a legacy `X-UA-Compatible`. Deduplicate.
+3. **No robots meta anywhere.** Every facet combination is currently indexable.
+
+Fix: emit `<meta name="robots" content="noindex,follow">` when a collection has
+active filters or is beyond page 1, and keep the canonical pointing at the
+unfiltered collection. `follow` preserves link equity flow to products while
+keeping the combinations out of the index.
+
 ### D8 — Cleanup
 
 Delete `hello-world.liquid`. Audit `custom-section.liquid` for scaffold status.
@@ -188,10 +249,11 @@ with tokens.
 ## Scope
 
 In scope: token layer, homepage bands, collection/PLP, product/PDP, cart drawer,
-header, footer.
+header, footer, mega-menu component, navigation content via Admin API, the nine
+automated collections in D9, and indexation hygiene.
 
-Out of scope: navigation *content* (currently HOME / CATALOG / CONTACT — that is
-merchant data, not theme code), product photography, copy.
+Out of scope: product photography, marketing copy, and the "60+ brands" claim in
+the marquee (merchant copy, and currently inaccurate against the seeded catalog).
 
 ## Verification
 
