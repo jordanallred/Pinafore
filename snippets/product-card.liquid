@@ -121,9 +121,30 @@
               {%- endif -%}
             </ul>
           {%- elsif option.values.size > 1 -%}
-            <span class="card__option-count">
-              {{ 'products.color_count' | t: count: option.values.size }}
-            </span>
+            {%- comment -%}
+              No swatch metaobjects configured. Rather than a count, list the
+              colour names — this is what boutiques in this category actually
+              do, and it lets someone scanning the grid see the colour they
+              want without opening the product. Shopify's native swatches do
+              not cover collection cards at all, so this is the primary
+              treatment here, not a fallback.
+            {%- endcomment -%}
+            <ul class="card__colors" role="list" aria-label="{{ option.name }}">
+              {%- for value in option.values limit: 4 -%}
+                <li>
+                  {%- if value.variant -%}
+                    <a class="card__color" href="{{ value.variant.url }}">{{ value }}</a>
+                  {%- else -%}
+                    <span class="card__color">{{ value }}</span>
+                  {%- endif -%}
+                </li>
+              {%- endfor -%}
+              {%- if option.values.size > 4 -%}
+                <li><span class="card__color card__color--more">
+                  {{ 'products.more_colors' | t: count: option.values.size | minus: 4 }}
+                </span></li>
+              {%- endif -%}
+            </ul>
           {%- endif -%}
         {%- endif -%}
       {%- endfor -%}
@@ -255,11 +276,41 @@
     border: var(--border-width) solid rgb(var(--color-foreground-rgb) / 0.15);
   }
 
-  .card__option-count {
-    font-size: var(--text-2xs);
-    letter-spacing: var(--tracking-eyebrow);
-    text-transform: uppercase;
+  .card__colors {
+    list-style: none;
+    margin: 0.2rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    /* Separated by a middot rather than a gap, so a wrapped row still reads
+       as one list instead of two stray words. */
+    gap: 0 0.15rem;
+  }
+
+  .card__colors li:not(:last-child)::after {
+    content: '·';
+    margin-inline: 0.15rem;
     color: var(--color-foreground-muted);
+  }
+
+  .card__color {
+    /* Sits above the card's stretched title link so it is separately
+       clickable, which is the whole point of listing the colours. */
+    position: relative;
+    z-index: 1;
+    font-size: var(--text-2xs);
+    color: var(--color-foreground-muted);
+    text-decoration: none;
+  }
+
+  a.card__color:hover {
+    color: var(--color-foreground);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .card__color--more {
+    font-variant-numeric: tabular-nums;
   }
 
   .card__swatch-more {

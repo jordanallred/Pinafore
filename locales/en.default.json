@@ -132,6 +132,10 @@
     "color_count": {
       "one": "{{ count }} color",
       "other": "{{ count }} colors"
+    },
+    "more_colors": {
+      "one": "+{{ count }} more",
+      "other": "+{{ count }} more"
     }
   },
   "general": {
