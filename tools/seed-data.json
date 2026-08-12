@@ -1,0 +1,163 @@
+{
+  "_comment": "Catalog shaped like Little Monkey Toes so the theme is exercised against realistic data: many vendors, apparel sizing, a sale item, a backordered item (which is what drives the preorder badge), a sold-out item, and multi-option products. Image URLs are seeded placeholders, not real product photography.",
+
+  "products": [
+    {
+      "title": "Mallard Shorts",
+      "vendor": "Properly Tied",
+      "type": "Shorts",
+      "tags": ["Boys", "Bottoms", "Spring"],
+      "body": "<p>Cut from soft cotton twill with a flat front and a relaxed seat. Holds up to a full day of school and still looks right at Sunday lunch.</p><p>True to size. Size up for a longer season of wear.</p>",
+      "options": [
+        { "name": "Color", "values": ["Chambray", "Sand", "Olive"] },
+        { "name": "Size", "values": ["2T", "3T", "4T", "5", "6"] }
+      ],
+      "price": "48.00",
+      "compare_at": null,
+      "inventory": 12,
+      "image_seed": "mallard"
+    },
+    {
+      "title": "Once Upon a Time Bubble",
+      "vendor": "Trotter Street Kids",
+      "type": "Bubbles",
+      "tags": ["Girls", "Preorder", "Fall"],
+      "body": "<p>A smocked bubble in a soft brushed cotton, with covered buttons at the shoulder and a scalloped hem.</p>",
+      "options": [
+        { "name": "Size", "values": ["12M", "18M", "2T", "3T", "4T"] }
+      ],
+      "price": "42.00",
+      "compare_at": null,
+      "inventory": 0,
+      "backorder": true,
+      "image_seed": "bubble"
+    },
+    {
+      "title": "Scalloped Peter Pan Blouse",
+      "vendor": "Little English",
+      "type": "Tops",
+      "tags": ["Girls", "Tops", "Classic"],
+      "body": "<p>A classic Peter Pan collar with a hand-finished scalloped edge, in a lightweight pima cotton.</p>",
+      "options": [
+        { "name": "Color", "values": ["White", "Pink Gingham"] },
+        { "name": "Size", "values": ["2T", "3T", "4T", "5", "6", "7"] }
+      ],
+      "price": "39.00",
+      "compare_at": "52.00",
+      "inventory": 6,
+      "image_seed": "blouse"
+    },
+    {
+      "title": "Ruffle Turn Cuff Socks",
+      "vendor": "Jefferies Socks",
+      "type": "Socks",
+      "tags": ["Girls", "Accessories"],
+      "body": "<p>Three pairs of turn-cuff socks with a fine ruffle edge. Cotton blend with a bit of stretch.</p>",
+      "options": [
+        { "name": "Size", "values": ["6-18M", "2-4Y", "4-6Y"] }
+      ],
+      "price": "7.50",
+      "compare_at": null,
+      "inventory": 40,
+      "image_seed": "socks"
+    },
+    {
+      "title": "Magnetic Coverall",
+      "vendor": "Magnetic Me",
+      "type": "Coveralls",
+      "tags": ["Baby", "Sleep", "Bestseller"],
+      "body": "<p>Magnets instead of snaps, so a midnight change takes one hand and about four seconds. Modal, and it gets softer every wash.</p>",
+      "options": [
+        { "name": "Color", "values": ["Sky", "Oat"] },
+        { "name": "Size", "values": ["NB", "3M", "6M", "9M"] }
+      ],
+      "price": "36.00",
+      "compare_at": null,
+      "inventory": 20,
+      "image_seed": "coverall"
+    },
+    {
+      "title": "Garden Party Dress",
+      "vendor": "Pink Chicken",
+      "type": "Dresses",
+      "tags": ["Girls", "Dresses", "Spring"],
+      "body": "<p>A tiered cotton dress in a hand-blocked floral, with a tie back and deep pockets.</p>",
+      "options": [
+        { "name": "Size", "values": ["2T", "3T", "4T", "5", "6"] }
+      ],
+      "price": "68.00",
+      "compare_at": null,
+      "inventory": 0,
+      "backorder": false,
+      "image_seed": "dress"
+    },
+    {
+      "title": "Corduroy Overall",
+      "vendor": "Properly Tied",
+      "type": "Overalls",
+      "tags": ["Boys", "Bottoms", "Fall"],
+      "body": "<p>Fine-wale corduroy with adjustable straps and a roomy front pocket.</p>",
+      "options": [
+        { "name": "Color", "values": ["Rust", "Forest"] },
+        { "name": "Size", "values": ["12M", "18M", "2T", "3T", "4T"] }
+      ],
+      "price": "54.00",
+      "compare_at": null,
+      "inventory": 9,
+      "image_seed": "overall"
+    },
+    {
+      "title": "Beyond Creation Hairbow",
+      "vendor": "Beyond Creation",
+      "type": "Accessories",
+      "tags": ["Girls", "Accessories", "Bestseller"],
+      "body": "<p>A hand-tied grosgrain bow on a no-slip clip.</p>",
+      "options": [
+        { "name": "Color", "values": ["Navy", "Red", "Pink", "White"] }
+      ],
+      "price": "11.00",
+      "compare_at": null,
+      "inventory": 60,
+      "image_seed": "hairbow"
+    },
+    {
+      "title": "Salt Water Sandal",
+      "vendor": "Salt Water Sandals",
+      "type": "Shoes",
+      "tags": ["Shoes", "Summer", "Bestseller"],
+      "body": "<p>The original since 1944. Real leather, rustproof buckles, and they only get better wet.</p>",
+      "options": [
+        { "name": "Color", "values": ["Tan", "Red", "Navy"] },
+        { "name": "Size", "values": ["5", "6", "7", "8", "9", "10"] }
+      ],
+      "price": "62.00",
+      "compare_at": null,
+      "inventory": 15,
+      "image_seed": "sandal"
+    },
+    {
+      "title": "Bamboo Two Piece Pajama",
+      "vendor": "Little Sleepies",
+      "type": "Pajamas",
+      "tags": ["Sleep", "Bamboo", "Bestseller"],
+      "body": "<p>Viscose from bamboo, with plenty of stretch so they last through a growth spurt.</p>",
+      "options": [
+        { "name": "Size", "values": ["12M", "18M", "2T", "3T", "4T", "5"] }
+      ],
+      "price": "44.00",
+      "compare_at": "58.00",
+      "inventory": 11,
+      "image_seed": "pajama"
+    }
+  ],
+
+  "collections": [
+    { "title": "New Arrivals", "rule_tag": "Spring" },
+    { "title": "Best Sellers", "rule_tag": "Bestseller" },
+    { "title": "Girls", "rule_tag": "Girls" },
+    { "title": "Boys", "rule_tag": "Boys" },
+    { "title": "Baby", "rule_tag": "Baby" },
+    { "title": "Shoes", "rule_tag": "Shoes" },
+    { "title": "Preorder", "rule_tag": "Preorder" }
+  ]
+}
