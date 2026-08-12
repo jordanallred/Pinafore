@@ -128,7 +128,11 @@
       "unavailable": "Pickup is not available for this item right now."
     },
     "quick_add": "Quick add",
-    "quick_add_title": "Add {{ title }} to cart"
+    "quick_add_title": "Add {{ title }} to cart",
+    "color_count": {
+      "one": "{{ count }} color",
+      "other": "{{ count }} colors"
+    }
   },
   "general": {
     "pagination": "Pagination",

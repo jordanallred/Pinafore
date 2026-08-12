@@ -175,13 +175,15 @@ def main():
             # because a childrenswear theme cannot be judged against stock
             # photos — the design rests on how smocking and pale product shots
             # sit against the palette.
-            src = product.get('image_url')
-            if src:
+            srcs = [product['image_url']] if product.get('image_url') else []
+            # One image per colourway, so a swatch has something to swap to.
+            srcs += product.get('extra_images') or []
+            if srcs:
                 payload['files'] = [{
-                    'originalSource': src,
+                    'originalSource': u,
                     'contentType': 'IMAGE',
                     'alt': product['title'],
-                }]
+                } for u in srcs]
             elif product.get('image_seed'):
                 seed = product['image_seed']
                 payload['files'] = [{

@@ -1,0 +1,125 @@
+{
+  "_comment": [
+    "Hand-curated grouping of the 65 scraped Little Monkey Toes listings into",
+    "Shopify products. Written by reading every title rather than inferring",
+    "structure with regex: the source encodes the *TOKEN* as the style name for",
+    "some vendors and as the colourway for others, and no rule separated those",
+    "reliably without also merging genuinely different garments.",
+    "",
+    "`merge` entries collapse listings that are one product in different",
+    "colourways. Everything not listed stays a single product. Sizes are never",
+    "invented here — they come from tools/seed-options.json, scraped from each",
+    "product's own page.",
+    "",
+    "Indices refer to positions in tools/seed-data-real.json."
+  ],
+
+  "merge": [
+    {
+      "title": "Floafers Prodigy Driver",
+      "option": "Color",
+      "members": [
+        { "index": 36, "value": "Driftwood Brown" },
+        { "index": 37, "value": "Navy Peony" }
+      ]
+    },
+    {
+      "title": "Footmates Allie T-Strap",
+      "option": "Color",
+      "members": [
+        { "index": 57, "value": "Apple Red" },
+        { "index": 58, "value": "Chestnut" },
+        { "index": 59, "value": "Navy" },
+        { "index": 60, "value": "Rose" }
+      ]
+    },
+    {
+      "title": "L'Amour Birdie T-Strap",
+      "option": "Color",
+      "members": [
+        { "index": 4, "value": "Brown" },
+        { "index": 5, "value": "Ecru" },
+        { "index": 6, "value": "Navy" },
+        { "index": 7, "value": "Pink" }
+      ]
+    },
+    {
+      "title": "La Luna Footless Romper",
+      "option": "Color",
+      "members": [
+        { "index": 19, "value": "Blue Mouse Ears" },
+        { "index": 21, "value": "Pink Mouse Ears" }
+      ]
+    },
+    {
+      "title": "La Luna Long Sleeve Loungewear",
+      "option": "Color",
+      "members": [
+        { "index": 20, "value": "Blue Mouse Ears" },
+        { "index": 22, "value": "Pink Mouse Ears" }
+      ]
+    },
+    {
+      "title": "Mustard & Ketchup Birthday Cake Tee",
+      "option": "Color",
+      "members": [
+        { "index": 40, "value": "Light Blue" },
+        { "index": 41, "value": "Light Pink" }
+      ]
+    },
+    {
+      "title": "Oh Mint Medium Backpack",
+      "option": "Color",
+      "members": [
+        { "index": 45, "value": "Baby Blue Seersucker" },
+        { "index": 46, "value": "Cheetah" },
+        { "index": 47, "value": "Grey Seersucker" },
+        { "index": 48, "value": "Lilac Seersucker" }
+      ]
+    },
+    {
+      "_note": "Collegiate is a real Little Monkey Toes category. The axis is a team, not a colour, and labelling it Color would put nonsense in the picker and in the storefront filters.",
+      "title": "Scarlet & Gold Cheer Dress",
+      "option": "Team",
+      "members": [
+        { "index": 42, "value": "Alabama" },
+        { "index": 43, "value": "Auburn" },
+        { "index": 44, "value": "South Alabama" }
+      ]
+    },
+    {
+      "title": "The Uptown Baby A+ Sleep Bag",
+      "option": "Color",
+      "members": [
+        { "index": 53, "value": "Blue Gingham" },
+        { "index": 54, "value": "Pink Gingham" }
+      ]
+    },
+    {
+      "title": "Widgeon Hooded Barn Jacket",
+      "option": "Color",
+      "members": [
+        { "index": 33, "value": "Light Blue" },
+        { "index": 34, "value": "Light Pink" }
+      ]
+    }
+  ],
+
+  "_kept_separate_deliberately": {
+    "Apple of my Isla BALLET": "Go Bag, Backpack, Lunchbox and Nap Mat share a print but are four different products at four different prices.",
+    "Bob & Blossom BROTHER": "Four different garments with different size runs — 0-3mo for the all-in-one, 1YR/2YR/4YR/6YR for the sweatshirts.",
+    "Harding Lane": "Each animal design is its own SKU at the brand, and the hat colour differs per design.",
+    "Little English": "Four distinct garments across two prints.",
+    "Magnolia Baby / Mustard & Ketchup / Uptown Baby sibling styles": "Big Brother and Big Sister are separate products, which is what the theme's sibling-matching feature is meant to link.",
+    "Trotter Street Kids Abigail": "Dress, Pant Set and Romper are different garments at different prices.",
+    "Widgeon Barn Jacket vs Warmplus Favorite Jacket": "Different jackets; only the Hooded Barn Jacket has two colourways."
+  },
+
+  "drop": [
+    { "index": 26, "reason": "Duplicate Southern Saturday Elephant Dress listing at a different price; keeping both would collide on handle." }
+  ],
+
+  "sizeless": [49, 50, 51, 52, 45, 46, 47, 48, 53, 54, 8, 9, 10, 11, 16, 17, 18, 27],
+
+  "_sizeless_note": "Bags, nap mats, sleep bags, hats and socks that the source store sells one-size. These get Shopify's default variant so the theme hides the picker entirely."
+}

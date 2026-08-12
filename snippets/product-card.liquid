@@ -90,23 +90,41 @@
       {%- for option in product.options_with_values -%}
         {%- assign option_key = option.name | downcase -%}
         {%- if option_key == 'color' or option_key == 'colour' -%}
-          <ul class="card__swatches" role="list" aria-label="{{ option.name }}">
-            {%- for value in option.values limit: 5 -%}
-              <li
-                class="card__swatch"
-                {% if value.swatch.color %}
-                  style="--swatch: {{ value.swatch.color }};"
-                {% elsif value.swatch.image %}
-                  style="--swatch-image: url({{ value.swatch.image | image_url: width: 40 }});"
-                {% endif %}
-              >
-                <span class="visually-hidden">{{ value }}</span>
-              </li>
-            {%- endfor -%}
-            {%- if option.values.size > 5 -%}
-              <li class="card__swatch-more">+{{ option.values.size | minus: 5 }}</li>
-            {%- endif -%}
-          </ul>
+          {%- liquid
+            # Without linked swatch metaobjects this row would be identical
+            # grey dots, which tells a customer nothing. Fall back to a plain
+            # count, which at least says "this comes in four colours".
+            assign card_has_swatches = false
+            for value in option.values
+              if value.swatch.color or value.swatch.image
+                assign card_has_swatches = true
+                break
+              endif
+            endfor
+          -%}
+          {%- if card_has_swatches -%}
+            <ul class="card__swatches" role="list" aria-label="{{ option.name }}">
+              {%- for value in option.values limit: 5 -%}
+                <li
+                  class="card__swatch"
+                  {% if value.swatch.color %}
+                    style="--swatch: {{ value.swatch.color }};"
+                  {% elsif value.swatch.image %}
+                    style="--swatch-image: url({{ value.swatch.image | image_url: width: 40 }});"
+                  {% endif %}
+                >
+                  <span class="visually-hidden">{{ value }}</span>
+                </li>
+              {%- endfor -%}
+              {%- if option.values.size > 5 -%}
+                <li class="card__swatch-more">+{{ option.values.size | minus: 5 }}</li>
+              {%- endif -%}
+            </ul>
+          {%- elsif option.values.size > 1 -%}
+            <span class="card__option-count">
+              {{ 'products.color_count' | t: count: option.values.size }}
+            </span>
+          {%- endif -%}
         {%- endif -%}
       {%- endfor -%}
     {%- endif -%}
@@ -235,6 +253,13 @@
     background-image: var(--swatch-image, none);
     background-size: cover;
     border: var(--border-width) solid rgb(var(--color-foreground-rgb) / 0.15);
+  }
+
+  .card__option-count {
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-foreground-muted);
   }
 
   .card__swatch-more {

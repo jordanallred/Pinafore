@@ -32,6 +32,25 @@
         if size_names contains option_key
           assign is_size = true
         endif
+
+        # `value.swatch` is only populated once a merchant has linked swatch
+        # metaobjects to the option values, which most never do. Rendering
+        # circles anyway produces unlabelled grey dots — the colour name is
+        # visually hidden in swatch mode, so there is then no way at all to
+        # tell the colours apart. Fall back to named pills unless real swatch
+        # data exists.
+        assign has_swatches = false
+        for value in option.values
+          if value.swatch.color or value.swatch.image
+            assign has_swatches = true
+            break
+          endif
+        endfor
+
+        assign render_swatches = false
+        if is_color and has_swatches
+          assign render_swatches = true
+        endif
       -%}
 
       <fieldset class="variants__group" data-option-index="{{ forloop.index }}">
@@ -54,7 +73,7 @@
           {%- endif -%}
         </div>
 
-        <div class="variants__options{% if is_color %} variants__options--swatch{% endif %}">
+        <div class="variants__options{% if render_swatches %} variants__options--swatch{% endif %}">
           {%- for value in option.values -%}
             {%- liquid
               assign input_id = 'Option-' | append: section.id | append: '-' | append: forloop.parentloop.index | append: '-' | append: forloop.index
@@ -80,9 +99,9 @@
             <label
               class="variants__swatch{% unless is_available %} is-unavailable{% endunless %}"
               for="{{ input_id }}"
-              {% if is_color and value.swatch.color %}
+              {% if render_swatches and value.swatch.color %}
                 style="--swatch: {{ value.swatch.color }};"
-              {% elsif is_color and value.swatch.image %}
+              {% elsif render_swatches and value.swatch.image %}
                 style="--swatch-image: url({{ value.swatch.image | image_url: width: 80 }});"
               {% endif %}
             >
