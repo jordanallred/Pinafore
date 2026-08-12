@@ -170,7 +170,10 @@ Playfair Display + Karla is kept — it mirrors the serif-display / sans-body
 structure of both references (Lora + Montserrat; SangBleu + Serenity).
 
 - `type_heading_scale` 115 → 105. At 115 the `--text-4xl` step reached 6.3rem.
-- `type_heading_letter_spacing` -1 → -0.5, matching Lora's -0.5px on Posh Peanut.
+- `type_heading_letter_spacing` stays at -1. The setting is a `step: 1` range in
+  hundredths of an em, so -0.5 is not representable; -1 resolves to -0.01em,
+  which at display sizes is within a hair of the -0.5px Lora carries on
+  poshpeanut.com.
 - The vendor eyebrow moves from `--text-2xs` (~11px) to `--text-xs` for
   legibility. Tracking stays at `0.12em` uppercase; both references do this.
 
