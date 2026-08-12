@@ -1,0 +1,55 @@
+{% doc %}
+  The product results grid, shared by collection and search.
+
+  Owns its own layout CSS so neither template depends on styles declared in
+  the other — cross-file CSS dependencies defeat stylesheet subsetting, which
+  the Theme Store performance rules call out directly.
+
+  @param {object} products - Products to render
+  @param {number} [columns] - Desktop column count; defaults to 4
+
+  @example
+  {% render 'product-grid', products: collection.products, columns: 4 %}
+{% enddoc %}
+
+{%- liquid
+  assign cols = columns | default: 4
+  # Derived from the actual column count rather than hardcoded, so a 5-up grid
+  # does not request 25vw renditions it will never display.
+  assign desktop_vw = 100 | divided_by: cols | plus: 1
+  assign grid_sizes = '(min-width: 990px) ' | append: desktop_vw | append: 'vw, (min-width: 750px) 33vw, 50vw'
+-%}
+
+<ul class="product-grid" style="--grid-columns: {{ cols }};" role="list">
+  {%- for product in products -%}
+    <li>
+      {% render 'product-card',
+        product: product,
+        sizes: grid_sizes,
+        lazy: forloop.first
+      %}
+    </li>
+  {%- endfor -%}
+</ul>
+
+{% stylesheet %}
+  .product-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    /*
+     * Two columns on a phone, not one. A boutique shopper is scanning for a
+     * print they like, and halving the products visible per screen measurably
+     * lengthens that hunt.
+     */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-md) var(--space-sm);
+  }
+
+  @media screen and (min-width: 750px) {
+    .product-grid {
+      grid-template-columns: repeat(var(--grid-columns, 4), minmax(0, 1fr));
+    }
+  }
+{% endstylesheet %}

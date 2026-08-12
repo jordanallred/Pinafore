@@ -1,0 +1,159 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin language editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "accessibility": {
+    "skip_to_content": "Skip to content",
+    "close": "Close",
+    "menu": "Menu",
+    "search": "Search",
+    "cart": "Cart",
+    "cart_count": "{{ count }} items in cart",
+    "account": "Account",
+    "previous": "Previous",
+    "next": "Next",
+    "loading": "Loading",
+    "primary_navigation": "Primary"
+  },
+  "404": {
+    "title": "404",
+    "not_found": "Page not found.",
+    "back_to_shopping": "Back to shopping"
+  },
+  "blog": {
+    "article_comments": "Comments",
+    "article_metadata_html": "{{ date }} by {{ author }}",
+    "comment_form_body": "Comment",
+    "comment_form_email": "Email",
+    "comment_form_name": "Name",
+    "comment_form_submit": "Post",
+    "comment_form_title": "Add a comment",
+    "empty": "No posts yet.",
+    "comment_posted": "Thanks — your comment is awaiting approval."
+  },
+  "cart": {
+    "checkout": "Checkout",
+    "title": "Cart",
+    "update": "Update",
+    "remove": "Remove",
+    "empty": "Your cart is empty.",
+    "continue_shopping": "Continue shopping",
+    "subtotal": "Subtotal",
+    "taxes_note": "Taxes and shipping calculated at checkout.",
+    "view_cart": "View cart",
+    "increase": "Add one {{ title }}",
+    "decrease": "Remove one {{ title }}",
+    "gift_note": "Add a gift note",
+    "gift_note_placeholder": "Write a message to include with this order",
+    "product": "Product",
+    "total": "Total",
+    "quantity_for": "Quantity for {{ title }}"
+  },
+  "customers": {
+    "login": {
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "title": "Login"
+    }
+  },
+  "collections": {
+    "title": "Collections",
+    "filter_and_sort": "Filter and sort",
+    "sort_by": "Sort by",
+    "clear_all": "Clear all",
+    "apply": "Show results",
+    "remove_filter": "Remove filter",
+    "product_count": {
+      "one": "{{ count }} product",
+      "other": "{{ count }} products"
+    },
+    "price_from": "Lowest price",
+    "price_to": "Highest price",
+    "empty": "No products match these filters.",
+    "browse_all": "Browse all products",
+    "no_brands": "No brands to show yet.",
+    "view_all": "View all",
+    "pick_a_collection": "Choose a collection to show products here."
+  },
+  "gift_card": {
+    "add_to_apple_wallet": "Add to Apple Wallet",
+    "card": "Gift card",
+    "expired": "This gift card has expired",
+    "expires_on": "Expires on {{ expires_on }}",
+    "use_at_checkout": "Use this gift card at checkout"
+  },
+  "password": {
+    "title": "This shop is private",
+    "password": "Password",
+    "enter": "Enter"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search articles, pages, or products",
+    "submit": "Search",
+    "no_results_html": "No results found for {{ terms }}",
+    "results_for_html": "{{ count }} results found for {{ terms }}",
+    "brands": "Brands",
+    "collections": "Collections",
+    "products": "Products",
+    "view_all": "See all results"
+  },
+  "newsletter": {
+    "email": "Email address",
+    "submit": "Sign up",
+    "success": "Thanks for signing up."
+  },
+  "products": {
+    "price": {
+      "from": "From",
+      "regular_price": "Regular price",
+      "sale_price": "Sale price",
+      "label": "Price {{ price }}",
+      "sale_label": "Sale price {{ sale_price }}, regular price {{ original_price }}"
+    },
+    "add_to_cart": "Add to cart",
+    "sold_out": "Sold out",
+    "on_sale": "Sale",
+    "percent_off": "{{ percent }}% off",
+    "preorder": "Preorder",
+    "preorder_add": "Preorder now",
+    "preorder_note": "Preorder — ships when this style arrives.",
+    "quantity": "Quantity",
+    "size_guide": "Size guide",
+    "product_variants": "Options",
+    "media": {
+      "gallery": "Product images",
+      "go_to": "Go to image {{ index }}"
+    },
+    "pickup": {
+      "available": "Pickup available",
+      "unavailable": "Pickup is not available for this item right now."
+    },
+    "quick_add": "Quick add",
+    "quick_add_title": "Add {{ title }} to cart",
+    "color_count": {
+      "one": "{{ count }} color",
+      "other": "{{ count }} colors"
+    },
+    "more_colors": {
+      "one": "+{{ count }} more",
+      "other": "+{{ count }} more"
+    }
+  },
+  "general": {
+    "pagination": "Pagination",
+    "previous": "Previous page",
+    "next": "Next page",
+    "page": "page"
+  },
+  "reviews": {
+    "rating": "Rated {{ rating }} out of 5"
+  }
+}

@@ -1,0 +1,301 @@
+{% comment %}
+  Cart page.
+
+  The drawer handles most sessions, but this page still has to be complete:
+  it is where customers land from an emailed cart link, from the accessible
+  fallback when JavaScript fails, and from browsers with the drawer's
+  <dialog> unsupported.
+{% endcomment %}
+
+<div class="cart-page color-{{ section.settings.color_scheme }}">
+  <h1 class="cart-page__title">{{ 'cart.title' | t }}</h1>
+
+  {%- if cart.item_count == 0 -%}
+    <div class="cart-page__empty">
+      <p>{{ 'cart.empty' | t }}</p>
+      <a class="button" href="{{ routes.all_products_collection_url }}">
+        {{ 'cart.continue_shopping' | t }}
+      </a>
+    </div>
+  {%- else -%}
+    <form action="{{ routes.cart_url }}" method="post" novalidate class="cart-page__form">
+      <table class="cart-table">
+        <caption class="visually-hidden">{{ 'cart.title' | t }}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{{ 'cart.product' | t }}</th>
+            <th scope="col">{{ 'products.quantity' | t }}</th>
+            <th scope="col" class="cart-table__right">{{ 'cart.total' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {%- for item in cart.items -%}
+            <tr class="cart-row">
+              <td class="cart-row__product" data-label="{{ 'cart.product' | t }}">
+                <a class="cart-row__media" href="{{ item.url }}" tabindex="-1" aria-hidden="true">
+                  {%- if item.image -%}
+                    {{
+                      item.image
+                      | image_url: width: 200
+                      | image_tag: widths: '100, 200', sizes: '100px', alt: '', loading: 'lazy'
+                    }}
+                  {%- endif -%}
+                </a>
+                <div class="cart-row__detail">
+                  {% render 'cart-line-detail', item: item %}
+                </div>
+              </td>
+
+              <td class="cart-row__qty" data-label="{{ 'products.quantity' | t }}">
+                <label class="visually-hidden" for="CartQty-{{ forloop.index }}">
+                  {{ 'cart.quantity_for' | t: title: item.product.title }}
+                </label>
+                <input
+                  class="field cart-row__qty-input"
+                  id="CartQty-{{ forloop.index }}"
+                  type="number"
+                  name="updates[]"
+                  value="{{ item.quantity }}"
+                  min="0"
+                  step="1"
+                >
+                <a class="cart-row__remove" href="{{ item.url_to_remove }}">
+                  {{ 'cart.remove' | t }}
+                  <span class="visually-hidden">{{ item.product.title }}</span>
+                </a>
+              </td>
+
+              <td class="cart-row__total cart-table__right" data-label="{{ 'cart.total' | t }}">
+                {{ item.final_line_price | money }}
+              </td>
+            </tr>
+          {%- endfor -%}
+        </tbody>
+      </table>
+
+      <div class="cart-page__foot">
+        {%- if section.settings.show_note -%}
+          <div class="cart-page__note">
+            <label for="CartPageNote">{{ 'cart.gift_note' | t }}</label>
+            <textarea class="field cart-page__note-field" id="CartPageNote" name="note" rows="3">{{ cart.note }}</textarea>
+          </div>
+        {%- endif -%}
+
+        <div class="cart-page__summary">
+          {% render 'cart-summary' %}
+
+          <button class="button button--full" type="submit" name="update">{{ 'cart.update' | t }}</button>
+          <button class="button button--full" type="submit" name="checkout">{{ 'cart.checkout' | t }}</button>
+          <div class="cart-page__accelerated">{{ content_for_additional_checkout_buttons }}</div>
+        </div>
+      </div>
+    </form>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .cart-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding-block: var(--space-lg);
+  }
+
+  .cart-page__title {
+    margin: 0;
+  }
+
+  .cart-page__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    color: var(--color-foreground-muted);
+  }
+
+  .cart-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .cart-table thead th {
+    text-align: left;
+    padding-bottom: var(--space-2xs);
+    font-size: var(--text-2xs);
+    font-weight: 700;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-foreground-muted);
+  }
+
+  .cart-table__right {
+    text-align: right;
+  }
+
+  .cart-row td {
+    padding-block: var(--space-sm);
+    vertical-align: top;
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--color-border) 0 var(--seam-dash),
+      transparent var(--seam-dash) calc(var(--seam-dash) + var(--seam-gap))
+    );
+    background-repeat: no-repeat;
+    background-size: 100% var(--seam-weight);
+    background-position: bottom left;
+  }
+
+  .cart-row__product {
+    display: flex;
+    gap: var(--space-sm);
+  }
+
+  .cart-row__media {
+    flex: none;
+    width: 5rem;
+  }
+
+  .cart-row__media img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border-radius: var(--radius-media);
+  }
+
+  .cart-row__detail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .cart-row__qty {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    align-items: flex-start;
+  }
+
+  .cart-row__qty-input {
+    width: 4.5rem;
+    min-height: var(--tap-target);
+    padding-inline: var(--space-2xs);
+    border: var(--border-width) solid var(--color-border-control);
+    background-color: transparent;
+    color: var(--color-foreground);
+  }
+
+  .cart-row__total {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cart-page__foot {
+    display: grid;
+    gap: var(--space-md);
+  }
+
+  .cart-page__note-field {
+    width: 100%;
+    padding: var(--space-2xs);
+    background-color: transparent;
+    color: var(--color-foreground);
+    border: var(--border-width) solid var(--color-border-control);
+    border-radius: var(--radius-control);
+    resize: vertical;
+  }
+
+  .cart-page__note label {
+    display: block;
+    margin-bottom: var(--space-3xs);
+    font-size: var(--text-sm);
+  }
+
+  .cart-row__remove {
+    font-size: var(--text-xs);
+    color: var(--color-foreground-muted);
+    text-underline-offset: 0.2em;
+  }
+
+  .cart-page__accelerated {
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .cart-page__summary {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+
+  /*
+   * The table collapses to stacked rows on phones. Header cells are hidden
+   * and each cell announces itself from its data-label instead, so the
+   * relationship survives without a horizontal scroll.
+   */
+  @media screen and (max-width: 749px) {
+    .cart-table thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      clip-path: inset(50%);
+    }
+
+    .cart-row {
+      display: grid;
+      gap: var(--space-2xs);
+    }
+
+    .cart-row td {
+      background-image: none;
+    }
+
+    .cart-row td:last-child {
+      background-image: repeating-linear-gradient(
+        90deg,
+        var(--color-border) 0 var(--seam-dash),
+        transparent var(--seam-dash) calc(var(--seam-dash) + var(--seam-gap))
+      );
+      background-repeat: no-repeat;
+      background-size: 100% var(--seam-weight);
+      background-position: bottom left;
+    }
+
+    .cart-row__total {
+      text-align: left;
+    }
+
+    .cart-row__total::before {
+      content: attr(data-label) ': ';
+      color: var(--color-foreground-muted);
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .cart-page__foot {
+      grid-template-columns: 1fr minmax(18rem, 22rem);
+      align-items: start;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.cart",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_note",
+      "label": "t:labels.show_gift_note",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme_1"
+    }
+  ],
+  "disabled_on": { "groups": ["header", "footer"] }
+}
+{% endschema %}

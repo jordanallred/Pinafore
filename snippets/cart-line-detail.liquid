@@ -1,0 +1,69 @@
+{% doc %}
+  The text half of a cart line: brand, title, variant, selling plan, and any
+  line-level discounts.
+
+  Shared by the cart drawer and the cart page. Those two lay out very
+  differently — a list versus a table — but the detail block itself is
+  identical, and keeping it here means neither file depends on CSS defined in
+  the other.
+
+  @param {object} item - The cart line item
+
+  @example
+  {% render 'cart-line-detail', item: item %}
+{% enddoc %}
+
+{%- if item.product.vendor != blank -%}
+  <span class="line-detail__vendor">{{ item.product.vendor }}</span>
+{%- endif -%}
+
+<a class="line-detail__title" href="{{ item.url }}">{{ item.product.title }}</a>
+
+{%- unless item.product.has_only_default_variant -%}
+  <span class="line-detail__meta">{{ item.variant.title }}</span>
+{%- endunless -%}
+
+{%- if item.selling_plan_allocation -%}
+  <span class="line-detail__meta">{{ item.selling_plan_allocation.selling_plan.name }}</span>
+{%- endif -%}
+
+{%- comment -%}
+  Line discounts have to be visible before checkout, or the total reads as
+  wrong to the customer.
+{%- endcomment -%}
+{%- for discount in item.line_level_discount_allocations -%}
+  <span class="line-detail__discount">
+    {{ discount.discount_application.title }} (&minus;{{ discount.amount | money }})
+  </span>
+{%- endfor -%}
+
+{% stylesheet %}
+  .line-detail__vendor {
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-foreground-muted);
+  }
+
+  .line-detail__title {
+    font-family: var(--font-heading--family);
+    font-size: var(--text-base);
+    line-height: var(--leading-snug);
+    text-decoration: none;
+  }
+
+  .line-detail__title:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .line-detail__meta {
+    font-size: var(--text-xs);
+    color: var(--color-foreground-muted);
+  }
+
+  .line-detail__discount {
+    font-size: var(--text-xs);
+    color: var(--color-sale);
+  }
+{% endstylesheet %}

@@ -1,0 +1,297 @@
+{% doc %}
+  Variant picker.
+
+  Options render as radio inputs, never a <select>: on a kids apparel page
+  every size should be visible and comparable at a glance, and each control
+  needs to clear the 44px tap floor. Color options become swatches, sizes
+  become pills, everything else falls back to text pills.
+
+  A <noscript> <select name="id"> carries the same choice for anyone without
+  JavaScript, so the form still submits a valid variant.
+
+  @param {object} product - The product
+  @param {object} section - The owning section, for settings
+{% enddoc %}
+
+{% liquid
+  assign current = product.selected_or_first_available_variant
+  assign color_names = 'color,colour,shade,print,pattern' | split: ','
+  assign size_names = 'size,sizes,age,fit' | split: ','
+%}
+
+{%- unless product.has_only_default_variant -%}
+  <pinafore-variants class="variants" data-url="{{ product.url }}" data-section="{{ section.id }}">
+    {%- for option in product.options_with_values -%}
+      {%- liquid
+        assign option_key = option.name | downcase
+        assign is_color = false
+        assign is_size = false
+        if color_names contains option_key
+          assign is_color = true
+        endif
+        if size_names contains option_key
+          assign is_size = true
+        endif
+
+        # `value.swatch` is only populated once a merchant has linked swatch
+        # metaobjects to the option values, which most never do. Rendering
+        # circles anyway produces unlabelled grey dots — the colour name is
+        # visually hidden in swatch mode, so there is then no way at all to
+        # tell the colours apart. Fall back to named pills unless real swatch
+        # data exists.
+        assign has_swatches = false
+        for value in option.values
+          if value.swatch.color or value.swatch.image
+            assign has_swatches = true
+            break
+          endif
+        endfor
+
+        assign render_swatches = false
+        if is_color and has_swatches
+          assign render_swatches = true
+        endif
+      -%}
+
+      <fieldset class="variants__group" data-option-index="{{ forloop.index }}">
+        <legend class="visually-hidden">{{ option.name }}</legend>
+
+        <div class="variants__head">
+          <span class="variants__label">
+            {{ option.name }}:
+            <span class="variants__value" data-option-value="{{ forloop.index }}">
+              {{- option.selected_value -}}
+            </span>
+          </span>
+
+          {%- comment -%}
+            The size guide sits directly beside the size control, where the
+            question actually gets asked, rather than in a tab further down.
+          {%- endcomment -%}
+          {%- if is_size and section.settings.show_size_guide -%}
+            {% render 'size-guide-link', product: product %}
+          {%- endif -%}
+        </div>
+
+        <div class="variants__options{% if render_swatches %} variants__options--swatch{% endif %}">
+          {%- for value in option.values -%}
+            {%- liquid
+              assign input_id = 'Option-' | append: section.id | append: '-' | append: forloop.parentloop.index | append: '-' | append: forloop.index
+              assign is_available = false
+              if value.available
+                assign is_available = true
+              endif
+            -%}
+            <input
+              class="visually-hidden variants__input"
+              type="radio"
+              id="{{ input_id }}"
+              name="{{ option.name | escape }}-{{ section.id }}"
+              value="{{ value | escape }}"
+              form="ProductForm-{{ section.id }}"
+              {% if option.selected_value == value %}
+                checked
+              {% endif %}
+              {% unless is_available %}
+                data-unavailable
+              {% endunless %}
+            >
+            <label
+              class="variants__swatch{% unless is_available %} is-unavailable{% endunless %}"
+              for="{{ input_id }}"
+              {% if render_swatches and value.swatch.color %}
+                style="--swatch: {{ value.swatch.color }};"
+              {% elsif render_swatches and value.swatch.image %}
+                style="--swatch-image: url({{ value.swatch.image | image_url: width: 80 }});"
+              {% endif %}
+            >
+              <span class="variants__swatch-label">{{ value }}</span>
+              {%- unless is_available -%}
+                <span class="visually-hidden">({{ 'products.sold_out' | t }})</span>
+              {%- endunless -%}
+            </label>
+          {%- endfor -%}
+        </div>
+      </fieldset>
+    {%- endfor -%}
+
+    <noscript>
+      <label class="visually-hidden" for="Variants-{{ section.id }}">
+        {{ 'products.product_variants' | t }}
+      </label>
+      <select
+        class="field variants__select"
+        id="Variants-{{ section.id }}"
+        name="id"
+        form="ProductForm-{{ section.id }}"
+      >
+        {%- for variant in product.variants -%}
+          <option
+            value="{{ variant.id }}"
+            {% if variant == current %}
+              selected
+            {% endif %}
+            {% unless variant.available %}
+              disabled
+            {% endunless %}
+          >
+            {{ variant.title }}
+            {%- unless variant.available %} - {{ 'products.sold_out' | t }}{% endunless %}
+            - {{ variant.price | money }}
+          </option>
+        {%- endfor -%}
+      </select>
+    </noscript>
+
+    {%- comment -%}
+      The variant data the picker matches against. Rendered by Liquid so the
+      client never has to guess at option ordering or availability.
+    {%- endcomment -%}
+    <script type="application/json" data-variant-data>
+      {{ product.variants | json }}
+    </script>
+  </pinafore-variants>
+{%- endunless -%}
+
+{% stylesheet %}
+  .variants {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .variants__group {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+
+  .variants__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2xs);
+    flex-wrap: wrap;
+  }
+
+  .variants__label {
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-foreground-muted);
+  }
+
+  .variants__value {
+    color: var(--color-foreground);
+    font-weight: 700;
+  }
+
+  .variants__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs);
+  }
+
+  .variants__swatch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Every option clears the WCAG 2.5.5 target floor. */
+    min-width: var(--tap-target);
+    min-height: var(--tap-target);
+    padding-inline: var(--space-2xs);
+    border: var(--border-width) solid var(--color-border-control);
+    border-radius: var(--radius-control);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition: border-color var(--duration-fast) var(--ease-out),
+      background-color var(--duration-fast) var(--ease-out);
+  }
+
+  .variants__swatch:hover {
+    border-color: var(--color-foreground);
+  }
+
+  .variants__input:checked + .variants__swatch {
+    background-color: var(--color-foreground);
+    color: var(--color-background);
+    border-color: var(--color-foreground);
+    font-weight: 600;
+  }
+
+  .variants__input:focus-visible + .variants__swatch {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /*
+   * Unavailable options stay selectable — a customer needs to be able to pick
+   * a sold-out size to see that it is sold out. The state is carried by a
+   * strike-through line as well as by dimming, so it survives a greyscale or
+   * color-blind reading rather than relying on color alone.
+   */
+  .variants__swatch.is-unavailable {
+    color: var(--color-foreground-muted);
+    border-color: var(--color-border);
+    background-image: linear-gradient(
+      to top left,
+      transparent calc(50% - 0.5px),
+      var(--color-border-control) 50%,
+      transparent calc(50% + 0.5px)
+    );
+  }
+
+  .variants__input:checked + .variants__swatch.is-unavailable {
+    background-color: transparent;
+    color: var(--color-foreground);
+    border-color: var(--color-foreground);
+  }
+
+  /* Color swatches show the color itself and hide the text label. */
+  .variants__options--swatch .variants__swatch {
+    padding: 0;
+    width: var(--tap-target);
+    background-color: var(--swatch, var(--color-background));
+    background-image: var(--swatch-image, none);
+    background-size: cover;
+    border-radius: var(--radius-full);
+  }
+
+  .variants__options--swatch .variants__swatch-label {
+    /* Visually hidden, but still the accessible name of the control. */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /*
+   * A selected colour swatch must keep showing its colour. The generic
+   * checked rule fills the control with the foreground, which turned the
+   * chosen swatch into a dark square — Apple Red rendered as ink. Selection
+   * is shown with a ring instead.
+   */
+  .variants__options--swatch .variants__input:checked + .variants__swatch {
+    background-color: var(--swatch, var(--color-background));
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 2px;
+  }
+
+  .variants__options--swatch .variants__swatch.is-unavailable {
+    /* Keep the colour visible while still reading as unavailable. */
+    opacity: 0.45;
+  }
+
+  .variants__select {
+    width: 100%;
+    min-height: var(--tap-target);
+    padding-inline: var(--space-2xs);
+    border: var(--border-width) solid var(--color-border-control);
+  }
+{% endstylesheet %}

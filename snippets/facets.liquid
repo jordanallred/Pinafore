@@ -1,0 +1,459 @@
+{% doc %}
+  Faceted filtering and sorting.
+
+  The whole thing is one GET form pointed at the collection. That means every
+  filtered view is a real, shareable, back-button-able URL, and it works with
+  JavaScript disabled — `<pinafore-facets>` only intercepts the submit to
+  swap the results in place via the Section Rendering API.
+
+  On phones the filters live in a bottom sheet: a boutique collection can
+  carry a dozen brands and a dozen sizes, which is far too much to sit above
+  the products someone came to see.
+
+  @param {object} results - collection or search object
+  @param {object} section - the owning section
+{% enddoc %}
+
+{% liquid
+  assign is_search = false
+  if results.terms
+    assign is_search = true
+  endif
+
+  assign active_count = 0
+  for filter in results.filters
+    assign active_count = active_count | plus: filter.active_values.size
+    if filter.type == 'price_range' and filter.min_value.value != nil
+      assign active_count = active_count | plus: 1
+    endif
+  endfor
+%}
+
+<pinafore-facets class="facets" data-section="{{ section.id }}">
+  <div class="facets__bar">
+    <button
+      class="button button--secondary facets__toggle"
+      type="button"
+      aria-controls="FacetsDrawer"
+      aria-expanded="false"
+      data-drawer-open="FacetsDrawer"
+    >
+      {{ 'collections.filter_and_sort' | t }}
+      {%- if active_count > 0 -%}
+        <span class="facets__count">{{ active_count }}</span>
+      {%- endif -%}
+    </button>
+
+    <p class="facets__result-count" data-result-count aria-live="polite" aria-atomic="true">
+      {{ 'collections.product_count' | t: count: results.products_count }}
+    </p>
+  </div>
+
+  {%- if active_count > 0 -%}
+    {%- comment -%}
+      Applied filters as removable chips. Each is a plain link to the URL
+      without that value, so removing one never depends on script.
+    {%- endcomment -%}
+    <ul class="facets__applied" role="list">
+      {%- for filter in results.filters -%}
+        {%- for value in filter.active_values -%}
+          <li>
+            <a class="facets__chip" href="{{ value.url_to_remove }}">
+              {{ value.label }}
+              {% render 'icon', icon: 'close', size: '0.85rem' %}
+              <span class="visually-hidden">{{ 'collections.remove_filter' | t }}</span>
+            </a>
+          </li>
+        {%- endfor -%}
+        {%- if filter.type == 'price_range' and filter.min_value.value != nil -%}
+          <li>
+            <a class="facets__chip" href="{{ filter.url_to_remove }}">
+              {{ filter.min_value.value | money }} &ndash; {{ filter.max_value.value | money }}
+              {% render 'icon', icon: 'close', size: '0.85rem' %}
+            </a>
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+      <li>
+        <a class="facets__chip facets__chip--clear" href="{{ results.url }}">
+          {{ 'collections.clear_all' | t }}
+        </a>
+      </li>
+    </ul>
+  {%- endif -%}
+
+  <dialog class="drawer drawer--end" id="FacetsDrawer" scroll-lock aria-modal="true" aria-labelledby="FacetsTitle">
+    <form class="drawer__panel" data-facet-form>
+      {%- if is_search -%}
+        <input type="hidden" name="q" value="{{ results.terms | escape }}">
+        <input type="hidden" name="options[prefix]" value="last">
+      {%- endif -%}
+
+      <div class="drawer__header">
+        <span class="drawer__title" id="FacetsTitle">{{ 'collections.filter_and_sort' | t }}</span>
+        <button class="button button--icon" type="button" data-drawer-close>
+          {% render 'icon', icon: 'close' %}
+          <span class="visually-hidden">{{ 'accessibility.close' | t }}</span>
+        </button>
+      </div>
+
+      <div class="drawer__body">
+        {%- if results.sort_options.size > 0 -%}
+          <details class="facet" open>
+            <summary class="facet__summary">
+              {{ 'collections.sort_by' | t }}
+              {% render 'icon', icon: 'chevron-down', class: 'facet__chevron' %}
+            </summary>
+            <div class="facet__body">
+              {%- assign sort_current = results.sort_by | default: results.default_sort_by -%}
+              {%- for option in results.sort_options -%}
+                <label class="facet__row">
+                  <input
+                    type="radio"
+                    name="sort_by"
+                    value="{{ option.value }}"
+                    {% if option.value == sort_current %}
+                      checked
+                    {% endif %}
+                  >
+                  <span>{{ option.name }}</span>
+                </label>
+              {%- endfor -%}
+            </div>
+          </details>
+        {%- endif -%}
+
+        {%- for filter in results.filters -%}
+          <details class="facet" {% if filter.active_values.size > 0 %}open{% endif %}>
+            <summary class="facet__summary">
+              {{ filter.label }}
+              {%- if filter.active_values.size > 0 -%}
+                <span class="facet__badge">{{ filter.active_values.size }}</span>
+              {%- endif -%}
+              {% render 'icon', icon: 'chevron-down', class: 'facet__chevron' %}
+            </summary>
+
+            <div class="facet__body">
+              {%- case filter.type -%}
+                {%- when 'price_range' -%}
+                  <div class="facet__price">
+                    <label class="facet__price-field">
+                      <span class="visually-hidden">{{ 'collections.price_from' | t }}</span>
+                      <input
+                        class="field"
+                        type="number"
+                        name="{{ filter.min_value.param_name }}"
+                        value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}"
+                        placeholder="0"
+                        min="0"
+                        max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                      >
+                    </label>
+                    <span aria-hidden="true">&ndash;</span>
+                    <label class="facet__price-field">
+                      <span class="visually-hidden">{{ 'collections.price_to' | t }}</span>
+                      <input
+                        class="field"
+                        type="number"
+                        name="{{ filter.max_value.param_name }}"
+                        value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}"
+                        placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                        min="0"
+                        max="{{ filter.range_max | money_without_currency | replace: ',', '' }}"
+                      >
+                    </label>
+                  </div>
+
+                {%- when 'boolean' -%}
+                  {%- for value in filter.values -%}
+                    <label class="facet__row">
+                      <input
+                        type="checkbox"
+                        name="{{ value.param_name }}"
+                        value="{{ value.value }}"
+                        {% if value.active %}
+                          checked
+                        {% endif %}
+                      >
+                      <span>{{ value.label }}</span>
+                    </label>
+                  {%- endfor -%}
+
+                {%- else -%}
+                  {%- liquid
+                    # Shopify sets `presentation` to 'swatch' once the option is
+                    # linked to a colour metafield. When it is, the values are
+                    # taxonomy-grouped — a shopper picks "Red" and gets Apple
+                    # Red, Rose and Crimson without knowing any vendor's names
+                    # for them.
+                    assign is_swatch_filter = false
+                    if filter.presentation == 'swatch'
+                      assign is_swatch_filter = true
+                    endif
+                  -%}
+                  <div class="facet__values{% if is_swatch_filter %} facet__values--swatch{% endif %}">
+                    {%- for value in filter.values -%}
+                      {%- liquid
+                        assign is_disabled = false
+                        if value.count == 0 and value.active == false
+                          assign is_disabled = true
+                        endif
+                      -%}
+                      <label
+                        class="facet__row{% if is_disabled %} is-empty{% endif %}{% if is_swatch_filter %} facet__row--swatch{% endif %}"
+                        {% if is_swatch_filter and value.swatch.color %}
+                          style="--swatch: {{ value.swatch.color }};"
+                        {% elsif is_swatch_filter and value.swatch.image %}
+                          style="--swatch-image: url({{ value.swatch.image | image_url: width: 80 }});"
+                        {% endif %}
+                      >
+                        <input
+                          type="checkbox"
+                          name="{{ value.param_name }}"
+                          value="{{ value.value }}"
+                          {% if value.active %}
+                            checked
+                          {% endif %}
+                          {% if is_disabled %}
+                            disabled
+                          {% endif %}
+                        >
+                        {%- if is_swatch_filter -%}
+                          <span class="facet__swatch" aria-hidden="true"></span>
+                        {%- endif -%}
+                        <span class="facet__value-label">{{ value.label }}</span>
+                        <span class="facet__value-count">{{ value.count }}</span>
+                      </label>
+                    {%- endfor -%}
+                  </div>
+              {%- endcase -%}
+            </div>
+          </details>
+        {%- endfor -%}
+      </div>
+
+      <div class="drawer__footer facets__footer">
+        <a class="button button--secondary" href="{{ results.url }}">{{ 'collections.clear_all' | t }}</a>
+        <button class="button" type="submit">{{ 'collections.apply' | t }}</button>
+      </div>
+    </form>
+  </dialog>
+</pinafore-facets>
+
+{% stylesheet %}
+  .facets {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+
+  .facets__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+  }
+
+  .facets__toggle {
+    gap: var(--space-3xs);
+  }
+
+  .facets__count {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.2rem;
+    height: 1.2rem;
+    padding-inline: 0.25rem;
+    border-radius: var(--radius-full);
+    background-color: var(--color-accent);
+    color: var(--color-accent-foreground);
+    font-size: var(--text-2xs);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .facets__result-count {
+    font-size: var(--text-sm);
+    color: var(--color-foreground-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .facets__applied {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs);
+  }
+
+  .facets__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-height: 2rem;
+    padding-inline: var(--space-2xs);
+    border: var(--border-width) solid var(--color-border-control);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    text-decoration: none;
+  }
+
+  .facets__chip:hover {
+    background-color: rgb(var(--color-foreground-rgb) / 0.06);
+  }
+
+  .facets__chip--clear {
+    border-style: dashed;
+    color: var(--color-foreground-muted);
+  }
+
+  .facet {
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--color-border) 0 var(--seam-dash),
+      transparent var(--seam-dash) calc(var(--seam-dash) + var(--seam-gap))
+    );
+    background-repeat: no-repeat;
+    background-size: 100% var(--seam-weight);
+    background-position: bottom left;
+  }
+
+  .facet__summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3xs);
+    min-height: var(--tap-target);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .facet__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .facet__chevron {
+    margin-left: auto;
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+
+  .facet[open] .facet__chevron {
+    transform: rotate(180deg);
+  }
+
+  .facet__badge {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.1rem;
+    height: 1.1rem;
+    border-radius: var(--radius-full);
+    background-color: var(--color-accent);
+    color: var(--color-accent-foreground);
+    font-size: var(--text-2xs);
+  }
+
+  .facet__body {
+    padding-bottom: var(--space-2xs);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .facet__row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    /* The whole row is the target, not just the checkbox. */
+    min-height: var(--tap-target);
+    font-size: var(--text-sm);
+    cursor: pointer;
+  }
+
+  .facet__values {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /*
+   * A swatch filter reads better as a wrapped grid than a tall list — colour
+   * is scanned, not read.
+   */
+  .facet__values--swatch {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+    gap: var(--space-3xs);
+  }
+
+  .facet__swatch {
+    width: 1.15rem;
+    height: 1.15rem;
+    flex: none;
+    border-radius: var(--radius-full);
+    background-color: var(--swatch, var(--color-border));
+    background-image: var(--swatch-image, none);
+    background-size: cover;
+    border: var(--border-width) solid rgb(var(--color-foreground-rgb) / 0.2);
+  }
+
+  /* The colour name always stays visible: a bare dot cannot be named aloud,
+     and "Apple Red" is not guessable from a square of colour. */
+  .facet__value-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .facet__row--swatch .facet__value-count {
+    margin-left: 0;
+  }
+
+  .facet__row input {
+    width: 1.05rem;
+    height: 1.05rem;
+    accent-color: var(--color-accent);
+    flex: none;
+  }
+
+  .facet__row.is-empty {
+    color: var(--color-foreground-muted);
+    cursor: not-allowed;
+  }
+
+  .facet__value-count {
+    margin-left: auto;
+    font-size: var(--text-2xs);
+    color: var(--color-foreground-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .facet__price {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding-block: var(--space-2xs);
+  }
+
+  .facet__price-field {
+    flex: 1;
+  }
+
+  .facet__price-field input {
+    width: 100%;
+    min-height: var(--tap-target);
+    padding-inline: var(--space-2xs);
+    border: var(--border-width) solid var(--color-border-control);
+    background-color: transparent;
+    color: var(--color-foreground);
+  }
+
+  .facets__footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2xs);
+  }
+
+  .facets__footer .button {
+    width: 100%;
+  }
+{% endstylesheet %}

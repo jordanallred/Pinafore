@@ -1,0 +1,23 @@
+{% doc %}
+  One entry in the brand index: a vendor name linking into a vendor-filtered
+  collection view.
+
+  Exists as a snippet purely so the brand index can render it from more than
+  one loop — see the offset loops in sections/shop-by-brand.liquid.
+
+  @param {string} vendor - The vendor name
+
+  @example
+  {% render 'brand-chip', vendor: vendor %}
+{% enddoc %}
+
+{%- if vendor != blank -%}
+  <li>
+    <a
+      class="brands__chip"
+      href="{{ routes.all_products_collection_url }}?filter.p.vendor={{ vendor | url_encode }}"
+    >
+      {{ vendor }}
+    </a>
+  </li>
+{%- endif -%}

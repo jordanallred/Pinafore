@@ -1,0 +1,417 @@
+{% comment %}
+  Store header: logo, multi-level navigation, and the search / account / cart
+  actions. Renders inside the `header` section group.
+
+  Navigation degrades cleanly: the desktop mega menu is built on
+  <details>/<summary>, so it opens on click and is fully keyboard operable
+  with no JavaScript at all. `<pinafore-menu>` only adds hover-intent and
+  roving focus on top of that.
+{% endcomment %}
+
+{% liquid
+  assign menu = section.settings.menu
+  assign has_logo = false
+  if section.settings.logo != blank
+    assign has_logo = true
+  endif
+%}
+
+<pinafore-header
+  class="header color-{{ section.settings.color_scheme }}"
+  {% if section.settings.sticky %}
+    data-sticky
+  {% endif %}
+>
+  <div class="header__inner">
+    {%- comment -%} Mobile: opens the navigation drawer. {%- endcomment -%}
+    <button
+      class="button button--icon header__burger"
+      type="button"
+      aria-controls="NavDrawer"
+      aria-expanded="false"
+      data-drawer-open="NavDrawer"
+    >
+      {% render 'icon', icon: 'menu', size: '1.4rem' %}
+      <span class="visually-hidden">{{ 'accessibility.menu' | t }}</span>
+    </button>
+
+    {%- comment -%}
+      The logo is an <h1> only on the index template, where the store name is
+      the page's real heading. Everywhere else the page's own <h1> owns that
+      role, so the logo is a plain link.
+    {%- endcomment -%}
+    {%- if request.page_type == 'index' -%}
+      <h1 class="header__logo">
+    {%- else -%}
+      <div class="header__logo">
+    {%- endif -%}
+      {%- comment -%}
+        The width is carried on the link as a custom property rather than as a
+        `style` argument to image_tag: filter arguments are plain strings and
+        cannot interpolate Liquid.
+      {%- endcomment -%}
+      <a
+        href="{{ routes.root_url }}"
+        class="header__logo-link"
+        {% if has_logo %}
+          style="--logo-width: {{ section.settings.logo_width }}px;"
+        {% endif %}
+      >
+        {%- if has_logo -%}
+          {{
+            section.settings.logo
+            | image_url: width: 600
+            | image_tag:
+              widths: '150, 300, 450, 600',
+              sizes: '(max-width: 749px) 40vw, 20vw',
+              alt: shop.name,
+              class: 'header__logo-image'
+          }}
+        {%- else -%}
+          <span class="header__logo-text">{{ shop.name }}</span>
+        {%- endif -%}
+      </a>
+    {%- if request.page_type == 'index' -%}
+      </h1>
+    {%- else -%}
+      </div>
+    {%- endif -%}
+
+    <nav class="header__nav" aria-label="{{ 'accessibility.primary_navigation' | t }}">
+      <pinafore-menu class="header__nav-list">
+        {%- for link in menu.links -%}
+          {%- if link.links.size > 0 -%}
+            <details class="nav-item nav-item--has-menu" data-menu>
+              <summary class="nav-item__label">
+                {{ link.title }}
+                {% render 'icon', icon: 'chevron-down', size: '0.9rem', class: 'nav-item__chevron' %}
+              </summary>
+              {% render 'mega-menu', link: link, section: section %}
+            </details>
+          {%- else -%}
+            <a
+              class="nav-item nav-item__label"
+              href="{{ link.url }}"
+              {% if link.current %}
+                aria-current="page"
+              {% endif %}
+            >
+              {{ link.title }}
+            </a>
+          {%- endif -%}
+        {%- endfor -%}
+      </pinafore-menu>
+    </nav>
+
+    <div class="header__actions">
+      <button
+        class="button button--icon"
+        type="button"
+        aria-controls="SearchDrawer"
+        aria-expanded="false"
+        data-drawer-open="SearchDrawer"
+      >
+        {% render 'icon', icon: 'search' %}
+        <span class="visually-hidden">{{ 'accessibility.search' | t }}</span>
+      </button>
+
+      {%- if shop.customer_accounts_enabled -%}
+        <shopify-account menu="{{ section.settings.customer_account_menu }}" class="header__account">
+          {% render 'icon', icon: 'account' %}
+          <span class="visually-hidden">{{ 'accessibility.account' | t }}</span>
+        </shopify-account>
+      {%- endif -%}
+
+      {%- comment -%}
+        Stays a real link to /cart so it works before JavaScript loads and for
+        anyone browsing without it. The drawer intercepts the click.
+      {%- endcomment -%}
+      <a
+        class="button button--icon header__cart"
+        href="{{ routes.cart_url }}"
+        aria-controls="CartDrawer"
+        data-drawer-open="CartDrawer"
+      >
+        {% render 'icon', icon: 'cart' %}
+        <span class="visually-hidden">{{ 'accessibility.cart' | t }}</span>
+        <span
+          class="header__cart-count{% if cart.item_count == 0 %} is-empty{% endif %}"
+          data-cart-count
+          aria-hidden="true"
+        >
+          {{- cart.item_count -}}
+        </span>
+      </a>
+    </div>
+  </div>
+</pinafore-header>
+
+{% render 'nav-drawer', menu: menu, section: section %}
+{% render 'search-drawer', section: section %}
+{% comment %}
+  The cart drawer is rendered from layout/theme.liquid instead of here, because
+  it must be a section for the Section Rendering API to re-render it and
+  sections cannot nest.
+{% endcomment %}
+
+{% stylesheet %}
+  .header {
+    position: relative;
+    z-index: var(--z-header);
+    display: block;
+    background-color: var(--color-background);
+    /* The seam, rather than a solid rule. */
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--color-border) 0 var(--seam-dash),
+      transparent var(--seam-dash) calc(var(--seam-dash) + var(--seam-gap))
+    );
+    background-repeat: no-repeat;
+    background-size: 100% var(--seam-weight);
+    background-position: bottom left;
+  }
+
+  .header[data-sticky] {
+    position: sticky;
+    top: 0;
+  }
+
+  /* Set by <pinafore-header> once the page has scrolled past the header. */
+  .header[data-scrolled] {
+    box-shadow: var(--shadow-sm);
+  }
+
+  .header__inner {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--space-sm);
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+    min-height: 3.75rem;
+  }
+
+  .header__logo {
+    font-size: inherit;
+    margin: 0;
+    justify-self: center;
+  }
+
+  .header__logo-link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .header__logo-text {
+    font-family: var(--font-heading--family);
+    font-size: var(--text-lg);
+    letter-spacing: var(--heading-letter-spacing);
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .header__logo-image {
+    width: var(--logo-width, 140px);
+    height: auto;
+    max-width: 100%;
+  }
+
+  .header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3xs);
+    justify-self: end;
+  }
+
+  .header__account {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--tap-target);
+    min-height: var(--tap-target);
+    cursor: pointer;
+  }
+
+  .header__cart {
+    position: relative;
+  }
+
+  .header__cart-count {
+    position: absolute;
+    top: 0.3rem;
+    right: 0.3rem;
+    min-width: 1.05rem;
+    height: 1.05rem;
+    padding-inline: 0.2rem;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-full);
+    background-color: var(--color-accent);
+    color: var(--color-accent-foreground);
+    font-size: 0.65rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .header__cart-count.is-empty {
+    display: none;
+  }
+
+  /* ------------------------------------------------------- Navigation */
+  .header__nav {
+    display: none;
+  }
+
+  .header__nav-list {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .nav-item {
+    position: relative;
+  }
+
+  .nav-item__label {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    min-height: var(--tap-target);
+    padding-inline: 0.15rem;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  /* Safari still paints a disclosure triangle without this. */
+  .nav-item__label::-webkit-details-marker {
+    display: none;
+  }
+
+  .nav-item__label::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 1rem;
+    height: 1px;
+    background-color: currentcolor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .nav-item:hover .nav-item__label::after,
+  .nav-item[open] .nav-item__label::after,
+  .nav-item__label[aria-current='page']::after {
+    transform: scaleX(1);
+  }
+
+  .nav-item__chevron {
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+
+  .nav-item[open] .nav-item__chevron {
+    transform: rotate(180deg);
+  }
+
+  @media screen and (min-width: 990px) {
+    .header__inner {
+      grid-template-columns: auto 1fr auto;
+      min-height: 4.5rem;
+    }
+
+    .header__burger {
+      display: none;
+    }
+
+    .header__logo {
+      justify-self: start;
+    }
+
+    .header__nav {
+      display: block;
+      justify-self: center;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.header",
+  "tag": "header",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "t:labels.logo"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "t:labels.logo_width",
+      "min": 60,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "default": 140
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "t:labels.menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky",
+      "label": "t:labels.sticky_header",
+      "info": "t:info.sticky_header",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:general.mega_menu"
+    },
+    {
+      "type": "range",
+      "id": "mega_columns",
+      "label": "t:labels.mega_columns",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "t:general.colors"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme_1"
+    },
+    {
+      "type": "header",
+      "content": "t:general.account"
+    },
+    {
+      "type": "link_list",
+      "id": "customer_account_menu",
+      "label": "t:labels.customer_account_menu",
+      "default": "customer-account-main-menu"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,533 @@
+{% comment %}
+  Main product section.
+
+  The information column is composed from blocks so a merchant can reorder
+  price above title, drop in an app block for reviews, or add accordions
+  without code. `@app` is accepted, which the Theme Store requires of the main
+  product section.
+
+  https://shopify.dev/docs/storefronts/themes/architecture/templates/product
+{% endcomment %}
+
+{% liquid
+  assign product_form_id = 'ProductForm-' | append: section.id
+  assign current = product.selected_or_first_available_variant
+
+  assign is_preorder = false
+  if current.available and current.inventory_management != blank and current.inventory_quantity <= 0 and current.inventory_policy == 'continue'
+    assign is_preorder = true
+  endif
+%}
+
+<div class="product color-{{ section.settings.color_scheme }}">
+  <div class="product__layout">
+    <div class="product__media">
+      {% render 'product-media', product: product %}
+    </div>
+
+    <div class="product__info">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'vendor' -%}
+            {%- if product.vendor != blank -%}
+              <a
+                class="product__vendor eyebrow"
+                href="{{ routes.all_products_collection_url }}?filter.p.vendor={{ product.vendor | url_encode }}"
+                {{ block.shopify_attributes }}
+              >
+                {{ product.vendor }}
+              </a>
+            {%- endif -%}
+
+          {%- when 'title' -%}
+            <h1 class="product__title" {{ block.shopify_attributes }}>{{ product.title }}</h1>
+
+          {%- when 'badges' -%}
+            <div class="product__badges" {{ block.shopify_attributes }}>
+              {% render 'product-badges', product: product %}
+            </div>
+
+          {%- when 'price' -%}
+            <div class="product__price" data-price {{ block.shopify_attributes }}>
+              {% render 'price', product: current, context: 'product' %}
+              {%- if is_preorder and block.settings.show_preorder_note -%}
+                <p class="product__preorder-note">
+                  {% render 'icon', icon: 'truck', size: '1rem' %}
+                  {{ 'products.preorder_note' | t }}
+                </p>
+              {%- endif -%}
+              {%- comment -%}
+                Shop Pay Installments. Required by the Theme Store, and on a
+                boutique's higher-ticket items it materially affects checkout.
+              {%- endcomment -%}
+              <div class="product__installments">
+                {%- comment -%}
+                  The id is captured first. A filter chain inside a tag
+                  argument makes Liquid read the piped expression as the next
+                  positional argument — here it took the id as the form type.
+                {%- endcomment -%}
+                {%- capture installment_form_id -%}
+                  InstallmentForm-{{ section.id }}
+                {%- endcapture -%}
+                {% form 'product', product, id: installment_form_id %}
+                  <input type="hidden" name="id" value="{{ current.id }}">
+                  {{ form | payment_terms }}
+                {% endform %}
+              </div>
+            </div>
+
+          {%- when 'variant_picker' -%}
+            <div {{ block.shopify_attributes }}>
+              {% render 'variant-picker', product: product, section: section %}
+            </div>
+
+          {%- when 'buy_buttons' -%}
+            <div class="product__buy" {{ block.shopify_attributes }}>
+              {%- form 'product', product, id: product_form_id, novalidate: 'novalidate' -%}
+                <input
+                  type="hidden"
+                  name="id"
+                  value="{{ current.id }}"
+                  data-variant-id
+                  {% if product.has_only_default_variant %}
+                    disabled
+                  {% endif %}
+                >
+
+                {%- if block.settings.show_quantity -%}
+                  <div class="product__qty">
+                    <label class="variants__label" for="Quantity-{{ section.id }}">
+                      {{ 'products.quantity' | t }}
+                    </label>
+                    <input
+                      class="field product__qty-input"
+                      id="Quantity-{{ section.id }}"
+                      type="number"
+                      name="quantity"
+                      value="1"
+                      min="1"
+                      step="1"
+                    >
+                  </div>
+                {%- endif -%}
+
+                <button
+                  class="button button--full product__atc"
+                  type="submit"
+                  name="add"
+                  data-atc
+                  {% unless current.available %}
+                    disabled
+                  {% endunless %}
+                >
+                  <span data-atc-text>
+                    {%- if current.available -%}
+                      {%- if is_preorder -%}
+                        {{ 'products.preorder_add' | t }}
+                      {%- else -%}
+                        {{ 'products.add_to_cart' | t }}
+                      {%- endif -%}
+                    {%- else -%}
+                      {{ 'products.sold_out' | t }}
+                    {%- endif -%}
+                  </span>
+                </button>
+
+                {%- if block.settings.show_dynamic_checkout -%}
+                  <div class="product__accelerated">{{ form | payment_button }}</div>
+                {%- endif -%}
+              {%- endform -%}
+            </div>
+
+          {%- when 'pickup' -%}
+            {%- comment -%}
+              Rendered straight from `store_availabilities` rather than through
+              a JS component. It only needs to reflect the currently selected
+              variant, which <pinafore-variants> already re-renders via the
+              Section Rendering API — so this costs no extra script.
+            {%- endcomment -%}
+            {%- if current.store_availabilities.size > 0 -%}
+              <div class="product__pickup" data-pickup {{ block.shopify_attributes }}>
+                {%- assign pickup_available = false -%}
+                {%- for availability in current.store_availabilities -%}
+                  {%- if availability.available -%}
+                    {%- assign pickup_available = true -%}
+                    {%- break -%}
+                  {%- endif -%}
+                {%- endfor -%}
+
+                {%- if pickup_available -%}
+                  <details class="accordion">
+                    <summary class="accordion__summary">
+                      <span class="pickup__status">
+                        {% render 'icon', icon: 'check', size: '1rem' %}
+                        {{ 'products.pickup.available' | t }}
+                      </span>
+                      {% render 'icon', icon: 'chevron-down', class: 'accordion__chevron' %}
+                    </summary>
+                    <div class="accordion__body">
+                      <ul class="pickup__list" role="list">
+                        {%- for availability in current.store_availabilities -%}
+                          {%- if availability.available -%}
+                            <li class="pickup__location">
+                              <strong>{{ availability.location.name }}</strong>
+                              <span>{{ availability.pick_up_time }}</span>
+                              {%- if availability.location.address != blank -%}
+                                <address class="pickup__address">
+                                  {{ availability.location.address | format_address }}
+                                </address>
+                              {%- endif -%}
+                            </li>
+                          {%- endif -%}
+                        {%- endfor -%}
+                      </ul>
+                    </div>
+                  </details>
+                {%- else -%}
+                  <p class="pickup__unavailable">{{ 'products.pickup.unavailable' | t }}</p>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+
+          {%- when 'description' -%}
+            {%- if product.description != blank -%}
+              <div class="product__description rte" {{ block.shopify_attributes }}>
+                {{ product.description }}
+              </div>
+            {%- endif -%}
+
+          {%- when 'accordion' -%}
+            <details class="accordion" {{ block.shopify_attributes }}>
+              <summary class="accordion__summary">
+                {{ block.settings.heading }}
+                {% render 'icon', icon: 'chevron-down', class: 'accordion__chevron' %}
+              </summary>
+              <div class="accordion__body rte">{{ block.settings.content }}</div>
+            </details>
+
+          {%- when 'text' -%}
+            <div class="product__text rte" {{ block.shopify_attributes }}>
+              {{ block.settings.text }}
+            </div>
+
+          {%- when '@app' -%}
+            {% render block %}
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{%- comment -%}
+  Sticky buy bar. Revealed by <pinafore-sticky-atc> only once the real add to
+  cart button has scrolled out of view, so it never covers the control it
+  duplicates. Phones only — on desktop the info column is already sticky.
+{%- endcomment -%}
+{%- if section.settings.sticky_atc -%}
+  <pinafore-sticky-atc class="sticky-atc color-{{ section.settings.color_scheme }}" hidden>
+    <div class="sticky-atc__inner">
+      <div class="sticky-atc__detail">
+        <span class="sticky-atc__title">{{ product.title }}</span>
+        {% render 'price', product: current, context: 'line' %}
+      </div>
+      <button
+        class="button sticky-atc__button"
+        type="submit"
+        name="add"
+        form="{{ product_form_id }}"
+        {% unless current.available %}
+          disabled
+        {% endunless %}
+      >
+        {%- if current.available -%}
+          {{ 'products.add_to_cart' | t }}
+        {%- else -%}
+          {{ 'products.sold_out' | t }}
+        {%- endif -%}
+      </button>
+    </div>
+  </pinafore-sticky-atc>
+{%- endif -%}
+
+{% stylesheet %}
+  .product {
+    padding-block: var(--space-lg);
+  }
+
+  .product__layout {
+    display: grid;
+    gap: var(--space-lg);
+  }
+
+  .product__info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .product__vendor {
+    text-decoration: none;
+    align-self: flex-start;
+  }
+
+  .product__vendor:hover {
+    color: var(--color-foreground);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .product__title {
+    font-size: var(--text-2xl);
+    margin: 0;
+  }
+
+  .product__badges {
+    display: flex;
+    gap: var(--space-3xs);
+    flex-wrap: wrap;
+  }
+
+  .product__price {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+  }
+
+  .product__preorder-note {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: var(--text-xs);
+    color: var(--color-foreground-muted);
+  }
+
+  .product__buy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+
+  .product__qty {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+  }
+
+  .product__qty-input {
+    width: 5rem;
+    min-height: var(--tap-target);
+    padding-inline: var(--space-2xs);
+    border: var(--border-width) solid var(--color-border-control);
+    background-color: transparent;
+    color: var(--color-foreground);
+  }
+
+  .product__accelerated {
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .accordion {
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--color-border) 0 var(--seam-dash),
+      transparent var(--seam-dash) calc(var(--seam-dash) + var(--seam-gap))
+    );
+    background-repeat: no-repeat;
+    background-size: 100% var(--seam-weight);
+    background-position: top left;
+  }
+
+  .accordion__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2xs);
+    min-height: var(--tap-target);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .accordion__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .accordion__chevron {
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+
+  .accordion[open] .accordion__chevron {
+    transform: rotate(180deg);
+  }
+
+  .accordion__body {
+    padding-bottom: var(--space-sm);
+    font-size: var(--text-sm);
+    color: var(--color-foreground-muted);
+  }
+
+  /* ----------------------------------------------------- Sticky buy bar */
+  .sticky-atc {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: var(--z-header);
+    background-color: var(--color-background);
+    padding: var(--space-2xs) var(--space-sm);
+    padding-bottom: calc(var(--space-2xs) + env(safe-area-inset-bottom));
+    box-shadow: var(--shadow-lg);
+  }
+
+  .sticky-atc[hidden] {
+    display: none;
+  }
+
+  .sticky-atc__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+  }
+
+  .sticky-atc__detail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+  }
+
+  .sticky-atc__title {
+    font-family: var(--font-heading--family);
+    font-size: var(--text-base);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sticky-atc__button {
+    flex: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    .product__layout {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      gap: var(--space-xl);
+      align-items: start;
+    }
+
+    .product__info {
+      position: sticky;
+      /* Clears the sticky header without hardcoding its height. */
+      top: calc(4.5rem + var(--space-sm));
+    }
+
+    /* Desktop keeps the real button in view, so the duplicate is phone-only. */
+    .sticky-atc {
+      display: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.product",
+  "blocks": [
+    { "type": "@app" },
+    { "type": "vendor", "name": "t:general.vendor", "limit": 1 },
+    { "type": "title", "name": "t:labels.heading", "limit": 1 },
+    { "type": "badges", "name": "t:general.badges", "limit": 1 },
+    {
+      "type": "price",
+      "name": "t:general.price",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_preorder_note",
+          "label": "t:labels.show_preorder_note",
+          "info": "t:info.show_preorder_note",
+          "default": true
+        }
+      ]
+    },
+    { "type": "variant_picker", "name": "t:general.variant_picker", "limit": 1 },
+    {
+      "type": "buy_buttons",
+      "name": "t:general.buy_buttons",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_quantity",
+          "label": "t:labels.show_quantity",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "show_dynamic_checkout",
+          "label": "t:labels.show_accelerated_checkout",
+          "info": "t:info.show_accelerated_checkout",
+          "default": true
+        }
+      ]
+    },
+    { "type": "pickup", "name": "t:general.pickup", "limit": 1 },
+    { "type": "description", "name": "t:general.description", "limit": 1 },
+    {
+      "type": "accordion",
+      "name": "t:general.accordion",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:labels.heading",
+          "default": "Shipping and returns"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "t:labels.text"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "t:general.text",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "t:labels.text"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "sticky_atc",
+      "label": "t:labels.sticky_atc",
+      "info": "t:info.sticky_atc",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_size_guide",
+      "label": "t:labels.show_size_guide",
+      "info": "t:info.show_size_guide",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme_1"
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  }
+}
+{% endschema %}

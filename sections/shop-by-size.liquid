@@ -1,0 +1,198 @@
+{% comment %}
+  Shop by size.
+
+  A parent shops for one child, who is one size. Every visit starts with that
+  constraint, and making someone re-apply it through a filter on every
+  collection is the single biggest friction in children's apparel.
+
+  Each size links into a filtered collection URL, so it uses the store's real
+  filter data rather than requiring a hand-built collection per size.
+{% endcomment %}
+
+{% liquid
+  assign target = section.settings.collection | default: nil
+  if target
+    assign base_url = target.url
+  else
+    assign base_url = routes.all_products_collection_url
+  endif
+
+  assign filter_key = section.settings.filter_key | default: 'filter.v.option.size'
+%}
+
+<div class="sizes-band band color-{{ section.settings.color_scheme }} full-width section-spacing">
+  <div class="sizes band__inner">
+  <header class="sizes__header">
+    {%- if section.settings.eyebrow != blank -%}
+      <span class="eyebrow">{{ section.settings.eyebrow }}</span>
+    {%- endif -%}
+    {%- if section.settings.heading != blank -%}
+      <h2 class="sizes__heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+  </header>
+
+  <ul class="sizes__list" role="list">
+    {%- for block in section.blocks -%}
+      {%- liquid
+        assign label = block.settings.label
+        assign value = block.settings.value | default: label
+      -%}
+      <li {{ block.shopify_attributes }}>
+        <a class="sizes__chip" href="{{ base_url }}?{{ filter_key }}={{ value | url_encode }}">
+          <span class="sizes__chip-label">{{ label }}</span>
+          {%- if block.settings.caption != blank -%}
+            <span class="sizes__chip-caption">{{ block.settings.caption }}</span>
+          {%- endif -%}
+        </a>
+      </li>
+    {%- endfor -%}
+  </ul>
+</div>
+</div>
+
+{% stylesheet %}
+  .sizes {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .sizes__header {
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .sizes__heading {
+    margin: 0;
+  }
+
+  .sizes__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    /*
+     * Auto-fit rather than a fixed column count: a store might expose six
+     * sizes or eighteen, and the row should stay even either way.
+     */
+    grid-template-columns: repeat(auto-fit, minmax(5.5rem, 1fr));
+    gap: var(--space-2xs);
+  }
+
+  .sizes__chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.1rem;
+    min-height: 4.5rem;
+    padding: var(--space-2xs);
+    border: var(--border-width) solid var(--color-border-control);
+    border-radius: var(--radius-card);
+    text-decoration: none;
+    text-align: center;
+    transition: background-color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out);
+  }
+
+  .sizes__chip:hover {
+    background-color: var(--color-foreground);
+    color: var(--color-background);
+    border-color: var(--color-foreground);
+  }
+
+  .sizes__chip-label {
+    font-family: var(--font-heading--family);
+    font-size: var(--text-lg);
+    line-height: 1;
+  }
+
+  .sizes__chip-caption {
+    font-size: var(--text-2xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-foreground-muted);
+  }
+
+  .sizes__chip:hover .sizes__chip-caption {
+    color: inherit;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.shop_by_size",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:labels.eyebrow",
+      "default": "Find their fit"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "Shop by size"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:labels.collection",
+      "info": "t:info.size_collection"
+    },
+    {
+      "type": "text",
+      "id": "filter_key",
+      "label": "t:labels.filter_key",
+      "info": "t:info.filter_key",
+      "default": "filter.v.option.size"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme_3"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "size",
+      "name": "t:general.size",
+      "settings": [
+        { "type": "text", "id": "label", "label": "t:labels.label", "default": "2T" },
+        {
+          "type": "text",
+          "id": "value",
+          "label": "t:labels.filter_value",
+          "info": "t:info.filter_value"
+        },
+        { "type": "text", "id": "caption", "label": "t:labels.caption" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.shop_by_size",
+      "blocks": [
+        { "type": "size", "settings": { "label": "NB", "caption": "Newborn" } },
+        { "type": "size", "settings": { "label": "3M", "caption": "Baby" } },
+        { "type": "size", "settings": { "label": "6M", "caption": "Baby" } },
+        { "type": "size", "settings": { "label": "12M", "caption": "Baby" } },
+        { "type": "size", "settings": { "label": "18M", "caption": "Toddler" } },
+        { "type": "size", "settings": { "label": "2T", "caption": "Toddler" } },
+        { "type": "size", "settings": { "label": "3T", "caption": "Toddler" } },
+        { "type": "size", "settings": { "label": "4T", "caption": "Toddler" } },
+        { "type": "size", "settings": { "label": "5", "caption": "Little kid" } },
+        { "type": "size", "settings": { "label": "6", "caption": "Little kid" } },
+        { "type": "size", "settings": { "label": "7", "caption": "Big kid" } },
+        { "type": "size", "settings": { "label": "8", "caption": "Big kid" } }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  }
+}
+{% endschema %}

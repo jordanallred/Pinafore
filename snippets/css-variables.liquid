@@ -1,0 +1,244 @@
+{% doc %}
+  Emits every design token for the theme as CSS custom properties.
+
+  Two layers:
+  1. `:root` — typography scale, spacing, radii, layout and motion tokens
+     derived from global theme settings.
+  2. `.color-scheme_n` — one class per merchant-defined color scheme. Sections
+     and blocks opt in by rendering `class="color-{{ settings.color_scheme }}"`,
+     which re-points the color tokens for that subtree.
+
+  Colors are emitted twice: as a hex value for direct use, and as a space
+  separated RGB triplet so translucent variants can be composed with
+  `rgb(var(--color-foreground-rgb) / 0.6)` without hardcoding a second color.
+{% enddoc %}
+
+{% liquid
+  assign heading_font = settings.type_heading_font
+  assign body_font = settings.type_body_font
+
+  case settings.layout_density
+    when 'compact'
+      assign density = 0.75
+    when 'spacious'
+      assign density = 1.25
+    else
+      assign density = 1
+  endcase
+
+  case settings.style_corners
+    when 'sharp'
+      assign radius_control = 0
+      assign radius_card = 0
+      assign radius_media = 0
+    when 'round'
+      assign radius_control = 999
+      assign radius_card = 16
+      assign radius_media = 12
+    else
+      assign radius_control = 4
+      assign radius_card = 6
+      assign radius_media = 4
+  endcase
+
+  if settings.style_button_shape == 'pill'
+    assign radius_button = 999
+  else
+    assign radius_button = radius_control
+  endif
+
+  case settings.style_media_ratio
+    when 'square'
+      assign media_ratio = '1 / 1'
+    when 'portrait'
+      assign media_ratio = '3 / 4'
+    else
+      assign media_ratio = 'auto'
+  endcase
+
+  if settings.type_eyebrow_font == 'heading'
+    assign eyebrow_family = 'var(--font-heading--family)'
+  else
+    assign eyebrow_family = 'var(--font-body--family)'
+  endif
+%}
+
+{% style %}
+  {{ body_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
+  {{ body_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+  {{ body_font | font_modify: 'weight', 'bold' | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ heading_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
+  {{ heading_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+
+  :root {
+    /* Typography ---------------------------------------------------- */
+    --font-body--family: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --font-body--style: {{ body_font.style }};
+    --font-body--weight: {{ body_font.weight }};
+    --font-body--weight-bold: {{ body_font.weight | plus: 300 | at_most: 900 }};
+
+    --font-heading--family: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --font-heading--style: {{ heading_font.style }};
+    --font-heading--weight: {{ heading_font.weight }};
+
+    --font-eyebrow--family: {{ eyebrow_family }};
+
+    --font-size-base: {{ settings.type_body_size }}px;
+    --heading-scale: {{ settings.type_heading_scale | divided_by: 100.0 }};
+    --heading-case: {{ settings.type_heading_case }};
+    --heading-letter-spacing: {{ settings.type_heading_letter_spacing | divided_by: 100.0 }}em;
+
+    /*
+     * Fluid type. Each step interpolates between a mobile and a desktop size
+     * across the viewport, so no breakpoint-specific font sizing is needed.
+     * Headings are additionally multiplied by the merchant's heading scale.
+     */
+    --text-2xs: clamp(0.6875rem, 0.66rem + 0.14vw, 0.75rem);
+    --text-xs: clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem);
+    --text-sm: clamp(0.8125rem, 0.79rem + 0.16vw, 0.875rem);
+    --text-base: clamp(0.9375rem, 0.91rem + 0.17vw, 1rem);
+    --text-md: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+    --text-lg: calc(clamp(1.125rem, 1.05rem + 0.4vw, 1.375rem) * var(--heading-scale));
+    --text-xl: calc(clamp(1.375rem, 1.22rem + 0.75vw, 1.875rem) * var(--heading-scale));
+    --text-2xl: calc(clamp(1.75rem, 1.44rem + 1.5vw, 2.75rem) * var(--heading-scale));
+    --text-3xl: calc(clamp(2.125rem, 1.6rem + 2.6vw, 4rem) * var(--heading-scale));
+    --text-4xl: calc(clamp(2.5rem, 1.6rem + 4.5vw, 5.5rem) * var(--heading-scale));
+
+    --leading-tight: 1.1;
+    --leading-snug: 1.25;
+    --leading-normal: 1.6;
+    --leading-relaxed: 1.75;
+
+    --tracking-eyebrow: 0.12em;
+
+    /* Spacing ------------------------------------------------------- */
+    --density: {{ density }};
+    --space-3xs: calc(0.25rem * var(--density));
+    --space-2xs: calc(0.5rem * var(--density));
+    --space-xs: calc(0.75rem * var(--density));
+    --space-sm: calc(1rem * var(--density));
+    --space-md: calc(1.5rem * var(--density));
+    --space-lg: calc(2.25rem * var(--density));
+    --space-xl: calc(3.5rem * var(--density));
+    --space-2xl: calc(5rem * var(--density));
+    --space-3xl: calc(7.5rem * var(--density));
+
+    /*
+     * HALF the gap between two sections, not the whole gap.
+     *
+     * Sections sit flush against each other, so each contributes its own
+     * padding to the same boundary and the visible gap is always double this
+     * value. At the previous 4rem cap and spacious density that meant 80px a
+     * side — a 160px void between every section, and a shop-by-size band that
+     * was 160px of padding around 179px of content.
+     */
+    --section-spacing: calc(clamp(1.5rem, 1rem + 1.8vw, 2.5rem) * var(--density));
+
+    /* Layout -------------------------------------------------------- */
+    --page-width: {{ settings.max_page_width }};
+    --page-margin: {{ settings.min_page_margin }}px;
+
+    /* Shape --------------------------------------------------------- */
+    --radius-control: {{ radius_control }}px;
+    --radius-button: {{ radius_button }}px;
+    --radius-card: {{ radius_card }}px;
+    --radius-media: {{ radius_media }}px;
+    --radius-full: 999px;
+    --media-ratio: {{ media_ratio }};
+
+    /* Skeleton's base reset references this name for inputs. */
+    --style-border-radius-inputs: var(--radius-control);
+
+    /* Controls ------------------------------------------------------ */
+    --control-height: 2.75rem;
+    --control-height-sm: 2.25rem;
+    /*
+     * Minimum interactive target. 44px is the WCAG 2.5.5 / iOS HIG floor and
+     * is enforced on every tappable element in the theme.
+     */
+    --tap-target: 44px;
+    --border-width: 1px;
+
+    /* Motion -------------------------------------------------------- */
+    --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --duration-fast: 150ms;
+    --duration-base: 250ms;
+    --duration-slow: 400ms;
+
+    /*
+     * Seam ----------------------------------------------------------
+     * The theme's signature and its only structural divider: a stitched
+     * rule, drawn as a dashed gradient rather than a solid border.
+     *
+     * A pinafore is a sewn garment, and this store frames roughly 60 other
+     * brands' photography — the chrome has to recede far enough that none of
+     * them clash. A seam is quieter than a rule while still being unmistakably
+     * this theme. It costs no images and no JavaScript, and because
+     * --color-border is tinted toward the accent, it reads as indigo thread
+     * running across cotton.
+     */
+    --seam-dash: 7px;
+    --seam-gap: 6px;
+    --seam-weight: 1px;
+
+    /* Elevation ----------------------------------------------------- */
+    --shadow-sm: 0 1px 2px rgb(var(--color-shadow-rgb) / 0.06);
+    --shadow-md: 0 4px 16px -4px rgb(var(--color-shadow-rgb) / 0.12);
+    --shadow-lg: 0 16px 48px -12px rgb(var(--color-shadow-rgb) / 0.18);
+
+    --z-header: 100;
+    --z-overlay: 200;
+    --z-drawer: 300;
+  }
+
+  {% comment %}
+    One class per color scheme. The first scheme is also bound to `:root` so
+    that unscoped elements (dialogs, the body background) have valid tokens.
+  {% endcomment %}
+  {% for scheme in settings.color_schemes -%}
+    {%- if forloop.first %}:root,{% endif %}
+    .color-{{ scheme.id }} {
+      --color-background: {{ scheme.settings.background }};
+      --color-background-rgb: {{ scheme.settings.background.red }} {{ scheme.settings.background.green }} {{ scheme.settings.background.blue }};
+      {% if scheme.settings.background_gradient != blank -%}
+        --gradient-background: {{ scheme.settings.background_gradient }};
+      {%- else -%}
+        --gradient-background: {{ scheme.settings.background }};
+      {%- endif %}
+
+      --color-foreground: {{ scheme.settings.text }};
+      --color-foreground-rgb: {{ scheme.settings.text.red }} {{ scheme.settings.text.green }} {{ scheme.settings.text.blue }};
+      --color-foreground-muted: {{ scheme.settings.text_muted }};
+
+      --color-button: {{ scheme.settings.button }};
+      --color-button-foreground: {{ scheme.settings.button_label }};
+      --color-button-secondary-foreground: {{ scheme.settings.secondary_button_label }};
+
+      --color-accent: {{ scheme.settings.accent }};
+      --color-accent-rgb: {{ scheme.settings.accent.red }} {{ scheme.settings.accent.green }} {{ scheme.settings.accent.blue }};
+      --color-accent-foreground: {{ scheme.settings.accent_label }};
+
+      /*
+       * Semantic, deliberately separate from the brand accent: a store can
+       * rebrand the accent to any hue without the sale signal following it and
+       * losing its meaning. Used as text, so it is held to 4.5:1.
+       */
+      --color-sale: {{ scheme.settings.sale }};
+      --color-sale-rgb: {{ scheme.settings.sale.red }} {{ scheme.settings.sale.green }} {{ scheme.settings.sale.blue }};
+
+      /* Decorative hairlines. Not held to WCAG 1.4.11 — see check-contrast.py */
+      --color-border: {{ scheme.settings.border }};
+      /* Interactive control boundaries. Held to 3:1 against the background. */
+      --color-border-control: {{ scheme.settings.border_control }};
+      --color-focus-ring: {{ scheme.settings.accent }};
+
+      --color-shadow-rgb: {{ scheme.settings.shadow.red }} {{ scheme.settings.shadow.green }} {{ scheme.settings.shadow.blue }};
+
+      color: var(--color-foreground);
+      background-color: var(--color-background);
+    }
+  {%- endfor %}
+{% endstyle %}

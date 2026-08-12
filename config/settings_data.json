@@ -1,0 +1,124 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "current": {
+    "color_schemes": {
+      "scheme_1": {
+        "settings": {
+          "background": "#FBF6F0",
+          "background_gradient": "",
+          "text": "#2F2823",
+          "text_muted": "#6E635A",
+          "button": "#2F2823",
+          "button_label": "#FBF6F0",
+          "secondary_button_label": "#2F2823",
+          "accent": "#35506E",
+          "accent_label": "#FFFFFF",
+          "sale": "#9A3B2B",
+          "border": "#E6DCD0",
+          "border_control": "#8A7F73",
+          "shadow": "#2F2823"
+        }
+      },
+      "scheme_2": {
+        "settings": {
+          "background": "#2F2823",
+          "background_gradient": "",
+          "text": "#F6F1EA",
+          "text_muted": "#B5A99C",
+          "button": "#F6F1EA",
+          "button_label": "#2F2823",
+          "secondary_button_label": "#F6F1EA",
+          "accent": "#E8CBAE",
+          "accent_label": "#2F2823",
+          "sale": "#EE9781",
+          "border": "#463D35",
+          "border_control": "#8E8175",
+          "shadow": "#000000"
+        }
+      },
+      "scheme_3": {
+        "settings": {
+          "background": "#F7E9E4",
+          "background_gradient": "",
+          "text": "#3A2C28",
+          "text_muted": "#6F5D57",
+          "button": "#3A2C28",
+          "button_label": "#F7E9E4",
+          "secondary_button_label": "#3A2C28",
+          "accent": "#35506E",
+          "accent_label": "#FFFFFF",
+          "sale": "#9A3B2B",
+          "border": "#E8D3CC",
+          "border_control": "#8C7770",
+          "shadow": "#3A2C28"
+        }
+      },
+      "scheme_4": {
+        "settings": {
+          "background": "#49584A",
+          "background_gradient": "",
+          "text": "#F4F2EB",
+          "text_muted": "#C6CFC3",
+          "button": "#F4F2EB",
+          "button_label": "#49584A",
+          "secondary_button_label": "#F4F2EB",
+          "accent": "#E8CBAE",
+          "accent_label": "#2F2823",
+          "sale": "#F6BCAB",
+          "border": "#5E6E5F",
+          "border_control": "#A3B2A2",
+          "shadow": "#232B24"
+        }
+      },
+      "scheme_5": {
+        "settings": {
+          "background": "#FFFFFF",
+          "background_gradient": "",
+          "text": "#2F2823",
+          "text_muted": "#665C53",
+          "button": "#2F2823",
+          "button_label": "#FFFFFF",
+          "secondary_button_label": "#2F2823",
+          "accent": "#35506E",
+          "accent_label": "#FFFFFF",
+          "sale": "#9A3B2B",
+          "border": "#EDE5DC",
+          "border_control": "#8A7F73",
+          "shadow": "#2F2823"
+        }
+      }
+    },
+    "type_heading_font": "playfair_display_n4",
+    "type_body_font": "karla_n4",
+    "type_body_size": 16,
+    "type_heading_scale": 115,
+    "type_heading_case": "none",
+    "type_heading_letter_spacing": -1,
+    "type_eyebrow_font": "body",
+    "max_page_width": "90rem",
+    "min_page_margin": 20,
+    "layout_density": "spacious",
+    "style_corners": "round",
+    "style_button_shape": "pill",
+    "style_media_ratio": "square",
+    "card_show_vendor": true,
+    "card_show_second_image": true,
+    "card_show_swatches": true,
+    "card_show_quick_add": true,
+    "card_show_sale_badge": true,
+    "card_show_preorder_badge": true,
+    "card_show_sold_out_badge": true,
+    "motion_reveal": true,
+    "motion_image_zoom": true,
+    "search_predictive_enabled": true,
+    "search_show_vendors": true
+  }
+}

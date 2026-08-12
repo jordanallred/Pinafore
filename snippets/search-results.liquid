@@ -1,0 +1,78 @@
+{% doc %}
+  Search results grid.
+
+  Separate from `product-grid` because search returns mixed object types —
+  products, pages and articles in one list. Products get the full card;
+  everything else gets a text result, so a page about sizing does not
+  masquerade as something purchasable.
+
+  @param {object} results - search.results
+  @param {number} [columns] - Desktop column count; defaults to 4
+
+  @example
+  {% render 'search-results', results: search.results, columns: 4 %}
+{% enddoc %}
+
+<ul class="search-results" style="--grid-columns: {{ columns | default: 4 }};" role="list">
+  {%- for item in results -%}
+    <li>
+      {%- if item.object_type == 'product' -%}
+        {% render 'product-card',
+          product: item,
+          sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw',
+          lazy: forloop.first
+        %}
+      {%- else -%}
+        <article class="search-result">
+          <span class="search-result__kind">{{ item.object_type }}</span>
+          <h2 class="search-result__title">
+            <a href="{{ item.url }}">{{ item.title }}</a>
+          </h2>
+          <p class="search-result__excerpt">
+            {{ item.content | strip_html | truncatewords: 28 }}
+          </p>
+        </article>
+      {%- endif -%}
+    </li>
+  {%- endfor -%}
+</ul>
+
+{% stylesheet %}
+  .search-results {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-md) var(--space-sm);
+  }
+
+  @media screen and (min-width: 750px) {
+    .search-results {
+      grid-template-columns: repeat(var(--grid-columns, 4), minmax(0, 1fr));
+    }
+  }
+
+  .search-result {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+  }
+
+  .search-result__kind {
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-foreground-muted);
+  }
+
+  .search-result__title {
+    font-size: var(--text-lg);
+    margin: 0;
+  }
+
+  .search-result__excerpt {
+    font-size: var(--text-sm);
+    color: var(--color-foreground-muted);
+  }
+{% endstylesheet %}

@@ -1,0 +1,102 @@
+{% comment %}
+  Search results. Reuses the collection's facets and card so a filtered search
+  behaves identically to a filtered collection.
+{% endcomment %}
+
+{% paginate search.results by section.settings.per_page %}
+  <div class="search-page color-{{ section.settings.color_scheme }}" data-results>
+    <header class="search-page__header">
+      <h1 class="search-page__title">
+        {%- if search.performed -%}
+          {{ 'search.results_for_html' | t: count: search.results_count, terms: search.terms }}
+        {%- else -%}
+          {{ 'search.title' | t }}
+        {%- endif -%}
+      </h1>
+    </header>
+
+    <form class="search-page__form" action="{{ routes.search_url }}" method="get" role="search">
+      <input type="hidden" name="options[prefix]" value="last">
+      <label class="visually-hidden" for="SearchPageInput">{{ 'search.title' | t }}</label>
+      <input
+        class="field search-page__input"
+        id="SearchPageInput"
+        type="search"
+        name="q"
+        value="{{ search.terms | escape }}"
+        placeholder="{{ 'search.placeholder' | t }}"
+      >
+      <button class="button" type="submit">{{ 'search.submit' | t }}</button>
+    </form>
+
+    {%- if search.performed -%}
+      {%- if search.filters.size > 0 -%}
+        {% render 'facets', results: search, section: section %}
+      {%- endif -%}
+
+      {%- if search.results.size > 0 -%}
+        {% render 'search-results', results: search.results, columns: section.settings.columns %}
+        {%- if paginate.pages > 1 -%}
+          {% render 'pagination', paginate: paginate %}
+        {%- endif -%}
+      {%- else -%}
+        <p class="search-page__empty">{{ 'search.no_results_html' | t: terms: search.terms }}</p>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+{% endpaginate %}
+
+{% stylesheet %}
+  .search-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding-block: var(--space-lg);
+  }
+
+  .search-page__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+
+  .search-page__title {
+    margin: 0;
+  }
+
+  .search-page__empty {
+    color: var(--color-foreground-muted);
+    padding-block: var(--space-xl);
+  }
+
+  .search-page__form {
+    display: flex;
+    gap: var(--space-2xs);
+    flex-wrap: wrap;
+    max-width: 34rem;
+  }
+
+  .search-page__input {
+    flex: 1 1 14rem;
+    min-height: var(--tap-target);
+    padding-inline: var(--space-2xs);
+    border: var(--border-width) solid var(--color-border-control);
+    background-color: transparent;
+    color: var(--color-foreground);
+  }
+
+
+
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.search",
+  "settings": [
+    { "type": "range", "id": "columns", "label": "t:labels.columns_desktop", "min": 2, "max": 5, "step": 1, "default": 4 },
+    { "type": "range", "id": "per_page", "label": "t:labels.per_page", "min": 8, "max": 48, "step": 4, "default": 24 },
+    { "type": "color_scheme", "id": "color_scheme", "label": "t:labels.color_scheme", "default": "scheme_1" }
+  ],
+  "disabled_on": { "groups": ["header", "footer"] }
+}
+{% endschema %}

@@ -1,0 +1,130 @@
+{% doc %}
+  Mobile navigation drawer.
+
+  Nested levels are <details> elements rather than a sliding panel stack: it
+  keeps a parent's position visible while a child is open, needs no JavaScript
+  to work, and never traps someone three levels deep with no way back.
+
+  @param {object} menu - The header's link_list
+  @param {object} section - The header section, for the color scheme
+{% enddoc %}
+
+<dialog
+  class="drawer drawer--start color-{{ section.settings.color_scheme }}"
+  id="NavDrawer"
+  scroll-lock
+  aria-modal="true"
+  aria-labelledby="NavDrawerTitle"
+>
+  <div class="drawer__panel">
+    <div class="drawer__header">
+      <span class="drawer__title" id="NavDrawerTitle">{{ 'accessibility.menu' | t }}</span>
+      <button class="button button--icon" type="button" data-drawer-close>
+        {% render 'icon', icon: 'close' %}
+        <span class="visually-hidden">{{ 'accessibility.close' | t }}</span>
+      </button>
+    </div>
+
+    <div class="drawer__body">
+      <ul class="nav-drawer__list" role="list">
+        {%- for link in menu.links -%}
+          <li>
+            {%- if link.links.size > 0 -%}
+              <details class="nav-drawer__group">
+                <summary class="nav-drawer__row">
+                  {{ link.title }}
+                  {% render 'icon', icon: 'chevron-down', class: 'nav-drawer__chevron' %}
+                </summary>
+                <ul class="nav-drawer__sublist" role="list">
+                  {%- for child in link.links -%}
+                    <li>
+                      {%- if child.links.size > 0 -%}
+                        <details class="nav-drawer__group">
+                          <summary class="nav-drawer__row nav-drawer__row--sub">
+                            {{ child.title }}
+                            {% render 'icon', icon: 'chevron-down', class: 'nav-drawer__chevron' %}
+                          </summary>
+                          <ul class="nav-drawer__sublist" role="list">
+                            {%- for grandchild in child.links -%}
+                              <li>
+                                <a class="nav-drawer__row nav-drawer__row--sub" href="{{ grandchild.url }}">
+                                  {{ grandchild.title }}
+                                </a>
+                              </li>
+                            {%- endfor -%}
+                          </ul>
+                        </details>
+                      {%- else -%}
+                        <a class="nav-drawer__row nav-drawer__row--sub" href="{{ child.url }}">
+                          {{ child.title }}
+                        </a>
+                      {%- endif -%}
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              </details>
+            {%- else -%}
+              <a class="nav-drawer__row" href="{{ link.url }}">{{ link.title }}</a>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+
+    {%- if shop.customer_accounts_enabled -%}
+      <div class="drawer__footer">
+        <a class="button button--secondary button--full" href="{{ routes.account_url }}">
+          {% render 'icon', icon: 'account' %}
+          {{ 'customers.login.title' | t }}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</dialog>
+
+{% stylesheet %}
+  .nav-drawer__list,
+  .nav-drawer__sublist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-drawer__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    /* Full-width rows at the tap-target height: the whole row is the target. */
+    min-height: var(--tap-target);
+    padding-block: var(--space-2xs);
+    font-family: var(--font-heading--family);
+    font-size: var(--text-lg);
+    text-decoration: none;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .nav-drawer__row::-webkit-details-marker {
+    display: none;
+  }
+
+  .nav-drawer__row--sub {
+    font-family: var(--font-body--family);
+    font-size: var(--text-base);
+    color: var(--color-foreground-muted);
+  }
+
+  .nav-drawer__sublist {
+    padding-inline-start: var(--space-sm);
+    padding-bottom: var(--space-2xs);
+  }
+
+  .nav-drawer__chevron {
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+
+  .nav-drawer__group[open] > .nav-drawer__row > .nav-drawer__chevron {
+    transform: rotate(180deg);
+  }
+{% endstylesheet %}

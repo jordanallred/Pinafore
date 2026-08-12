@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="{{ settings.color_schemes.scheme_1.settings.background }}">
+    <link rel="canonical" href="{{ canonical_url }}">
+
+    {% if settings.favicon != blank %}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+      <link rel="apple-touch-icon" href="{{ settings.favicon | image_url: width: 180, height: 180 }}">
+    {% endif %}
+
+    {% # Inlined design tokens. Must precede any stylesheet that consumes them. %}
+    {% render 'css-variables' %}
+
+    {% comment %}
+      Font preloading:
+      1. Preconnect to the font CDN so the handshake overlaps with HTML parsing.
+      2. Preload only the two base variants actually used above the fold.
+         Bold and italic variants load on demand via the @font-face rules
+         emitted in css-variables.
+    {% endcomment %}
+    {% liquid
+      assign preconnect_fonts = false
+      unless settings.type_body_font.system? and settings.type_heading_font.system?
+        assign preconnect_fonts = true
+      endunless
+    %}
+    {%- if preconnect_fonts -%}
+      <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+    {%- endif -%}
+    {%- unless settings.type_body_font.system? -%}
+      {{ settings.type_body_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
+    {%- endunless -%}
+    {%- unless settings.type_heading_font.system? -%}
+      {{ settings.type_heading_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
+    {%- endunless -%}
+
+    {% # Load and preload the critical CSS %}
+    {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
+
+    {% # Social, title, etc. %}
+    {% render 'meta-tags' %}
+
+    {{ content_for_header }}
+  </head>
+
+  <body class="template-{{ request.page_type | handle }}">
+    <a class="skip-to-content" href="#MainContent">{{ 'accessibility.skip_to_content' | t }}</a>
+
+    {% sections 'header-group' %}
+
+    <main id="MainContent" role="main" tabindex="-1">
+      {{ content_for_layout }}
+    </main>
+
+    {% sections 'footer-group' %}
+
+    {% comment %}
+      Rendered at the layout level because it is a section (so the Section
+      Rendering API can refresh it) and sections cannot be nested inside the
+      header section that opens it.
+    {% endcomment %}
+    {% section 'cart-drawer' %}
+
+    <script src="{{ 'pinafore.js' | asset_url }}" defer></script>
+  </body>
+</html>

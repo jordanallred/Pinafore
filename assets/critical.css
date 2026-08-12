@@ -1,0 +1,612 @@
+/**
+ * Critical CSS. Loaded on every page and preloaded in theme.liquid, so it is
+ * deliberately limited to the reset, the type system, layout primitives, and
+ * the handful of components that appear above the fold on every template.
+ * Component-specific styles live in {% stylesheet %} blocks next to their
+ * section or snippet, which Shopify concatenates into a separate bundle.
+ */
+
+/* ---------------------------------------------------------------- Reset */
+/* Inspired by https://www.joshwcomeau.com/css/custom-css-reset/ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  min-height: 100svh;
+}
+
+html:has(dialog[scroll-lock][open], details[scroll-lock][open]) {
+  overflow: hidden;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+  color: inherit;
+}
+
+input,
+textarea,
+select {
+  border-radius: var(--style-border-radius-inputs);
+}
+
+select {
+  background-color: var(--color-background);
+  color: currentcolor;
+}
+
+dialog {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  border: 0;
+  padding: 0;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+p:empty {
+  display: none;
+}
+
+:is(p, h1, h2, h3, h4, h5, h6):first-child,
+:empty:first-child + :where(p, h1, h2, h3, h4, h5, h6) {
+  margin-block-start: 0;
+}
+
+:is(p, h1, h2, h3, h4, h5, h6):last-child,
+:where(p, h1, h2, h3, h4, h5, h6) + :has(+ :empty:last-child) {
+  margin-block-end: 0;
+}
+
+/* ----------------------------------------------------------- Typography */
+body {
+  font-family: var(--font-body--family);
+  font-style: var(--font-body--style);
+  font-weight: var(--font-body--weight);
+  font-size: var(--font-size-base);
+  line-height: var(--leading-normal);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4 {
+  font-family: var(--font-heading--family);
+  font-style: var(--font-heading--style);
+  font-weight: var(--font-heading--weight);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--heading-letter-spacing);
+  text-transform: var(--heading-case);
+  text-wrap: balance;
+}
+
+h1,
+.h1 {
+  font-size: var(--text-3xl);
+}
+h2,
+.h2 {
+  font-size: var(--text-2xl);
+}
+h3,
+.h3 {
+  font-size: var(--text-xl);
+}
+h4,
+.h4 {
+  font-size: var(--text-lg);
+}
+h5 {
+  font-size: var(--text-md);
+}
+h6 {
+  font-size: var(--text-base);
+}
+
+.text-display {
+  font-family: var(--font-heading--family);
+  font-size: var(--text-4xl);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--heading-letter-spacing);
+  text-wrap: balance;
+}
+
+/*
+ * Eyebrow: the small tracked-out label above a heading. Uppercase plus wide
+ * tracking is only legible at a heavier weight, so it never inherits the
+ * display serif's light weight.
+ */
+.eyebrow {
+  font-family: var(--font-eyebrow--family);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  line-height: var(--leading-snug);
+  color: var(--color-foreground-muted);
+}
+
+.text-muted {
+  color: var(--color-foreground-muted);
+}
+
+.text-sm {
+  font-size: var(--text-sm);
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+/* ------------------------------------------------------------- A11y */
+
+/*
+ * A single, consistent focus indicator for the whole theme. `:focus-visible`
+ * keeps it off mouse clicks but guarantees it for keyboard users. The offset
+ * ring is drawn in the scheme's accent color, validated at 3:1 against every
+ * scheme background (WCAG 1.4.11).
+ */
+:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Only suppress the default ring where a visible :focus-visible ring replaces it. */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/*
+ * Windows High Contrast / forced-colors overrides author colors, so the
+ * accent ring silently disappears there. LinkText is a system color that
+ * survives the override.
+ */
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 3px solid LinkText;
+  }
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-to-content:not(:focus) {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-to-content:focus {
+  position: fixed;
+  top: var(--space-sm);
+  left: var(--space-sm);
+  z-index: calc(var(--z-drawer) + 10);
+  padding: var(--space-2xs) var(--space-sm);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  border: var(--border-width) solid var(--color-border-control);
+  border-radius: var(--radius-control);
+  text-decoration: none;
+}
+
+/* ---------------------------------------------------------- Section layout */
+
+/**
+ * A grid that supports both constrained and full-bleed children.
+ *
+ * By default a minimum margin is held on each side and content is centered
+ * without exceeding the maximum page width. A child with `.full-width`
+ * escapes to span the entire viewport.
+ */
+.shopify-section {
+  --content-width: min(
+    calc(var(--page-width) - var(--page-margin) * 2),
+    calc(100% - var(--page-margin) * 2)
+  );
+  --content-margin: minmax(var(--page-margin), 1fr);
+  --content-grid: var(--content-margin) var(--content-width) var(--content-margin);
+
+  /* Required to let <img> elements act as background images. */
+  position: relative;
+  grid-template-columns: var(--content-grid);
+  display: grid;
+  width: 100%;
+}
+
+.shopify-section > * {
+  grid-column: 2;
+}
+
+.shopify-section > .full-width {
+  grid-column: 1 / -1;
+}
+
+/* Nested full-bleed children re-establish the same grid for their own content. */
+.content-grid {
+  display: grid;
+  grid-template-columns: var(--content-grid);
+}
+
+.content-grid > * {
+  grid-column: 2;
+}
+
+.content-grid > .full-width {
+  grid-column: 1 / -1;
+}
+
+.section-spacing {
+  padding-block: var(--section-spacing);
+}
+
+/**
+ * A full-bleed band with inset content.
+ *
+ * A section that paints a background MUST be full-bleed. Applying a colour
+ * scheme to an element sitting in the section's content column paints only
+ * that column, which renders as a floating rectangle with the page ground
+ * either side rather than as a band. Every scheme-bearing section on the
+ * homepage had this.
+ *
+ * Usage: `.band` carries the scheme and spans the viewport; `.band__inner`
+ * holds the content to the same column as the header and footer.
+ */
+.band {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+.band__inner {
+  width: min(
+    calc(var(--page-width) - var(--page-margin) * 2),
+    calc(100% - var(--page-margin) * 2)
+  );
+  margin-inline: auto;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* ------------------------------------------------------------- Buttons */
+.button {
+  /* Meets the 44px tap floor without forcing visually oversized buttons. */
+  min-height: var(--tap-target);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2xs);
+  padding: var(--space-2xs) var(--space-md);
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius-button);
+  font-family: var(--font-body--family);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: var(--leading-snug);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  background-color: var(--color-button);
+  color: var(--color-button-foreground);
+  transition: opacity var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.button:hover {
+  opacity: 0.85;
+}
+
+.button:disabled,
+.button[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button--secondary {
+  background-color: transparent;
+  color: var(--color-button-secondary-foreground);
+  border-color: var(--color-border-control);
+}
+
+.button--secondary:hover {
+  opacity: 1;
+  background-color: rgb(var(--color-foreground-rgb) / 0.06);
+}
+
+.button--accent {
+  background-color: var(--color-accent);
+  color: var(--color-accent-foreground);
+}
+
+.button--full {
+  width: 100%;
+}
+
+/*
+ * Icon-only controls. Padding is zeroed and replaced by a square tap target so
+ * a 20px icon still presents a 44px hit area.
+ */
+.button--icon {
+  padding: 0;
+  min-width: var(--tap-target);
+  background: none;
+  border-color: transparent;
+  color: inherit;
+}
+
+.button--icon:hover {
+  opacity: 1;
+  background-color: rgb(var(--color-foreground-rgb) / 0.06);
+}
+
+/* ---------------------------------------------------------------- Seam */
+
+/**
+ * The stitched rule. Used everywhere this theme would otherwise reach for a
+ * 1px solid border: under the header, between collection rows, around the
+ * brand directory, between product accordions.
+ *
+ * Drawn as a repeating gradient so a single element carries it — no
+ * pseudo-element, no image request. `.seam` is a standalone divider;
+ * `.seam-block-end` and friends stitch one edge of an existing element.
+ */
+.seam,
+.seam-block-start,
+.seam-block-end {
+  --seam-image: repeating-linear-gradient(
+    90deg,
+    var(--color-border) 0 var(--seam-dash),
+    transparent var(--seam-dash) calc(var(--seam-dash) + var(--seam-gap))
+  );
+}
+
+.seam {
+  height: var(--seam-weight);
+  border: 0;
+  background-image: var(--seam-image);
+}
+
+/* Backgrounds compose, so an edge seam never fights an element's own fill. */
+.seam-block-end {
+  background-image: var(--seam-image);
+  background-repeat: no-repeat;
+  background-size: 100% var(--seam-weight);
+  background-position: bottom left;
+}
+
+.seam-block-start {
+  background-image: var(--seam-image);
+  background-repeat: no-repeat;
+  background-size: 100% var(--seam-weight);
+  background-position: top left;
+}
+
+/* Vertical run, for column rules and drawer edges. */
+.seam--vertical {
+  width: var(--seam-weight);
+  height: auto;
+  background-image: repeating-linear-gradient(
+    0deg,
+    var(--color-border) 0 var(--seam-dash),
+    transparent var(--seam-dash) calc(var(--seam-dash) + var(--seam-gap))
+  );
+}
+
+/* --------------------------------------------------------------- Media */
+.media {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-media);
+  background-color: rgb(var(--color-foreground-rgb) / 0.04);
+}
+
+.media--ratio {
+  aspect-ratio: var(--media-ratio);
+}
+
+.media--ratio > img,
+.media--ratio > svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* -------------------------------------------------------------- Drawers */
+
+/**
+ * All three drawers (navigation, search, cart) are native <dialog> elements
+ * opened with showModal(). That buys the focus trap, the Escape handler, the
+ * inert background and the top-layer stacking for free — no JS of ours, and
+ * far more reliable than hand-rolling any of it.
+ */
+.drawer {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  overflow: hidden;
+}
+
+.drawer::backdrop {
+  background-color: rgb(0 0 0 / 0.4);
+}
+
+.drawer__panel {
+  position: absolute;
+  inset-block: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(26rem, 100%);
+  max-height: 100%;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  box-shadow: var(--shadow-lg);
+}
+
+.drawer--start .drawer__panel {
+  inset-inline-start: 0;
+}
+.drawer--end .drawer__panel {
+  inset-inline-end: 0;
+}
+
+/* Search reads as a sheet dropping from the top, not a side drawer. */
+.drawer--top .drawer__panel {
+  inset: 0 0 auto 0;
+  width: 100%;
+  max-height: min(85svh, 44rem);
+}
+
+.drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--color-border) 0 var(--seam-dash),
+    transparent var(--seam-dash) calc(var(--seam-dash) + var(--seam-gap))
+  );
+  background-repeat: no-repeat;
+  background-size: 100% var(--seam-weight);
+  background-position: bottom left;
+}
+
+.drawer__title {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+}
+
+.drawer__body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--space-md);
+}
+
+.drawer__footer {
+  padding: var(--space-md);
+  /* Keeps the checkout button clear of the iOS home indicator. */
+  padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom));
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--color-border) 0 var(--seam-dash),
+    transparent var(--seam-dash) calc(var(--seam-dash) + var(--seam-gap))
+  );
+  background-repeat: no-repeat;
+  background-size: 100% var(--seam-weight);
+  background-position: top left;
+}
+
+/* Slide in, but only where the viewer hasn't asked for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .drawer[open] .drawer__panel {
+    animation: drawer-in var(--duration-base) var(--ease-out);
+  }
+  .drawer--start[open] .drawer__panel {
+    animation-name: drawer-in-start;
+  }
+  .drawer--top[open] .drawer__panel {
+    animation-name: drawer-in-top;
+  }
+  @keyframes drawer-in {
+    from { transform: translateX(100%); }
+  }
+  @keyframes drawer-in-start {
+    from { transform: translateX(-100%); }
+  }
+  @keyframes drawer-in-top {
+    from { transform: translateY(-100%); }
+  }
+}
+
+/* --------------------------------------------------------------- Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

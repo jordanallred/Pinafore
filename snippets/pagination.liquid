@@ -1,0 +1,93 @@
+{% doc %}
+  Numbered pagination.
+
+  Deliberately numbered links rather than infinite scroll: a paginated
+  collection is crawlable, linkable, and lets someone return to where they
+  were. Infinite scroll also makes the footer — where shipping, sizing and
+  contact live — effectively unreachable.
+
+  @param {object} paginate - The paginate object
+{% enddoc %}
+
+<nav class="pagination" aria-label="{{ 'general.pagination' | t }}">
+  <ul class="pagination__list" role="list">
+    {%- if paginate.previous -%}
+      <li>
+        <a class="pagination__link" href="{{ paginate.previous.url }}" rel="prev">
+          {% render 'icon', icon: 'chevron-left', size: '1rem' %}
+          <span class="visually-hidden">{{ 'general.previous' | t }}</span>
+        </a>
+      </li>
+    {%- endif -%}
+
+    {%- for part in paginate.parts -%}
+      <li>
+        {%- if part.is_link -%}
+          <a class="pagination__link" href="{{ part.url }}">
+            {{ part.title }}
+            <span class="visually-hidden">{{ 'general.page' | t }}</span>
+          </a>
+        {%- elsif part.title == '&hellip;' or part.title == '…' -%}
+          <span class="pagination__gap" aria-hidden="true">{{ part.title }}</span>
+        {%- else -%}
+          <span class="pagination__link is-current" aria-current="page">
+            {{ part.title }}
+          </span>
+        {%- endif -%}
+      </li>
+    {%- endfor -%}
+
+    {%- if paginate.next -%}
+      <li>
+        <a class="pagination__link" href="{{ paginate.next.url }}" rel="next">
+          {% render 'icon', icon: 'chevron-right', size: '1rem' %}
+          <span class="visually-hidden">{{ 'general.next' | t }}</span>
+        </a>
+      </li>
+    {%- endif -%}
+  </ul>
+</nav>
+
+{% stylesheet %}
+  .pagination__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3xs);
+  }
+
+  .pagination__link {
+    display: inline-grid;
+    place-items: center;
+    min-width: var(--tap-target);
+    min-height: var(--tap-target);
+    padding-inline: var(--space-3xs);
+    border-radius: var(--radius-control);
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+    text-decoration: none;
+    color: var(--color-foreground-muted);
+  }
+
+  .pagination__link:hover {
+    background-color: rgb(var(--color-foreground-rgb) / 0.06);
+    color: var(--color-foreground);
+  }
+
+  .pagination__link.is-current {
+    background-color: var(--color-foreground);
+    color: var(--color-background);
+    font-weight: 700;
+  }
+
+  .pagination__gap {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.5rem;
+    min-height: var(--tap-target);
+    color: var(--color-foreground-muted);
+  }
+{% endstylesheet %}

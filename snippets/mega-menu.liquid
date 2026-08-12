@@ -1,0 +1,181 @@
+{% doc %}
+  Renders the dropdown panel for one top-level navigation item.
+
+  Two shapes, chosen automatically from the menu's own depth so a merchant
+  never picks a layout:
+
+  - Three levels (child links have their own children): each child becomes a
+    titled column. This is the shape a boutique's "Girls" or "Shop by brand"
+    menu takes.
+  - Two levels: a plain multi-column list, balanced across the configured
+    column count.
+
+  @param {object} link - The parent link_list link
+  @param {object} section - The header section, for the column-count setting
+{% enddoc %}
+
+{% liquid
+  assign columns = section.settings.mega_columns | default: 4
+
+  assign has_grandchildren = false
+  for child in link.links
+    if child.links.size > 0
+      assign has_grandchildren = true
+      break
+    endif
+  endfor
+%}
+
+<div class="mega" data-menu-panel>
+  <div class="mega__inner">
+    {%- if has_grandchildren -%}
+      <ul class="mega__columns" style="--mega-columns: {{ columns }};" role="list">
+        {%- for child in link.links -%}
+          <li class="mega__column">
+            <a class="mega__column-title" href="{{ child.url }}">{{ child.title }}</a>
+            {%- if child.links.size > 0 -%}
+              <ul class="mega__list" role="list">
+                {%- for grandchild in child.links -%}
+                  <li>
+                    <a
+                      class="mega__link"
+                      href="{{ grandchild.url }}"
+                      {% if grandchild.current %}
+                        aria-current="page"
+                      {% endif %}
+                    >
+                      {{ grandchild.title }}
+                    </a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- else -%}
+      <ul class="mega__flat" style="--mega-columns: {{ columns }};" role="list">
+        {%- for child in link.links -%}
+          <li>
+            <a
+              class="mega__link"
+              href="{{ child.url }}"
+              {% if child.current %}
+                aria-current="page"
+              {% endif %}
+            >
+              {{ child.title }}
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .mega {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: var(--z-overlay);
+    width: max-content;
+    max-width: min(60rem, calc(100vw - var(--page-margin) * 2));
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-lg);
+    /* Seam along the top edge, tying the panel to the header it drops from. */
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--color-border) 0 var(--seam-dash),
+      transparent var(--seam-dash) calc(var(--seam-dash) + var(--seam-gap))
+    );
+    background-repeat: no-repeat;
+    background-size: 100% var(--seam-weight);
+    background-position: top left;
+  }
+
+  .mega__inner {
+    padding: var(--space-md) var(--space-lg);
+  }
+
+  .mega__columns,
+  .mega__flat {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(var(--mega-columns), minmax(9rem, 1fr));
+    gap: var(--space-md) var(--space-lg);
+  }
+
+  .mega__flat {
+    /* A flat list reads better flowing down each column than across rows. */
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    grid-template-rows: repeat(auto-fill, minmax(0, auto));
+  }
+
+  .mega__column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+
+  .mega__column-title {
+    font-size: var(--text-2xs);
+    font-weight: 700;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--color-foreground-muted);
+  }
+
+  .mega__column-title:hover {
+    color: var(--color-foreground);
+  }
+
+  .mega__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .mega__link {
+    display: block;
+    padding-block: 0.32rem;
+    font-size: var(--text-sm);
+    text-decoration: none;
+    color: var(--color-foreground);
+  }
+
+  .mega__link:hover,
+  .mega__link[aria-current='page'] {
+    text-decoration: underline;
+    text-underline-offset: 0.22em;
+  }
+
+  /*
+   * Only animate once JS has confirmed it can also close the panel. Without
+   * it the <details> still opens, just without the transition.
+   */
+  .js .mega {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-0.4rem);
+    pointer-events: none;
+    transition: opacity var(--duration-fast) var(--ease-out),
+      transform var(--duration-fast) var(--ease-out);
+  }
+
+  .js [open] > .mega {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+  }
+{% endstylesheet %}

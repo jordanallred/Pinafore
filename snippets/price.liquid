@@ -1,0 +1,107 @@
+{% doc %}
+  Renders a price, handling sale, ranges, and unit pricing consistently
+  everywhere a price appears.
+
+  The compare-at price is marked up with <s> rather than styled with
+  text-decoration alone, so a screen reader announces it as struck-through
+  and the "was / now" relationship survives without color.
+
+  @param {object} product - Product or line item to price
+  @param {string} [context] - 'card' | 'product' | 'line'. Controls size only.
+  @param {boolean} [show_from] - Prefix ranged prices with "From"
+
+  @example
+  {% render 'price', product: product, context: 'card', show_from: true %}
+{% enddoc %}
+
+{% liquid
+  assign target = product
+  assign price = target.price | default: 0
+  assign compare_at = target.compare_at_price
+
+  if target.price_varies and show_from
+    assign price = target.price_min
+  endif
+
+  assign on_sale = false
+  if compare_at > price
+    assign on_sale = true
+  endif
+%}
+
+{%- liquid
+  # The whole price is labelled as one phrase rather than left to be read as
+  # two loose numbers. Without this a sale price announces as "48 dollars 34
+  # dollars", which is worse than useless.
+  assign money_now = price | money
+  if on_sale
+    assign money_was = compare_at | money
+    assign price_label = 'products.price.sale_label' | t: sale_price: money_now, original_price: money_was
+  else
+    assign price_label = 'products.price.label' | t: price: money_now
+  endif
+-%}
+
+<div
+  class="price price--{{ context | default: 'card' }}{% if on_sale %} price--on-sale{% endif %}"
+  aria-label="{{ price_label }}"
+>
+  {%- comment -%}
+    The visual markup is hidden from assistive tech because the container's
+    label already says it, correctly ordered. <s> stays for sighted users:
+    the strike-through is what communicates "was" without relying on color.
+  {%- endcomment -%}
+  {%- if on_sale -%}
+    <s class="price__was" aria-hidden="true">{{ money_was }}</s>
+    <span class="price__now" aria-hidden="true">{{ money_now }}</span>
+  {%- else -%}
+    {%- if target.price_varies and show_from -%}
+      <span class="price__from" aria-hidden="true">{{ 'products.price.from' | t }}</span>
+    {%- endif -%}
+    <span class="price__current" aria-hidden="true">{{ money_now }}</span>
+  {%- endif -%}
+
+  {%- if target.unit_price_measurement -%}
+    <span class="price__unit">
+      {{ target.unit_price | money }}/{% if target.unit_price_measurement.reference_value != 1 %}
+        {{- target.unit_price_measurement.reference_value -}}
+      {% endif %}{{ target.unit_price_measurement.reference_unit }}
+    </span>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .price {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    font-variant-numeric: tabular-nums;
+    font-size: var(--text-sm);
+  }
+
+  .price--product {
+    font-size: var(--text-md);
+  }
+
+  .price__was {
+    color: var(--color-foreground-muted);
+    font-size: 0.9em;
+  }
+
+  .price__now {
+    color: var(--color-sale);
+    font-weight: 700;
+  }
+
+  .price__from {
+    color: var(--color-foreground-muted);
+    font-size: 0.9em;
+  }
+
+  .price__unit {
+    flex-basis: 100%;
+    color: var(--color-foreground-muted);
+    font-size: var(--text-2xs);
+  }
+{% endstylesheet %}
