@@ -1,23 +1,37 @@
 {% comment %}
-  This section is used in the 404 template to render page shown when customers
-  enter an invalid store URL.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/404
+  404. Kept short and gives one clear way back — a dead end is the only real
+  failure state here.
 {% endcomment %}
 
-<h1>{{ '404.title' | t }}</h1>
+<div class="notfound color-{{ section.settings.color_scheme }}">
+  <span class="eyebrow">{{ '404.title' | t }}</span>
+  <h1 class="notfound__heading">{{ '404.not_found' | t }}</h1>
+  <a class="button" href="{{ routes.all_products_collection_url }}">
+    {{ '404.back_to_shopping' | t }}
+  </a>
+</div>
 
-<p>
-  {{ '404.not_found' | t }}
-</p>
+{% stylesheet %}
+  .notfound {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-sm);
+    padding-block: var(--space-3xl);
+  }
 
-<a href="{{ routes.all_products_collection_url }}">
-  {{ '404.back_to_shopping' | t }}
-</a>
+  .notfound__heading {
+    margin: 0;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:general.404",
-  "settings": []
+  "settings": [
+    { "type": "color_scheme", "id": "color_scheme", "label": "t:labels.color_scheme", "default": "scheme_1" }
+  ],
+  "disabled_on": { "groups": ["header", "footer"] }
 }
 {% endschema %}

@@ -56,29 +56,7 @@
               </a>
 
               <div class="cart-item__detail">
-                {%- if item.product.vendor != blank -%}
-                  <span class="cart-item__vendor">{{ item.product.vendor }}</span>
-                {%- endif -%}
-                <a class="cart-item__title" href="{{ item.url }}">{{ item.product.title }}</a>
-
-                {%- unless item.product.has_only_default_variant -%}
-                  <span class="cart-item__variant">{{ item.variant.title }}</span>
-                {%- endunless -%}
-
-                {%- if item.selling_plan_allocation -%}
-                  <span class="cart-item__plan">{{ item.selling_plan_allocation.selling_plan.name }}</span>
-                {%- endif -%}
-
-                {%- comment -%}
-                  Line-level discounts have to be visible in the drawer, or the
-                  total looks wrong to the customer before checkout explains it.
-                {%- endcomment -%}
-                {%- for discount in item.line_level_discount_allocations -%}
-                  <span class="cart-item__discount">
-                    {{ discount.discount_application.title }}
-                    (&minus;{{ discount.amount | money }})
-                  </span>
-                {%- endfor -%}
+                {% render 'cart-line-detail', item: item %}
 
                 <div class="cart-item__foot">
                   <div class="qty">
@@ -143,21 +121,7 @@
 
       <div class="drawer__footer">
         <form action="{{ routes.cart_url }}" method="post" id="CartDrawerForm" novalidate>
-          <div class="cart-total">
-            <span>{{ 'cart.subtotal' | t }}</span>
-            <span class="cart-total__value">{{ cart.total_price | money_with_currency }}</span>
-          </div>
-
-          {%- if cart.cart_level_discount_applications.size > 0 -%}
-            {%- for discount in cart.cart_level_discount_applications -%}
-              <div class="cart-total cart-total--discount">
-                <span>{{ discount.title }}</span>
-                <span>&minus;{{ discount.total_allocated_amount | money }}</span>
-              </div>
-            {%- endfor -%}
-          {%- endif -%}
-
-          <p class="cart-note-text">{{ 'cart.taxes_note' | t }}</p>
+          {% render 'cart-summary', compact: true %}
 
           <button class="button button--full" type="submit" name="checkout">
             {{ 'cart.checkout' | t }}
@@ -236,32 +200,7 @@
     min-width: 0;
   }
 
-  .cart-item__vendor {
-    font-size: var(--text-2xs);
-    letter-spacing: var(--tracking-eyebrow);
-    text-transform: uppercase;
-    color: var(--color-foreground-muted);
-  }
-
-  .cart-item__title {
-    font-family: var(--font-heading--family);
-    font-size: var(--text-base);
-    line-height: var(--leading-snug);
-    text-decoration: none;
-  }
-
-  .cart-item__variant,
-  .cart-item__plan {
-    font-size: var(--text-xs);
-    color: var(--color-foreground-muted);
-  }
-
-  .cart-item__discount {
-    font-size: var(--text-xs);
-    color: var(--color-sale);
-  }
-
-  .cart-item__foot {
+          .cart-item__foot {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -329,32 +268,7 @@
     resize: vertical;
   }
 
-  .cart-total {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: var(--space-sm);
-    font-size: var(--text-md);
-    margin-bottom: var(--space-2xs);
-  }
-
-  .cart-total__value {
-    font-variant-numeric: tabular-nums;
-    font-weight: 700;
-  }
-
-  .cart-total--discount {
-    font-size: var(--text-sm);
-    color: var(--color-sale);
-  }
-
-  .cart-note-text {
-    font-size: var(--text-xs);
-    color: var(--color-foreground-muted);
-    margin-bottom: var(--space-sm);
-  }
-
-  .cart-accelerated {
+          .cart-accelerated {
     margin-top: var(--space-2xs);
     display: grid;
     gap: var(--space-2xs);

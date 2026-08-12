@@ -1,0 +1,63 @@
+{% doc %}
+  Cart subtotal, cart-level discounts, and the tax/shipping note.
+
+  Shared by the drawer and the cart page so neither depends on styles defined
+  in the other file.
+
+  @param {boolean} [compact] - Tighter type, for the drawer footer
+
+  @example
+  {% render 'cart-summary', compact: true %}
+{% enddoc %}
+
+<div class="cart-summary{% if compact %} cart-summary--compact{% endif %}">
+  <div class="cart-summary__row">
+    <span>{{ 'cart.subtotal' | t }}</span>
+    <span class="cart-summary__value">{{ cart.total_price | money_with_currency }}</span>
+  </div>
+
+  {%- for discount in cart.cart_level_discount_applications -%}
+    <div class="cart-summary__row cart-summary__row--discount">
+      <span>{{ discount.title }}</span>
+      <span>&minus;{{ discount.total_allocated_amount | money }}</span>
+    </div>
+  {%- endfor -%}
+
+  <p class="cart-summary__note">{{ 'cart.taxes_note' | t }}</p>
+</div>
+
+{% stylesheet %}
+  .cart-summary {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+  }
+
+  .cart-summary__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    font-size: var(--text-md);
+  }
+
+  .cart-summary--compact .cart-summary__row {
+    font-size: var(--text-base);
+  }
+
+  .cart-summary__value {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }
+
+  .cart-summary__row--discount {
+    font-size: var(--text-sm);
+    color: var(--color-sale);
+  }
+
+  .cart-summary__note {
+    font-size: var(--text-xs);
+    color: var(--color-foreground-muted);
+    margin-bottom: var(--space-2xs);
+  }
+{% endstylesheet %}

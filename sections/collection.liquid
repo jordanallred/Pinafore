@@ -18,22 +18,7 @@
     {%- endif -%}
 
     {%- if collection.products.size > 0 -%}
-      <ul
-        class="product-grid"
-        style="--grid-columns: {{ section.settings.columns }};"
-        role="list"
-        data-product-grid
-      >
-        {%- for product in collection.products -%}
-          <li>
-            {% render 'product-card',
-              product: product,
-              sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw',
-              lazy: forloop.first
-            %}
-          </li>
-        {%- endfor -%}
-      </ul>
+      {% render 'product-grid', products: collection.products, columns: section.settings.columns %}
 
       {%- if paginate.pages > 1 -%}
         {% render 'pagination', paginate: paginate %}
@@ -70,26 +55,6 @@
   .collection__description {
     max-width: 60ch;
     color: var(--color-foreground-muted);
-  }
-
-  .product-grid {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    /*
-     * Two columns on a phone, not one. A boutique shopper is scanning for a
-     * print they like, and halving the number of products visible per screen
-     * measurably lengthens that hunt.
-     */
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-md) var(--space-sm);
-  }
-
-  @media screen and (min-width: 750px) {
-    .product-grid {
-      grid-template-columns: repeat(var(--grid-columns, 4), minmax(0, 1fr));
-    }
   }
 
   .collection__empty {

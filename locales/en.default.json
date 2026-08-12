@@ -39,7 +39,10 @@
     "increase": "Add one {{ title }}",
     "decrease": "Remove one {{ title }}",
     "gift_note": "Add a gift note",
-    "gift_note_placeholder": "Write a message to include with this order"
+    "gift_note_placeholder": "Write a message to include with this order",
+    "product": "Product",
+    "total": "Total",
+    "quantity_for": "Quantity for {{ title }}"
   },
   "customers": {
     "login": {
