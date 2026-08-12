@@ -14,11 +14,12 @@
   class="drawer drawer--end color-{{ section.settings.color_scheme }}"
   id="CartDrawer"
   scroll-lock
-  aria-label="{{ 'cart.title' | t }}"
+  aria-modal="true"
+  aria-labelledby="CartDrawerTitle"
 >
   <pinafore-cart class="drawer__panel" data-item-count="{{ cart.item_count }}">
     <div class="drawer__header">
-      <span class="drawer__title">
+      <span class="drawer__title" id="CartDrawerTitle">
         {{ 'cart.title' | t }}
         {%- if cart.item_count > 0 %} ({{ cart.item_count }}){% endif -%}
       </span>

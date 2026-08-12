@@ -427,6 +427,92 @@
     }
   });
 
+  /* -------------------------------------------------------------- facets */
+
+  customElements.define('pinafore-facets', class extends HTMLElement {
+    connectedCallback() {
+      this.form = this.querySelector('[data-facet-form]');
+      if (!this.form) return;
+
+      this.section = this.getAttribute('data-section');
+      this.form.addEventListener('submit', this.onSubmit.bind(this));
+    }
+
+    onSubmit(event) {
+      event.preventDefault();
+
+      // FormData drops unchecked boxes and empty inputs for us, which is
+      // exactly the query string Shopify's filters expect.
+      var params = new URLSearchParams(new FormData(this.form));
+      var url = window.location.pathname + '?' + params.toString();
+
+      this.apply(url);
+      closeDialog(this.form.closest('dialog'));
+    }
+
+    apply(url) {
+      var results = document.querySelector('[data-results]');
+      if (results) results.setAttribute('aria-busy', 'true');
+
+      fetch(url + '&section_id=' + this.section)
+        .then(function (r) { return r.text(); })
+        .then(function (html) {
+          var doc = new DOMParser().parseFromString(html, 'text/html');
+          var fresh = doc.querySelector('[data-results]');
+          if (fresh && results) results.replaceWith(fresh);
+
+          // Keep the URL honest so the view is shareable and the back
+          // button returns to the previous filter state.
+          window.history.pushState({ facets: true }, '', url);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        })
+        .catch(function () { window.location.href = url; });
+    }
+  });
+
+  // Back/forward across filtered views.
+  window.addEventListener('popstate', function (event) {
+    if (event.state && event.state.facets) window.location.reload();
+  });
+
+  /* ----------------------------------------------------------- quick add */
+
+  document.addEventListener('submit', function (event) {
+    var form = event.target.closest('[data-quick-add]');
+    if (!form) return;
+    event.preventDefault();
+
+    var button = form.querySelector('button');
+    if (button) button.disabled = true;
+
+    fetch(window.Shopify.routes.root + 'cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        items: [{ id: Number(form.querySelector('[name="id"]').value), quantity: 1 }],
+        sections: 'cart-drawer,header',
+        sections_url: window.location.pathname
+      })
+    })
+      .then(function (r) {
+        if (!r.ok) throw new Error('add');
+        return r.json();
+      })
+      .then(function (data) {
+        var cart = document.querySelector('pinafore-cart');
+        if (cart) cart.render(data);
+
+        // Opening the drawer is the confirmation — no toast needed, and the
+        // customer can see exactly what landed in the cart.
+        var drawer = document.getElementById('CartDrawer');
+        if (drawer && drawer.showModal) drawer.showModal();
+      })
+      .catch(function () { form.submit(); })
+      .finally(function () {
+        if (button) button.disabled = false;
+      });
+  });
+
   /* -------------------------------------------------------------- search */
 
   customElements.define('pinafore-search', class extends HTMLElement {

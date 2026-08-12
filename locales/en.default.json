@@ -50,7 +50,23 @@
     }
   },
   "collections": {
-    "title": "Collections"
+    "title": "Collections",
+    "filter_and_sort": "Filter and sort",
+    "sort_by": "Sort by",
+    "clear_all": "Clear all",
+    "apply": "Show results",
+    "remove_filter": "Remove filter",
+    "product_count": {
+      "one": "{{ count }} product",
+      "other": "{{ count }} products"
+    },
+    "price_from": "Lowest price",
+    "price_to": "Highest price",
+    "empty": "No products match these filters.",
+    "browse_all": "Browse all products",
+    "no_brands": "No brands to show yet.",
+    "view_all": "View all",
+    "pick_a_collection": "Choose a collection to show products here."
   },
   "gift_card": {
     "add_to_apple_wallet": "Add to Apple Wallet",
@@ -84,7 +100,9 @@
     "price": {
       "from": "From",
       "regular_price": "Regular price",
-      "sale_price": "Sale price"
+      "sale_price": "Sale price",
+      "label": "Price {{ price }}",
+      "sale_label": "Sale price {{ sale_price }}, regular price {{ original_price }}"
     },
     "add_to_cart": "Add to cart",
     "sold_out": "Sold out",
@@ -103,6 +121,14 @@
     "pickup": {
       "available": "Pickup available",
       "unavailable": "Pickup is not available for this item right now."
-    }
+    },
+    "quick_add": "Quick add",
+    "quick_add_title": "Add {{ title }} to cart"
+  },
+  "general": {
+    "pagination": "Pagination",
+    "previous": "Previous page",
+    "next": "Next page",
+    "page": "page"
   }
 }

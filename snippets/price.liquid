@@ -29,17 +29,36 @@
   endif
 %}
 
-<div class="price price--{{ context | default: 'card' }}{% if on_sale %} price--on-sale{% endif %}">
+{%- liquid
+  # The whole price is labelled as one phrase rather than left to be read as
+  # two loose numbers. Without this a sale price announces as "48 dollars 34
+  # dollars", which is worse than useless.
+  assign money_now = price | money
+  if on_sale
+    assign money_was = compare_at | money
+    assign price_label = 'products.price.sale_label' | t: sale_price: money_now, original_price: money_was
+  else
+    assign price_label = 'products.price.label' | t: price: money_now
+  endif
+-%}
+
+<div
+  class="price price--{{ context | default: 'card' }}{% if on_sale %} price--on-sale{% endif %}"
+  aria-label="{{ price_label }}"
+>
+  {%- comment -%}
+    The visual markup is hidden from assistive tech because the container's
+    label already says it, correctly ordered. <s> stays for sighted users:
+    the strike-through is what communicates "was" without relying on color.
+  {%- endcomment -%}
   {%- if on_sale -%}
-    <span class="visually-hidden">{{ 'products.price.regular_price' | t }}</span>
-    <s class="price__was">{{ compare_at | money }}</s>
-    <span class="visually-hidden">{{ 'products.price.sale_price' | t }}</span>
-    <span class="price__now">{{ price | money }}</span>
+    <s class="price__was" aria-hidden="true">{{ money_was }}</s>
+    <span class="price__now" aria-hidden="true">{{ money_now }}</span>
   {%- else -%}
     {%- if target.price_varies and show_from -%}
-      <span class="price__from">{{ 'products.price.from' | t }}</span>
+      <span class="price__from" aria-hidden="true">{{ 'products.price.from' | t }}</span>
     {%- endif -%}
-    <span class="price__current">{{ price | money }}</span>
+    <span class="price__current" aria-hidden="true">{{ money_now }}</span>
   {%- endif -%}
 
   {%- if target.unit_price_measurement -%}

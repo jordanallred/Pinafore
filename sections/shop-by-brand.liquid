@@ -1,0 +1,283 @@
+{% comment %}
+  Shop by brand.
+
+  The differentiator this theme exists for. A DTC store makes one label, so
+  its homepage is organized around prints or categories. A boutique resells
+  dozens, and its customers arrive knowing the maker's name — "Properly Tied",
+  not "boys shorts". Burying those names in a filter loses that search.
+
+  Brands come from a chosen collection list (curated, with images) or, if the
+  merchant would rather not maintain one, from the vendors of a collection's
+  products, rendered as an A-Z index. The second path needs no setup at all,
+  which matters for a shop owner migrating 60 vendors.
+{% endcomment %}
+
+{% liquid
+  assign mode = section.settings.source
+  assign heading = section.settings.heading
+%}
+
+<div class="brands color-{{ section.settings.color_scheme }} section-spacing">
+  {%- if heading != blank -%}
+    <header class="brands__header">
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      <h2 class="brands__heading">{{ heading }}</h2>
+      {%- if section.settings.link_label != blank and section.settings.link_url != blank -%}
+        <a class="brands__all" href="{{ section.settings.link_url }}">
+          {{ section.settings.link_label }}
+          {% render 'icon', icon: 'arrow-right', size: '1rem' %}
+        </a>
+      {%- endif -%}
+    </header>
+  {%- endif -%}
+
+  {%- if mode == 'curated' -%}
+    <ul class="brands__grid" style="--brand-columns: {{ section.settings.columns }};" role="list">
+      {%- for block in section.blocks -%}
+        <li class="brand-card" {{ block.shopify_attributes }}>
+          <a class="brand-card__link" href="{{ block.settings.url | default: '#' }}">
+            <span class="brand-card__media media media--ratio">
+              {%- if block.settings.image -%}
+                {{
+                  block.settings.image
+                  | image_url: width: 600
+                  | image_tag:
+                    widths: '200, 300, 450, 600',
+                    sizes: '(min-width: 750px) 25vw, 45vw',
+                    alt: '',
+                    loading: 'lazy',
+                    class: 'brand-card__image'
+                }}
+              {%- endif -%}
+            </span>
+            <span class="brand-card__name">{{ block.settings.name }}</span>
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+
+  {%- else -%}
+    {%- comment -%}
+      Vendor index.
+
+      `all_vendors` / `shop.vendors` are already de-duplicated and sorted by
+      Shopify, which matters here: a `for` loop over products is capped at 50
+      iterations, so walking the catalog to collect vendors would quietly
+      report only a fraction of a 60-label roster — and would look correct on
+      a small test store.
+    {%- endcomment -%}
+    {%- liquid
+      assign source = collections[section.settings.collection]
+      if source and source.all_vendors.size > 0
+        assign vendors = source.all_vendors
+      else
+        assign vendors = shop.vendors
+      endif
+    -%}
+
+    {%- if vendors.size > 0 -%}
+      <ul class="brands__index" role="list">
+        {%- comment -%}
+          Three offset loops, not one. A single `for` stops at 50 iterations,
+          which would drop the tail of a 60-label roster without any error —
+          the worst kind of bug, because it looks fine on a small store and
+          only misbehaves on the store that needs this section most.
+          Three passes covers 150 brands.
+        {%- endcomment -%}
+        {%- for vendor in vendors limit: 50 -%}
+          {% render 'brand-chip', vendor: vendor %}
+        {%- endfor -%}
+        {%- if vendors.size > 50 -%}
+          {%- for vendor in vendors offset: 50 limit: 50 -%}
+            {% render 'brand-chip', vendor: vendor %}
+          {%- endfor -%}
+        {%- endif -%}
+        {%- if vendors.size > 100 -%}
+          {%- for vendor in vendors offset: 100 limit: 50 -%}
+            {% render 'brand-chip', vendor: vendor %}
+          {%- endfor -%}
+        {%- endif -%}
+      </ul>
+    {%- else -%}
+      <p class="brands__empty">{{ 'collections.no_brands' | t }}</p>
+    {%- endif -%}
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .brands {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .brands__header {
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .brands__heading {
+    margin: 0;
+  }
+
+  .brands__all {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-height: var(--tap-target);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    justify-self: start;
+  }
+
+  .brands__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-sm);
+  }
+
+  @media screen and (min-width: 750px) {
+    .brands__grid {
+      grid-template-columns: repeat(var(--brand-columns, 4), minmax(0, 1fr));
+    }
+  }
+
+  .brand-card__link {
+    display: grid;
+    gap: var(--space-2xs);
+    text-decoration: none;
+  }
+
+  .brand-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .brand-card__name {
+    font-family: var(--font-heading--family);
+    font-size: var(--text-base);
+  }
+
+  /*
+   * The A-Z index is intentionally dense. With ~60 labels the useful thing is
+   * seeing the whole roster at once, which is also the fastest way for a
+   * customer to confirm the shop carries what they came for.
+   */
+  .brands__index {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs);
+  }
+
+  .brands__chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap-target);
+    padding-inline: var(--space-xs);
+    border: var(--border-width) solid var(--color-border-control);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    text-decoration: none;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+
+  .brands__chip:hover {
+    background-color: var(--color-foreground);
+    color: var(--color-background);
+    border-color: var(--color-foreground);
+  }
+
+  .brands__empty {
+    color: var(--color-foreground-muted);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.shop_by_brand",
+  "tag": "section",
+  "class": "shopify-section--brands",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:labels.eyebrow",
+      "default": "The labels we carry"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "Shop by brand"
+    },
+    {
+      "type": "select",
+      "id": "source",
+      "label": "t:labels.brand_source",
+      "info": "t:info.brand_source",
+      "options": [
+        { "value": "auto", "label": "t:options.brand_source.auto" },
+        { "value": "curated", "label": "t:options.brand_source.curated" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:labels.collection",
+      "info": "t:info.brand_collection"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "t:labels.columns_desktop",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "t:labels.link_label"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "t:labels.link_url"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme_1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "brand",
+      "name": "t:general.brand",
+      "settings": [
+        { "type": "text", "id": "name", "label": "t:labels.name" },
+        { "type": "image_picker", "id": "image", "label": "t:labels.image" },
+        { "type": "url", "id": "url", "label": "t:labels.link_url" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "t:general.shop_by_brand" }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  }
+}
+{% endschema %}

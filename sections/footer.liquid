@@ -50,6 +50,7 @@
                     placeholder="{{ 'newsletter.email' | t }}"
                     autocomplete="email"
                     required
+                    aria-required="true"
                     {% if form.errors %}
                       aria-invalid="true"
                       aria-describedby="NewsletterError"

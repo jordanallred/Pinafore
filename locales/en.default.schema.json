@@ -56,7 +56,13 @@
     "buy_buttons": "Buy buttons",
     "pickup": "Pickup availability",
     "description": "Description",
-    "accordion": "Accordion row"
+    "accordion": "Accordion row",
+    "brand": "Brand",
+    "hero": "Hero",
+    "shop_by_brand": "Shop by brand",
+    "shop_by_size": "Shop by size",
+    "size": "Size",
+    "featured_collection": "Featured collection"
   },
   "labels": {
     "accent_background": "Accent",
@@ -126,7 +132,27 @@
     "show_quantity": "Show quantity selector",
     "show_preorder_note": "Show preorder shipping note",
     "sticky_atc": "Sticky add to cart on mobile",
-    "show_size_guide": "Show size guide"
+    "show_size_guide": "Show size guide",
+    "show_description": "Show collection description",
+    "show_filters": "Show filters",
+    "columns_desktop": "Columns on desktop",
+    "per_page": "Products per page",
+    "brand_source": "Brand list",
+    "caption": "Caption",
+    "collection": "Collection",
+    "eyebrow": "Eyebrow",
+    "filter_key": "Size filter",
+    "filter_value": "Filter value",
+    "height": "Height",
+    "image": "Image",
+    "image_mobile": "Mobile image",
+    "label": "Label",
+    "link_label": "Link text",
+    "link_url": "Link",
+    "name": "Name",
+    "overlay": "Image darkening",
+    "products_shown": "Products shown",
+    "show_view_all": "Show “View all” link"
   },
   "info": {
     "accent": "Used for badges, links, and focus outlines. Keep it distinct from your button color.",
@@ -153,7 +179,15 @@
     "show_accelerated_checkout": "Shows Shop Pay, Apple Pay, and Google Pay in the cart. Turning this off will lower mobile conversion.",
     "show_preorder_note": "Tells customers when a preordered item ships.",
     "sticky_atc": "A compact buy bar appears at the bottom of the screen once the main button scrolls away.",
-    "show_size_guide": "Shows a size chart next to the size options, pulled from the product or its brand."
+    "show_size_guide": "Shows a size chart next to the size options, pulled from the product or its brand.",
+    "show_filters": "Filters come from the Search & Discovery app. Set them up in your admin under Search & Discovery > Filters.",
+    "brand_source": "Automatic lists every brand you carry. Manual lets you pick and add a photo for each one.",
+    "brand_collection": "Limits the list to brands in this collection. Leave empty to list every brand in the store.",
+    "filter_key": "The filter your store uses for size. Find it in Search & Discovery > Filters.",
+    "filter_value": "Only needed when the filter value differs from the label, for example 2T versus 2-toddler.",
+    "image_mobile": "Used on phones. Leave empty to use the main image.",
+    "overlay": "Darkens the image behind the text so it stays readable.",
+    "size_collection": "Sizes link into this collection. Leave empty to search all products."
   },
   "options": {
     "alignment": {
@@ -205,6 +239,10 @@
       "title": "Title",
       "subtitle": "Subtitle",
       "normal": "Normal text"
+    },
+    "brand_source": {
+      "auto": "Automatic",
+      "curated": "Manual"
     }
   },
   "units": {

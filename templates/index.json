@@ -9,12 +9,83 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
-      "settings": {}
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "eyebrow": "Fall and winter",
+        "heading": "The preorder is open",
+        "text": "<p>Smocked dresses, corduroy, and everything they will actually wear to school.</p>",
+        "button_label": "Shop the drop",
+        "height": 75,
+        "overlay_opacity": 40,
+        "alignment": "start",
+        "color_scheme": "scheme_2"
+      }
+    },
+    "new-arrivals": {
+      "type": "featured-collection",
+      "settings": {
+        "eyebrow": "Just landed",
+        "heading": "New this week",
+        "product_limit": 8,
+        "columns": 4,
+        "show_view_all": true,
+        "color_scheme": "scheme_1"
+      }
+    },
+    "shop-by-size": {
+      "type": "shop-by-size",
+      "settings": {
+        "eyebrow": "Find their fit",
+        "heading": "Shop by size",
+        "filter_key": "filter.v.option.size",
+        "color_scheme": "scheme_3"
+      },
+      "blocks": {
+        "nb": { "type": "size", "settings": { "label": "NB", "caption": "Newborn" } },
+        "m3": { "type": "size", "settings": { "label": "3M", "caption": "Baby" } },
+        "m6": { "type": "size", "settings": { "label": "6M", "caption": "Baby" } },
+        "m12": { "type": "size", "settings": { "label": "12M", "caption": "Baby" } },
+        "m18": { "type": "size", "settings": { "label": "18M", "caption": "Toddler" } },
+        "t2": { "type": "size", "settings": { "label": "2T", "caption": "Toddler" } },
+        "t3": { "type": "size", "settings": { "label": "3T", "caption": "Toddler" } },
+        "t4": { "type": "size", "settings": { "label": "4T", "caption": "Toddler" } },
+        "k5": { "type": "size", "settings": { "label": "5", "caption": "Little kid" } },
+        "k6": { "type": "size", "settings": { "label": "6", "caption": "Little kid" } },
+        "k7": { "type": "size", "settings": { "label": "7", "caption": "Big kid" } },
+        "k8": { "type": "size", "settings": { "label": "8", "caption": "Big kid" } }
+      },
+      "block_order": [
+        "nb", "m3", "m6", "m12", "m18", "t2", "t3", "t4", "k5", "k6", "k7", "k8"
+      ]
+    },
+    "brands": {
+      "type": "shop-by-brand",
+      "settings": {
+        "eyebrow": "The labels we carry",
+        "heading": "Shop by brand",
+        "source": "auto",
+        "columns": 4,
+        "color_scheme": "scheme_1"
+      }
+    },
+    "best-sellers": {
+      "type": "featured-collection",
+      "settings": {
+        "eyebrow": "Most loved",
+        "heading": "Best sellers",
+        "product_limit": 8,
+        "columns": 4,
+        "show_view_all": true,
+        "color_scheme": "scheme_5"
+      }
     }
   },
   "order": [
-    "main"
+    "hero",
+    "new-arrivals",
+    "shop-by-size",
+    "brands",
+    "best-sellers"
   ]
 }

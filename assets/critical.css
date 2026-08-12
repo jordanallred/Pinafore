@@ -204,6 +204,17 @@ a {
   outline: none;
 }
 
+/*
+ * Windows High Contrast / forced-colors overrides author colors, so the
+ * accent ring silently disappears there. LinkText is a system color that
+ * survives the override.
+ */
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 3px solid LinkText;
+  }
+}
+
 .visually-hidden {
   position: absolute !important;
   width: 1px;

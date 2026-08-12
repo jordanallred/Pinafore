@@ -1,0 +1,178 @@
+{% comment %}
+  Featured collection.
+
+  A horizontal scroll strip on phones and a grid on desktop. The strip uses
+  scroll-snap rather than a carousel component: no JavaScript, native
+  momentum, and the next card peeks past the edge so it is obvious there is
+  more to see.
+{% endcomment %}
+
+{% liquid
+  assign target = section.settings.collection
+  assign limit = section.settings.product_limit
+%}
+
+<div class="featured color-{{ section.settings.color_scheme }} section-spacing">
+  <header class="featured__header">
+    <div class="featured__heading-group">
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="featured__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+    </div>
+
+    {%- if target != blank and section.settings.show_view_all -%}
+      <a class="featured__all" href="{{ target.url }}">
+        {{ 'collections.view_all' | t }}
+        {% render 'icon', icon: 'arrow-right', size: '1rem' %}
+      </a>
+    {%- endif -%}
+  </header>
+
+  {%- if target.products.size > 0 -%}
+    <ul
+      class="featured__grid"
+      style="--featured-columns: {{ section.settings.columns }};"
+      role="list"
+    >
+      {%- for product in target.products limit: limit -%}
+        <li class="featured__item">
+          {% render 'product-card',
+            product: product,
+            sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 60vw'
+          %}
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- else -%}
+    <p class="featured__empty">{{ 'collections.pick_a_collection' | t }}</p>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .featured {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .featured__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+  }
+
+  .featured__heading-group {
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .featured__heading {
+    margin: 0;
+  }
+
+  .featured__all {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-height: var(--tap-target);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /*
+   * Phones scroll horizontally with the next card deliberately peeking, so
+   * the row reads as continuable rather than as a truncated grid.
+   */
+  .featured__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0 var(--page-margin);
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(60vw, 1fr);
+    gap: var(--space-sm);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    /* Cancels the section grid's own margin so the strip can bleed edge to edge. */
+    margin-inline: calc(var(--page-margin) * -1);
+  }
+
+  .featured__grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .featured__item {
+    scroll-snap-align: start;
+  }
+
+  @media screen and (min-width: 750px) {
+    .featured__grid {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(var(--featured-columns, 4), minmax(0, 1fr));
+      overflow: visible;
+      padding: 0;
+      margin-inline: 0;
+    }
+  }
+
+  .featured__empty {
+    color: var(--color-foreground-muted);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.featured_collection",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "t:labels.eyebrow" },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:labels.heading",
+      "default": "New this week"
+    },
+    { "type": "collection", "id": "collection", "label": "t:labels.collection" },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "label": "t:labels.products_shown",
+      "min": 4,
+      "max": 16,
+      "step": 2,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "t:labels.columns_desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "t:labels.show_view_all",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme_1"
+    }
+  ],
+  "presets": [{ "name": "t:general.featured_collection" }],
+  "disabled_on": { "groups": ["header", "footer"] }
+}
+{% endschema %}

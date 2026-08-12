@@ -13,11 +13,12 @@
   class="drawer drawer--start color-{{ section.settings.color_scheme }}"
   id="NavDrawer"
   scroll-lock
-  aria-label="{{ 'accessibility.menu' | t }}"
+  aria-modal="true"
+  aria-labelledby="NavDrawerTitle"
 >
   <div class="drawer__panel">
     <div class="drawer__header">
-      <span class="drawer__title">{{ 'accessibility.menu' | t }}</span>
+      <span class="drawer__title" id="NavDrawerTitle">{{ 'accessibility.menu' | t }}</span>
       <button class="button button--icon" type="button" data-drawer-close>
         {% render 'icon', icon: 'close' %}
         <span class="visually-hidden">{{ 'accessibility.close' | t }}</span>

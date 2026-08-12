@@ -1,47 +1,151 @@
 {% comment %}
-  This section is used in the collection template to render collection page
-  listing all products within a collection.
+  Collection listing with faceted filtering.
 
   https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
 {% endcomment %}
 
-<h1>{{ collection.title }}</h1>
+{% paginate collection.products by section.settings.per_page %}
+  <div class="collection color-{{ section.settings.color_scheme }}" data-results>
+    <header class="collection__header">
+      <h1 class="collection__title">{{ collection.title }}</h1>
+      {%- if section.settings.show_description and collection.description != blank -%}
+        <div class="collection__description rte">{{ collection.description }}</div>
+      {%- endif -%}
+    </header>
 
-<div class="collection-products">
-  {% paginate collection.products by 20 %}
-    {% for product in collection.products %}
-      <div class="collection-product">
-        {% if product.featured_image %}
-          {% render 'image',
-            class: 'collection-product__image',
-            image: product.featured_image,
-            url: product.url,
-            width: 400,
-            height: 400,
-            crop: 'center'
-          %}
-        {% endif %}
-        <div class="collection-product__content">
-          <p>{{ product.title | escape | link_to: product.url }}</p>
-          <p>{{ product.price | money }}</p>
-        </div>
+    {%- if section.settings.show_filters -%}
+      {% render 'facets', results: collection, section: section %}
+    {%- endif -%}
+
+    {%- if collection.products.size > 0 -%}
+      <ul
+        class="product-grid"
+        style="--grid-columns: {{ section.settings.columns }};"
+        role="list"
+        data-product-grid
+      >
+        {%- for product in collection.products -%}
+          <li>
+            {% render 'product-card',
+              product: product,
+              sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw',
+              lazy: forloop.first
+            %}
+          </li>
+        {%- endfor -%}
+      </ul>
+
+      {%- if paginate.pages > 1 -%}
+        {% render 'pagination', paginate: paginate %}
+      {%- endif -%}
+    {%- else -%}
+      <div class="collection__empty">
+        <p>{{ 'collections.empty' | t }}</p>
+        <a class="button button--secondary" href="{{ routes.all_products_collection_url }}">
+          {{ 'collections.browse_all' | t }}
+        </a>
       </div>
-    {% endfor %}
-
-    {{ paginate | default_pagination }}
-  {% endpaginate %}
-</div>
+    {%- endif -%}
+  </div>
+{% endpaginate %}
 
 {% stylesheet %}
-  .collection-products {
+  .collection {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding-block: var(--space-lg);
+  }
+
+  .collection__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+
+  .collection__title {
+    margin: 0;
+  }
+
+  .collection__description {
+    max-width: 60ch;
+    color: var(--color-foreground-muted);
+  }
+
+  .product-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    /*
+     * Two columns on a phone, not one. A boutique shopper is scanning for a
+     * print they like, and halving the number of products visible per screen
+     * measurably lengthens that hunt.
+     */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-md) var(--space-sm);
+  }
+
+  @media screen and (min-width: 750px) {
+    .product-grid {
+      grid-template-columns: repeat(var(--grid-columns, 4), minmax(0, 1fr));
+    }
+  }
+
+  .collection__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    padding-block: var(--space-xl);
+    color: var(--color-foreground-muted);
   }
 {% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:general.collection",
-  "settings": []
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "t:labels.show_description",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filters",
+      "label": "t:labels.show_filters",
+      "info": "t:info.show_filters",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "t:labels.columns_desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "per_page",
+      "label": "t:labels.per_page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme_1"
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  }
 }
 {% endschema %}
