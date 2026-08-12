@@ -70,6 +70,19 @@ def main():
     options = json.loads(OPTIONS.read_text())
     cur = json.loads(CURATION.read_text())
 
+    titles = cur.get('titles', {})
+    vendor_fixes = cur.get('vendors', {})
+    unmapped = []
+
+    def final_title(generated):
+        if generated in titles:
+            return titles[generated]
+        unmapped.append(generated)
+        return generated
+
+    def final_vendor(v):
+        return vendor_fixes.get(v, v)
+
     dropped = {d['index'] for d in cur.get('drop', [])}
     sizeless = set(cur.get('sizeless', []))
 
@@ -99,8 +112,8 @@ def main():
             opts.append({'name': 'Size', 'values': sizes})
 
         products.append({
-            'title': group['title'],
-            'vendor': base['vendor'],
+            'title': final_title(group['title']),
+            'vendor': final_vendor(base['vendor']),
             'type': product_type(group['title']),
             'tags': classify(group['title'], base['vendor'], sizes),
             'body': f"<p>{group['title']} from {base['vendor']}.</p>",
@@ -117,11 +130,11 @@ def main():
     for i, p in enumerate(listings):
         if i in claimed or i in dropped:
             continue
-        title = clean(p['title'])
+        title = final_title(clean(p['title']))
         sizes = sizes_for(i)
         products.append({
             'title': title,
-            'vendor': p['vendor'],
+            'vendor': final_vendor(p['vendor']),
             'type': product_type(title),
             'tags': classify(title, p['vendor'], sizes),
             'body': f"<p>{title} from {p['vendor']}.</p>",
@@ -177,6 +190,13 @@ def main():
     variants = sum(
         max(1, len(p['options'][0]['values']) * (len(p['options'][1]['values']) if len(p['options']) > 1 else 1))
         for p in products)
+    if unmapped:
+        print(f'WARNING  {len(unmapped)} product(s) have no hand-written title '
+              f'in catalog-curation.json:')
+        for u in unmapped:
+            print(f'           {u}')
+        print()
+
     print(f'{len(products)} products, {variants} variants, '
           f'{len({p["vendor"] for p in products})} vendors -> {OUT}\n')
     print(f'{len(multi)} products with two option axes:')

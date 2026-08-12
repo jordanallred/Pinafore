@@ -283,9 +283,7 @@
       var thumb = event.target.closest('[data-thumb]');
       if (!thumb) return;
       event.preventDefault();
-      var id = thumb.getAttribute('data-media-id');
-      var slide = this.querySelector('[data-media-id="' + id + '"]');
-      if (slide) slide.scrollIntoView({ block: 'nearest', inline: 'center' });
+      this.showMedia(thumb.getAttribute('data-media-id'));
     }
 
     setActive(index) {
@@ -296,8 +294,22 @@
 
     // Called by <pinafore-variants> when the chosen variant has its own image.
     showMedia(mediaId) {
-      var slide = this.querySelector('[data-media-id="' + mediaId + '"]');
-      if (slide) slide.scrollIntoView({ block: 'nearest', inline: 'center' });
+      // Must select the slide specifically: thumbnails carry the same
+      // data-media-id, and scrolling to a thumbnail moves nothing.
+      var slide = this.querySelector('.gallery__slide[data-media-id="' + mediaId + '"]');
+      if (!slide || !this.track) return;
+
+      // scrollIntoView walks up to the nearest scroll container and, with
+      // mandatory scroll-snap, was being corrected straight back to the
+      // previous snap point. Offsets are measured against the track itself
+      // rather than offsetParent, which is the section, not the scroller.
+      var left = this.track.scrollLeft
+        + slide.getBoundingClientRect().left
+        - this.track.getBoundingClientRect().left;
+
+      // 'auto' is verified to work against a mandatory-snap container;
+      // smooth is requested only when the platform will honour it.
+      this.track.scrollTo({ left: left, behavior: 'auto' });
     }
   });
 
@@ -425,6 +437,41 @@
         self.hidden = entries[0].isIntersecting;
       }, { rootMargin: '0px 0px -80px 0px' }).observe(target);
     }
+  });
+
+  /* ------------------------------------------------- card variant preview */
+
+  /*
+   * Hovering a colour thumbnail previews that colour in the card's main
+   * image. The generic second-image-on-hover swap is disabled for products
+   * with a colourway axis, because there the second image is a different
+   * colour rather than another angle — so merely passing the cursor over a
+   * card changed which product it appeared to be.
+   */
+  document.addEventListener('pointerover', function (event) {
+    var thumb = event.target.closest ? event.target.closest('[data-variant-image]') : null;
+    if (!thumb) return;
+
+    var card = thumb.closest('.card');
+    var main = card && card.querySelector('.card__image--main');
+    if (!main) return;
+
+    if (!main.dataset.restoreSrc) {
+      main.dataset.restoreSrc = main.getAttribute('src') || '';
+      main.dataset.restoreSrcset = main.getAttribute('srcset') || '';
+    }
+    main.removeAttribute('srcset');
+    main.src = thumb.getAttribute('data-variant-image');
+  });
+
+  document.addEventListener('pointerout', function (event) {
+    var card = event.target.closest ? event.target.closest('.card') : null;
+    if (!card || card.contains(event.relatedTarget)) return;
+
+    var main = card.querySelector('.card__image--main');
+    if (!main || !main.dataset.restoreSrc) return;
+    main.src = main.dataset.restoreSrc;
+    if (main.dataset.restoreSrcset) main.setAttribute('srcset', main.dataset.restoreSrcset);
   });
 
   /* -------------------------------------------------------------- facets */

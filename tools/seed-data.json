@@ -2,7 +2,7 @@
   "_comment": "Built by tools/build-catalog.py from scraped listings, scraped option sets, and the hand-written grouping in catalog-curation.json.",
   "products": [
     {
-      "title": "Floafers Prodigy Driver",
+      "title": "Prodigy Driver",
       "vendor": "Floafers",
       "type": "Shoes",
       "tags": [
@@ -48,7 +48,7 @@
       ]
     },
     {
-      "title": "Footmates Allie T-Strap",
+      "title": "Allie T-Strap",
       "vendor": "Footmates",
       "type": "Shoes",
       "tags": [
@@ -106,8 +106,8 @@
       ]
     },
     {
-      "title": "L'Amour Birdie T-Strap",
-      "vendor": "L'Amour  Shoes",
+      "title": "Birdie T-Strap",
+      "vendor": "L'Amour Shoes",
       "type": "Shoes",
       "tags": [
         "Shoes"
@@ -147,7 +147,7 @@
       ]
     },
     {
-      "title": "La Luna Footless Romper",
+      "title": "Footless Romper",
       "vendor": "La Luna",
       "type": "Rompers",
       "tags": [
@@ -194,7 +194,7 @@
       ]
     },
     {
-      "title": "La Luna Long Sleeve Loungewear",
+      "title": "Long Sleeve Loungewear",
       "vendor": "La Luna",
       "type": "Pajamas",
       "tags": [
@@ -241,7 +241,7 @@
       "backorder": true
     },
     {
-      "title": "Mustard & Ketchup Birthday Cake Tee",
+      "title": "Birthday Cake Tee",
       "vendor": "Mustard & Ketchup Kids",
       "type": "Tops",
       "tags": [
@@ -275,7 +275,7 @@
       ]
     },
     {
-      "title": "Oh Mint Medium Backpack",
+      "title": "Medium Backpack",
       "vendor": "Oh Mint",
       "type": "Bags",
       "tags": [
@@ -305,7 +305,7 @@
       ]
     },
     {
-      "title": "Scarlet & Gold Cheer Dress",
+      "title": "Cheer Dress",
       "vendor": "Scarlet & Gold",
       "type": "Dresses",
       "tags": [
@@ -351,7 +351,7 @@
       ]
     },
     {
-      "title": "The Uptown Baby A+ Sleep Bag",
+      "title": "A+ Sleep Bag",
       "vendor": "The Uptown Baby",
       "type": "Sleepwear",
       "tags": [
@@ -376,7 +376,7 @@
       ]
     },
     {
-      "title": "Widgeon Hooded Barn Jacket",
+      "title": "Hooded Barn Jacket",
       "vendor": "Widgeon",
       "type": "Outerwear",
       "tags": [
@@ -419,13 +419,13 @@
       ]
     },
     {
-      "title": "Little English MERIWETHER FLORAL Simply Smocked Dress",
+      "title": "Meriwether Floral Simply Smocked Dress",
       "vendor": "Little English",
       "type": "Dresses",
       "tags": [
         "Girls"
       ],
-      "body": "<p>Little English MERIWETHER FLORAL Simply Smocked Dress from Little English.</p>",
+      "body": "<p>Meriwether Floral Simply Smocked Dress from Little English.</p>",
       "options": [
         {
           "name": "Title",
@@ -441,7 +441,7 @@
       "extra_images": []
     },
     {
-      "title": "Little English MERIWETHER STRIPE Sleeveless Barrington Bubble",
+      "title": "Meriwether Stripe Barrington Bubble",
       "vendor": "Little English",
       "type": "Bubbles",
       "tags": [
@@ -449,7 +449,7 @@
         "Baby",
         "New"
       ],
-      "body": "<p>Little English MERIWETHER STRIPE Sleeveless Barrington Bubble from Little English.</p>",
+      "body": "<p>Meriwether Stripe Barrington Bubble from Little English.</p>",
       "options": [
         {
           "name": "Size",
@@ -475,7 +475,7 @@
       "extra_images": []
     },
     {
-      "title": "Little English PATRIOTIC PLAID Evie Bloomer Set",
+      "title": "Patriotic Plaid Evie Bloomer Set",
       "vendor": "Little English",
       "type": "Bloomers",
       "tags": [
@@ -483,7 +483,7 @@
         "Baby",
         "New"
       ],
-      "body": "<p>Little English PATRIOTIC PLAID Evie Bloomer Set from Little English.</p>",
+      "body": "<p>Patriotic Plaid Evie Bloomer Set from Little English.</p>",
       "options": [
         {
           "name": "Size",
@@ -509,14 +509,14 @@
       "extra_images": []
     },
     {
-      "title": "Little English PATRIOTIC PLAID Evie Dress",
+      "title": "Patriotic Plaid Evie Dress",
       "vendor": "Little English",
       "type": "Dresses",
       "tags": [
         "Girls",
         "Baby"
       ],
-      "body": "<p>Little English PATRIOTIC PLAID Evie Dress from Little English.</p>",
+      "body": "<p>Patriotic Plaid Evie Dress from Little English.</p>",
       "options": [
         {
           "name": "Size",
@@ -542,7 +542,7 @@
       "extra_images": []
     },
     {
-      "title": "Harding Lane GOLDEN RETREIVER Moss Green Kids Hat",
+      "title": "Golden Retriever Kids Hat, Moss Green",
       "vendor": "Harding Lane",
       "type": "Hats",
       "tags": [
@@ -550,7 +550,7 @@
         "Boys",
         "Bestseller"
       ],
-      "body": "<p>Harding Lane GOLDEN RETREIVER Moss Green Kids Hat from Harding Lane.</p>",
+      "body": "<p>Golden Retriever Kids Hat, Moss Green from Harding Lane.</p>",
       "options": [
         {
           "name": "Title",
@@ -566,7 +566,7 @@
       "extra_images": []
     },
     {
-      "title": "Harding Lane GREAT WHITE SHARK Navy Kids Hat",
+      "title": "Great White Shark Kids Hat, Navy",
       "vendor": "Harding Lane",
       "type": "Hats",
       "tags": [
@@ -574,7 +574,7 @@
         "Boys",
         "Preorder"
       ],
-      "body": "<p>Harding Lane GREAT WHITE SHARK Navy Kids Hat from Harding Lane.</p>",
+      "body": "<p>Great White Shark Kids Hat, Navy from Harding Lane.</p>",
       "options": [
         {
           "name": "Title",
@@ -591,14 +591,14 @@
       "backorder": true
     },
     {
-      "title": "Harding Lane STEGOSAURUS Cobalt Kids Hat",
+      "title": "Stegosaurus Kids Hat, Cobalt",
       "vendor": "Harding Lane",
       "type": "Hats",
       "tags": [
         "Accessories",
         "Boys"
       ],
-      "body": "<p>Harding Lane STEGOSAURUS Cobalt Kids Hat from Harding Lane.</p>",
+      "body": "<p>Stegosaurus Kids Hat, Cobalt from Harding Lane.</p>",
       "options": [
         {
           "name": "Title",
@@ -614,7 +614,7 @@
       "extra_images": []
     },
     {
-      "title": "Harding Lane YELLOW LAB Navy Kids Hat",
+      "title": "Yellow Lab Kids Hat, Navy",
       "vendor": "Harding Lane",
       "type": "Hats",
       "tags": [
@@ -622,7 +622,7 @@
         "Boys",
         "Sale"
       ],
-      "body": "<p>Harding Lane YELLOW LAB Navy Kids Hat from Harding Lane.</p>",
+      "body": "<p>Yellow Lab Kids Hat, Navy from Harding Lane.</p>",
       "options": [
         {
           "name": "Title",
@@ -638,14 +638,14 @@
       "extra_images": []
     },
     {
-      "title": "Magnolia Baby Big Brother Printed LS Pajamas",
+      "title": "Big Brother Printed Pajamas",
       "vendor": "Magnolia Baby",
       "type": "Pajamas",
       "tags": [
         "Boys",
         "Bestseller"
       ],
-      "body": "<p>Magnolia Baby Big Brother Printed LS Pajamas from Magnolia Baby.</p>",
+      "body": "<p>Big Brother Printed Pajamas from Magnolia Baby.</p>",
       "options": [
         {
           "name": "Title",
@@ -661,13 +661,13 @@
       "extra_images": []
     },
     {
-      "title": "Magnolia Baby Big Sister Printed LS Pajamas",
+      "title": "Big Sister Printed Pajamas",
       "vendor": "Magnolia Baby",
       "type": "Pajamas",
       "tags": [
         "Girls"
       ],
-      "body": "<p>Magnolia Baby Big Sister Printed LS Pajamas from Magnolia Baby.</p>",
+      "body": "<p>Big Sister Printed Pajamas from Magnolia Baby.</p>",
       "options": [
         {
           "name": "Title",
@@ -683,14 +683,14 @@
       "extra_images": []
     },
     {
-      "title": "Magnolia Baby Little Brother Embroidered Converter Gown",
+      "title": "Little Brother Converter Gown",
       "vendor": "Magnolia Baby",
       "type": "Sleepwear",
       "tags": [
         "Boys",
         "Baby"
       ],
-      "body": "<p>Magnolia Baby Little Brother Embroidered Converter Gown from Magnolia Baby.</p>",
+      "body": "<p>Little Brother Converter Gown from Magnolia Baby.</p>",
       "options": [
         {
           "name": "Size",
@@ -709,14 +709,14 @@
       "extra_images": []
     },
     {
-      "title": "Magnolia Baby Little Brother Embroidered Footie",
+      "title": "Little Brother Embroidered Footie",
       "vendor": "Magnolia Baby",
       "type": "Sleepwear",
       "tags": [
         "Boys",
         "Baby"
       ],
-      "body": "<p>Magnolia Baby Little Brother Embroidered Footie from Magnolia Baby.</p>",
+      "body": "<p>Little Brother Embroidered Footie from Magnolia Baby.</p>",
       "options": [
         {
           "name": "Size",
@@ -735,14 +735,14 @@
       "extra_images": []
     },
     {
-      "title": "Jefferies 1603 White Nylon Knee High Socks",
+      "title": "White Nylon Knee High Socks",
       "vendor": "Jefferies Socks",
       "type": "Socks",
       "tags": [
         "Accessories",
         "New"
       ],
-      "body": "<p>Jefferies 1603 White Nylon Knee High Socks from Jefferies Socks.</p>",
+      "body": "<p>White Nylon Knee High Socks from Jefferies Socks.</p>",
       "options": [
         {
           "name": "Title",
@@ -758,15 +758,15 @@
       "extra_images": []
     },
     {
-      "title": "Jefferies 2143 Misty Ruffle Turn Cuff",
+      "title": "Misty Ruffle Turn Cuff Socks",
       "vendor": "Jefferies Socks",
-      "type": "Apparel",
+      "type": "Socks",
       "tags": [
         "Accessories",
         "Girls",
         "New"
       ],
-      "body": "<p>Jefferies 2143 Misty Ruffle Turn Cuff from Jefferies Socks.</p>",
+      "body": "<p>Misty Ruffle Turn Cuff Socks from Jefferies Socks.</p>",
       "options": [
         {
           "name": "Title",
@@ -782,14 +782,14 @@
       "extra_images": []
     },
     {
-      "title": "Jefferies 2154 White Eyelet Socks",
+      "title": "White Eyelet Socks",
       "vendor": "Jefferies Socks",
       "type": "Socks",
       "tags": [
         "Accessories",
         "Girls"
       ],
-      "body": "<p>Jefferies 2154 White Eyelet Socks from Jefferies Socks.</p>",
+      "body": "<p>White Eyelet Socks from Jefferies Socks.</p>",
       "options": [
         {
           "name": "Title",
@@ -805,7 +805,7 @@
       "extra_images": []
     },
     {
-      "title": "Southern Saturday CRIMSON/GREY Elephant Bubble",
+      "title": "Elephant Bubble, Crimson & Grey",
       "vendor": "Southern Saturday",
       "type": "Bubbles",
       "tags": [
@@ -813,7 +813,7 @@
         "Baby",
         "Bestseller"
       ],
-      "body": "<p>Southern Saturday CRIMSON/GREY Elephant Bubble from Southern Saturday.</p>",
+      "body": "<p>Elephant Bubble, Crimson & Grey from Southern Saturday.</p>",
       "options": [
         {
           "name": "Size",
@@ -839,14 +839,14 @@
       "extra_images": []
     },
     {
-      "title": "Southern Saturday CRIMSON/GREY Elephant Diaper Set",
+      "title": "Elephant Diaper Set, Crimson & Grey",
       "vendor": "Southern Saturday",
       "type": "Sets",
       "tags": [
         "Baby",
         "Preorder"
       ],
-      "body": "<p>Southern Saturday CRIMSON/GREY Elephant Diaper Set from Southern Saturday.</p>",
+      "body": "<p>Elephant Diaper Set, Crimson & Grey from Southern Saturday.</p>",
       "options": [
         {
           "name": "Size",
@@ -875,14 +875,14 @@
       "backorder": true
     },
     {
-      "title": "Southern Saturday CRIMSON/GREY Elephant Dress",
+      "title": "Elephant Dress, Crimson & Grey",
       "vendor": "Southern Saturday",
       "type": "Dresses",
       "tags": [
         "Girls",
         "Baby"
       ],
-      "body": "<p>Southern Saturday CRIMSON/GREY Elephant Dress from Southern Saturday.</p>",
+      "body": "<p>Elephant Dress, Crimson & Grey from Southern Saturday.</p>",
       "options": [
         {
           "name": "Size",
@@ -905,14 +905,14 @@
       "extra_images": []
     },
     {
-      "title": "Blended Spirit MARCHING BOOTS Mardi Gras--Baby",
+      "title": "Marching Boots Mardi Gras Bubble",
       "vendor": "Blended Spirit",
-      "type": "Apparel",
+      "type": "Bubbles",
       "tags": [
         "Girls",
         "Sale"
       ],
-      "body": "<p>Blended Spirit MARCHING BOOTS Mardi Gras--Baby from Blended Spirit.</p>",
+      "body": "<p>Marching Boots Mardi Gras Bubble from Blended Spirit.</p>",
       "options": [
         {
           "name": "Title",
@@ -928,7 +928,7 @@
       "extra_images": []
     },
     {
-      "title": "Trotter Street Kids ABIGAIL DRESS Lavender/Light Pink Stripe",
+      "title": "Abigail Dress, Lavender Stripe",
       "vendor": "Trotter Street Kids",
       "type": "Dresses",
       "tags": [
@@ -936,7 +936,7 @@
         "Baby",
         "Bestseller"
       ],
-      "body": "<p>Trotter Street Kids ABIGAIL DRESS Lavender/Light Pink Stripe from Trotter Street Kids.</p>",
+      "body": "<p>Abigail Dress, Lavender Stripe from Trotter Street Kids.</p>",
       "options": [
         {
           "name": "Size",
@@ -966,13 +966,13 @@
       "extra_images": []
     },
     {
-      "title": "Trotter Street Kids ABIGAIL PANT SET Lavender/Light Pink Stripe",
+      "title": "Abigail Pant Set, Lavender Stripe",
       "vendor": "Trotter Street Kids",
       "type": "Sets",
       "tags": [
         "Baby"
       ],
-      "body": "<p>Trotter Street Kids ABIGAIL PANT SET Lavender/Light Pink Stripe from Trotter Street Kids.</p>",
+      "body": "<p>Abigail Pant Set, Lavender Stripe from Trotter Street Kids.</p>",
       "options": [
         {
           "name": "Size",
@@ -1002,14 +1002,14 @@
       "extra_images": []
     },
     {
-      "title": "Trotter Street Kids ABIGAIL ROMPER Lavender/Light Pink Stripe",
+      "title": "Abigail Romper, Lavender Stripe",
       "vendor": "Trotter Street Kids",
       "type": "Rompers",
       "tags": [
         "Girls",
         "Baby"
       ],
-      "body": "<p>Trotter Street Kids ABIGAIL ROMPER Lavender/Light Pink Stripe from Trotter Street Kids.</p>",
+      "body": "<p>Abigail Romper, Lavender Stripe from Trotter Street Kids.</p>",
       "options": [
         {
           "name": "Size",
@@ -1039,14 +1039,14 @@
       "extra_images": []
     },
     {
-      "title": "Trotter Street Kids AMELIA BLOOMER PANT SET Light Pink Microgingham/Light Blue",
+      "title": "Amelia Bloomer Pant Set, Pink Microgingham",
       "vendor": "Trotter Street Kids",
       "type": "Bloomers",
       "tags": [
         "Girls",
         "Baby"
       ],
-      "body": "<p>Trotter Street Kids AMELIA BLOOMER PANT SET Light Pink Microgingham/Light Blue from Trotter Street Kids.</p>",
+      "body": "<p>Amelia Bloomer Pant Set, Pink Microgingham from Trotter Street Kids.</p>",
       "options": [
         {
           "name": "Size",
@@ -1076,7 +1076,7 @@
       "extra_images": []
     },
     {
-      "title": "Widgeon BARN JACKET Caramel",
+      "title": "Barn Jacket, Caramel",
       "vendor": "Widgeon",
       "type": "Outerwear",
       "tags": [
@@ -1084,7 +1084,7 @@
         "Baby",
         "New"
       ],
-      "body": "<p>Widgeon BARN JACKET Caramel from Widgeon.</p>",
+      "body": "<p>Barn Jacket, Caramel from Widgeon.</p>",
       "options": [
         {
           "name": "Size",
@@ -1115,14 +1115,14 @@
       "extra_images": []
     },
     {
-      "title": "Widgeon WARMPLUS FAVORITE JACKET Light Blue",
+      "title": "Warmplus Favorite Jacket, Light Blue",
       "vendor": "Widgeon",
       "type": "Outerwear",
       "tags": [
         "Baby",
         "New"
       ],
-      "body": "<p>Widgeon WARMPLUS FAVORITE JACKET Light Blue from Widgeon.</p>",
+      "body": "<p>Warmplus Favorite Jacket, Light Blue from Widgeon.</p>",
       "options": [
         {
           "name": "Size",
@@ -1149,13 +1149,13 @@
       "extra_images": []
     },
     {
-      "title": "Mustard & Ketchup Kids Big Brother SS Tee",
+      "title": "Big Brother Tee",
       "vendor": "Mustard & Ketchup Kids",
       "type": "Tops",
       "tags": [
         "Boys"
       ],
-      "body": "<p>Mustard & Ketchup Kids Big Brother SS Tee from Mustard & Ketchup Kids.</p>",
+      "body": "<p>Big Brother Tee from Mustard & Ketchup Kids.</p>",
       "options": [
         {
           "name": "Title",
@@ -1171,14 +1171,14 @@
       "extra_images": []
     },
     {
-      "title": "Mustard & Ketchup Kids Big Sister SS Tee",
+      "title": "Big Sister Tee",
       "vendor": "Mustard & Ketchup Kids",
       "type": "Tops",
       "tags": [
         "Girls",
         "Bestseller"
       ],
-      "body": "<p>Mustard & Ketchup Kids Big Sister SS Tee from Mustard & Ketchup Kids.</p>",
+      "body": "<p>Big Sister Tee from Mustard & Ketchup Kids.</p>",
       "options": [
         {
           "name": "Title",
@@ -1194,15 +1194,15 @@
       "extra_images": []
     },
     {
-      "title": "Apple of My Isla BALLET Go Bag - Large",
-      "vendor": "Apple of my Isla",
+      "title": "Ballet Go Bag, Large",
+      "vendor": "Apple of My Isla",
       "type": "Bags",
       "tags": [
         "Accessories",
         "Girls",
         "Preorder"
       ],
-      "body": "<p>Apple of My Isla BALLET Go Bag - Large from Apple of my Isla.</p>",
+      "body": "<p>Ballet Go Bag, Large from Apple of my Isla.</p>",
       "options": [
         {
           "name": "Title",
@@ -1219,14 +1219,14 @@
       "backorder": true
     },
     {
-      "title": "Apple of My Isla BALLET Large Backpack",
-      "vendor": "Apple of my Isla",
+      "title": "Ballet Large Backpack",
+      "vendor": "Apple of My Isla",
       "type": "Bags",
       "tags": [
         "Accessories",
         "Girls"
       ],
-      "body": "<p>Apple of My Isla BALLET Large Backpack from Apple of my Isla.</p>",
+      "body": "<p>Ballet Large Backpack from Apple of my Isla.</p>",
       "options": [
         {
           "name": "Title",
@@ -1242,15 +1242,15 @@
       "extra_images": []
     },
     {
-      "title": "Apple of My Isla BALLET Lunchbox",
-      "vendor": "Apple of my Isla",
+      "title": "Ballet Lunchbox",
+      "vendor": "Apple of My Isla",
       "type": "Bags",
       "tags": [
         "Accessories",
         "Girls",
         "Sale"
       ],
-      "body": "<p>Apple of My Isla BALLET Lunchbox from Apple of my Isla.</p>",
+      "body": "<p>Ballet Lunchbox from Apple of my Isla.</p>",
       "options": [
         {
           "name": "Title",
@@ -1266,15 +1266,15 @@
       "extra_images": []
     },
     {
-      "title": "Apple of My Isla BALLET Nap Mat",
-      "vendor": "Apple of my Isla",
+      "title": "Ballet Nap Mat",
+      "vendor": "Apple of My Isla",
       "type": "Nap mats",
       "tags": [
         "Accessories",
         "Girls",
         "Bestseller"
       ],
-      "body": "<p>Apple of My Isla BALLET Nap Mat from Apple of my Isla.</p>",
+      "body": "<p>Ballet Nap Mat from Apple of my Isla.</p>",
       "options": [
         {
           "name": "Title",
@@ -1290,14 +1290,14 @@
       "extra_images": []
     },
     {
-      "title": "The Uptown Baby BIG BROTHER 2 Piece Pajama Set",
+      "title": "Big Brother 2 Piece Pajama Set",
       "vendor": "The Uptown Baby",
       "type": "Pajamas",
       "tags": [
         "Boys",
         "Baby"
       ],
-      "body": "<p>The Uptown Baby BIG BROTHER 2 Piece Pajama Set from The Uptown Baby.</p>",
+      "body": "<p>Big Brother 2 Piece Pajama Set from The Uptown Baby.</p>",
       "options": [
         {
           "name": "Size",
@@ -1323,14 +1323,14 @@
       "extra_images": []
     },
     {
-      "title": "The Uptown Baby BIG SISTER 2 Piece Pajama Set",
+      "title": "Big Sister 2 Piece Pajama Set",
       "vendor": "The Uptown Baby",
       "type": "Pajamas",
       "tags": [
         "Girls",
         "Baby"
       ],
-      "body": "<p>The Uptown Baby BIG SISTER 2 Piece Pajama Set from The Uptown Baby.</p>",
+      "body": "<p>Big Sister 2 Piece Pajama Set from The Uptown Baby.</p>",
       "options": [
         {
           "name": "Size",
@@ -1356,14 +1356,14 @@
       "extra_images": []
     },
     {
-      "title": "Bob & Blossom BROTHER Denim Blue All in One",
-      "vendor": "Bob",
+      "title": "Brother All In One, Denim Blue",
+      "vendor": "Bob & Blossom",
       "type": "Rompers",
       "tags": [
         "Boys",
         "Baby"
       ],
-      "body": "<p>Bob & Blossom BROTHER Denim Blue All in One from Bob.</p>",
+      "body": "<p>Brother All In One, Denim Blue from Bob.</p>",
       "options": [
         {
           "name": "Size",
@@ -1381,14 +1381,14 @@
       "extra_images": []
     },
     {
-      "title": "Bob & Blossom BROTHER Denim Sweatshirt",
-      "vendor": "Bob",
+      "title": "Brother Denim Sweatshirt",
+      "vendor": "Bob & Blossom",
       "type": "Tops",
       "tags": [
         "Boys",
         "New"
       ],
-      "body": "<p>Bob & Blossom BROTHER Denim Sweatshirt from Bob.</p>",
+      "body": "<p>Brother Denim Sweatshirt from Bob.</p>",
       "options": [
         {
           "name": "Size",
@@ -1407,14 +1407,14 @@
       "extra_images": []
     },
     {
-      "title": "Bob & Blossom BROTHER Fern Sweatshirt",
-      "vendor": "Bob",
+      "title": "Brother Fern Sweatshirt",
+      "vendor": "Bob & Blossom",
       "type": "Tops",
       "tags": [
         "Boys",
         "New"
       ],
-      "body": "<p>Bob & Blossom BROTHER Fern Sweatshirt from Bob.</p>",
+      "body": "<p>Brother Fern Sweatshirt from Bob.</p>",
       "options": [
         {
           "name": "Size",
@@ -1433,14 +1433,14 @@
       "extra_images": []
     },
     {
-      "title": "Bob & Blossom BROTHER Sage Short Sleeve T-Shirt",
-      "vendor": "Bob",
+      "title": "Brother Short Sleeve T-Shirt, Sage",
+      "vendor": "Bob & Blossom",
       "type": "Tops",
       "tags": [
         "Boys",
         "Baby"
       ],
-      "body": "<p>Bob & Blossom BROTHER Sage Short Sleeve T-Shirt from Bob.</p>",
+      "body": "<p>Brother Short Sleeve T-Shirt, Sage from Bob.</p>",
       "options": [
         {
           "name": "Size",

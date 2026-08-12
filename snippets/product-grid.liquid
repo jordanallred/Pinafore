@@ -12,12 +12,20 @@
   {% render 'product-grid', products: collection.products, columns: 4 %}
 {% enddoc %}
 
-<ul class="product-grid" style="--grid-columns: {{ columns | default: 4 }};" role="list">
+{%- liquid
+  assign cols = columns | default: 4
+  # Derived from the actual column count rather than hardcoded, so a 5-up grid
+  # does not request 25vw renditions it will never display.
+  assign desktop_vw = 100 | divided_by: cols | plus: 1
+  assign grid_sizes = '(min-width: 990px) ' | append: desktop_vw | append: 'vw, (min-width: 750px) 33vw, 50vw'
+-%}
+
+<ul class="product-grid" style="--grid-columns: {{ cols }};" role="list">
   {%- for product in products -%}
     <li>
       {% render 'product-card',
         product: product,
-        sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw',
+        sizes: grid_sizes,
         lazy: forloop.first
       %}
     </li>

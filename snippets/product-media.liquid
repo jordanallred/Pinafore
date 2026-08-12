@@ -118,7 +118,13 @@
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
+    /*
+     * scroll-behavior is deliberately NOT smooth here. Combined with
+     * mandatory scroll-snap, Chrome cancels programmatic scrolls outright —
+     * selecting a colour moved the gallery nowhere and failed silently.
+     * <pinafore-gallery> passes `behavior` per call instead, which the snap
+     * container honours.
+     */
     overscroll-behavior-x: contain;
     gap: var(--space-3xs);
     /* Hide the scrollbar without disabling scrolling. */

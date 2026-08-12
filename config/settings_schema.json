@@ -22,7 +22,7 @@
             "type": "color",
             "id": "background",
             "label": "t:labels.background",
-            "default": "#FAF8F5"
+            "default": "#FBF6F0"
           },
           {
             "type": "color_background",
@@ -37,14 +37,14 @@
             "type": "color",
             "id": "text",
             "label": "t:labels.text",
-            "default": "#262A30"
+            "default": "#2F2823"
           },
           {
             "type": "color",
             "id": "text_muted",
             "label": "t:labels.text_muted",
             "info": "t:info.text_muted",
-            "default": "#61666E"
+            "default": "#6E635A"
           },
           {
             "type": "header",
@@ -54,19 +54,19 @@
             "type": "color",
             "id": "button",
             "label": "t:labels.button_background",
-            "default": "#262A30"
+            "default": "#2F2823"
           },
           {
             "type": "color",
             "id": "button_label",
             "label": "t:labels.button_label",
-            "default": "#FAF8F5"
+            "default": "#FBF6F0"
           },
           {
             "type": "color",
             "id": "secondary_button_label",
             "label": "t:labels.secondary_button_label",
-            "default": "#262A30"
+            "default": "#2F2823"
           },
           {
             "type": "header",
@@ -90,7 +90,7 @@
             "id": "sale",
             "label": "t:labels.sale",
             "info": "t:info.sale",
-            "default": "#8F3A2E"
+            "default": "#9A3B2B"
           },
           {
             "type": "header",
@@ -101,20 +101,20 @@
             "id": "border",
             "label": "t:labels.border",
             "info": "t:info.border",
-            "default": "#D6D8DC"
+            "default": "#E6DCD0"
           },
           {
             "type": "color",
             "id": "border_control",
             "label": "t:labels.border_control",
             "info": "t:info.border_control",
-            "default": "#7C828A"
+            "default": "#8A7F73"
           },
           {
             "type": "color",
             "id": "shadow",
             "label": "t:labels.shadow",
-            "default": "#262A30"
+            "default": "#2F2823"
           }
         ],
         "role": {
@@ -146,7 +146,7 @@
         "type": "font_picker",
         "id": "type_heading_font",
         "label": "t:labels.heading_font",
-        "default": "ebgaramond_n4"
+        "default": "playfair_display_n4"
       },
       {
         "type": "font_picker",
@@ -343,7 +343,7 @@
             "label": "t:options.media_ratio.portrait"
           }
         ],
-        "default": "portrait"
+        "default": "square"
       }
     ]
   },
@@ -369,6 +369,15 @@
         "id": "card_show_swatches",
         "label": "t:labels.show_swatches",
         "default": true
+      },
+      {
+        "type": "range",
+        "id": "card_swatch_limit",
+        "label": "t:labels.swatch_limit",
+        "min": 2,
+        "max": 8,
+        "step": 1,
+        "default": 4
       },
       {
         "type": "checkbox",

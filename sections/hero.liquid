@@ -71,17 +71,32 @@
 </div>
 
 {% stylesheet %}
+  /*
+   * The hero is full-bleed, so it re-establishes the page grid for its own
+   * content. Without this the copy sat hard against the viewport edge while
+   * the header logo sat at the content column — a visible misalignment on
+   * every page load.
+   */
   .hero {
     position: relative;
     display: grid;
+    grid-template-columns: var(--content-grid);
     min-height: var(--hero-height, 70svh);
     isolation: isolate;
   }
 
   .hero__media {
-    position: absolute;
-    inset: 0;
+    grid-column: 1 / -1;
+    grid-row: 1;
+    position: relative;
     z-index: -1;
+  }
+
+  .hero__media::before {
+    /* Holds the media cell open when there is no image yet. */
+    content: '';
+    display: block;
+    min-height: var(--hero-height, 70svh);
   }
 
   /*
@@ -103,6 +118,8 @@
   }
 
   .hero__image {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -113,24 +130,26 @@
   }
 
   .hero__content {
+    grid-column: 2;
+    grid-row: 1;
     position: relative;
     display: flex;
     flex-direction: column;
     gap: var(--space-2xs);
     align-self: end;
-    padding: var(--space-lg) var(--page-margin);
+    padding-block: var(--space-lg);
     max-width: 42rem;
   }
 
   .hero__content--center {
     align-self: center;
-    margin-inline: auto;
+    justify-self: center;
     text-align: center;
     align-items: center;
   }
 
   .hero__content--end {
-    margin-inline-start: auto;
+    justify-self: end;
     text-align: right;
     align-items: flex-end;
   }

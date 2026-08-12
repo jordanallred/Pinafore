@@ -125,8 +125,12 @@
     --space-2xl: calc(5rem * var(--density));
     --space-3xl: calc(7.5rem * var(--density));
 
-    /* Vertical rhythm between sections, fluid and density-aware. */
-    --section-spacing: calc(clamp(2.5rem, 1.5rem + 5vw, 6rem) * var(--density));
+    /*
+     * Vertical rhythm between sections. The upper bound is deliberately
+     * modest: it is multiplied by density, and at spacious (1.25) a 6rem cap
+     * produced 120px of dead space above and below a single row of chips.
+     */
+    --section-spacing: calc(clamp(2rem, 1.2rem + 3vw, 4rem) * var(--density));
 
     /* Layout -------------------------------------------------------- */
     --page-width: {{ settings.max_page_width }};

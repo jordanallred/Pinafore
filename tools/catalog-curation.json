@@ -13,68 +13,127 @@
     "",
     "Indices refer to positions in tools/seed-data-real.json."
   ],
-
   "merge": [
     {
       "title": "Floafers Prodigy Driver",
       "option": "Color",
       "members": [
-        { "index": 36, "value": "Driftwood Brown" },
-        { "index": 37, "value": "Navy Peony" }
+        {
+          "index": 36,
+          "value": "Driftwood Brown"
+        },
+        {
+          "index": 37,
+          "value": "Navy Peony"
+        }
       ]
     },
     {
       "title": "Footmates Allie T-Strap",
       "option": "Color",
       "members": [
-        { "index": 57, "value": "Apple Red" },
-        { "index": 58, "value": "Chestnut" },
-        { "index": 59, "value": "Navy" },
-        { "index": 60, "value": "Rose" }
+        {
+          "index": 57,
+          "value": "Apple Red"
+        },
+        {
+          "index": 58,
+          "value": "Chestnut"
+        },
+        {
+          "index": 59,
+          "value": "Navy"
+        },
+        {
+          "index": 60,
+          "value": "Rose"
+        }
       ]
     },
     {
       "title": "L'Amour Birdie T-Strap",
       "option": "Color",
       "members": [
-        { "index": 4, "value": "Brown" },
-        { "index": 5, "value": "Ecru" },
-        { "index": 6, "value": "Navy" },
-        { "index": 7, "value": "Pink" }
+        {
+          "index": 4,
+          "value": "Brown"
+        },
+        {
+          "index": 5,
+          "value": "Ecru"
+        },
+        {
+          "index": 6,
+          "value": "Navy"
+        },
+        {
+          "index": 7,
+          "value": "Pink"
+        }
       ]
     },
     {
       "title": "La Luna Footless Romper",
       "option": "Color",
       "members": [
-        { "index": 19, "value": "Blue Mouse Ears" },
-        { "index": 21, "value": "Pink Mouse Ears" }
+        {
+          "index": 19,
+          "value": "Blue Mouse Ears"
+        },
+        {
+          "index": 21,
+          "value": "Pink Mouse Ears"
+        }
       ]
     },
     {
       "title": "La Luna Long Sleeve Loungewear",
       "option": "Color",
       "members": [
-        { "index": 20, "value": "Blue Mouse Ears" },
-        { "index": 22, "value": "Pink Mouse Ears" }
+        {
+          "index": 20,
+          "value": "Blue Mouse Ears"
+        },
+        {
+          "index": 22,
+          "value": "Pink Mouse Ears"
+        }
       ]
     },
     {
       "title": "Mustard & Ketchup Birthday Cake Tee",
       "option": "Color",
       "members": [
-        { "index": 40, "value": "Light Blue" },
-        { "index": 41, "value": "Light Pink" }
+        {
+          "index": 40,
+          "value": "Light Blue"
+        },
+        {
+          "index": 41,
+          "value": "Light Pink"
+        }
       ]
     },
     {
       "title": "Oh Mint Medium Backpack",
       "option": "Color",
       "members": [
-        { "index": 45, "value": "Baby Blue Seersucker" },
-        { "index": 46, "value": "Cheetah" },
-        { "index": 47, "value": "Grey Seersucker" },
-        { "index": 48, "value": "Lilac Seersucker" }
+        {
+          "index": 45,
+          "value": "Baby Blue Seersucker"
+        },
+        {
+          "index": 46,
+          "value": "Cheetah"
+        },
+        {
+          "index": 47,
+          "value": "Grey Seersucker"
+        },
+        {
+          "index": 48,
+          "value": "Lilac Seersucker"
+        }
       ]
     },
     {
@@ -82,29 +141,49 @@
       "title": "Scarlet & Gold Cheer Dress",
       "option": "Team",
       "members": [
-        { "index": 42, "value": "Alabama" },
-        { "index": 43, "value": "Auburn" },
-        { "index": 44, "value": "South Alabama" }
+        {
+          "index": 42,
+          "value": "Alabama"
+        },
+        {
+          "index": 43,
+          "value": "Auburn"
+        },
+        {
+          "index": 44,
+          "value": "South Alabama"
+        }
       ]
     },
     {
       "title": "The Uptown Baby A+ Sleep Bag",
       "option": "Color",
       "members": [
-        { "index": 53, "value": "Blue Gingham" },
-        { "index": 54, "value": "Pink Gingham" }
+        {
+          "index": 53,
+          "value": "Blue Gingham"
+        },
+        {
+          "index": 54,
+          "value": "Pink Gingham"
+        }
       ]
     },
     {
       "title": "Widgeon Hooded Barn Jacket",
       "option": "Color",
       "members": [
-        { "index": 33, "value": "Light Blue" },
-        { "index": 34, "value": "Light Pink" }
+        {
+          "index": 33,
+          "value": "Light Blue"
+        },
+        {
+          "index": 34,
+          "value": "Light Pink"
+        }
       ]
     }
   ],
-
   "_kept_separate_deliberately": {
     "Apple of my Isla BALLET": "Go Bag, Backpack, Lunchbox and Nap Mat share a print but are four different products at four different prices.",
     "Bob & Blossom BROTHER": "Four different garments with different size runs — 0-3mo for the all-in-one, 1YR/2YR/4YR/6YR for the sweatshirts.",
@@ -114,12 +193,86 @@
     "Trotter Street Kids Abigail": "Dress, Pant Set and Romper are different garments at different prices.",
     "Widgeon Barn Jacket vs Warmplus Favorite Jacket": "Different jackets; only the Hooded Barn Jacket has two colourways."
   },
-
   "drop": [
-    { "index": 26, "reason": "Duplicate Southern Saturday Elephant Dress listing at a different price; keeping both would collide on handle." }
+    {
+      "index": 26,
+      "reason": "Duplicate Southern Saturday Elephant Dress listing at a different price; keeping both would collide on handle."
+    }
   ],
-
-  "sizeless": [49, 50, 51, 52, 45, 46, 47, 48, 53, 54, 8, 9, 10, 11, 16, 17, 18, 27],
-
-  "_sizeless_note": "Bags, nap mats, sleep bags, hats and socks that the source store sells one-size. These get Shopify's default variant so the theme hides the picker entirely."
+  "sizeless": [
+    49,
+    50,
+    51,
+    52,
+    45,
+    46,
+    47,
+    48,
+    53,
+    54,
+    8,
+    9,
+    10,
+    11,
+    16,
+    17,
+    18,
+    27
+  ],
+  "_sizeless_note": "Bags, nap mats, sleep bags, hats and socks that the source store sells one-size. These get Shopify's default variant so the theme hides the picker entirely.",
+  "_titles_note": "Written out by hand. Every rule-based attempt at stripping the vendor mangled something — 'Mustard & Ketchup Kids Birthday Cake Tee' became 'Ketchup Birthday Cake Tee'. 47 products is small enough to just say what each one is called. Keyed by the generated title; build-catalog.py warns on any product missing an entry so this cannot silently drift.",
+  "vendors": {
+    "L'Amour  Shoes": "L'Amour Shoes",
+    "Bob": "Bob & Blossom",
+    "Apple of my Isla": "Apple of My Isla"
+  },
+  "titles": {
+    "Floafers Prodigy Driver": "Prodigy Driver",
+    "Footmates Allie T-Strap": "Allie T-Strap",
+    "L'Amour Birdie T-Strap": "Birdie T-Strap",
+    "La Luna Footless Romper": "Footless Romper",
+    "La Luna Long Sleeve Loungewear": "Long Sleeve Loungewear",
+    "Mustard & Ketchup Birthday Cake Tee": "Birthday Cake Tee",
+    "Oh Mint Medium Backpack": "Medium Backpack",
+    "Scarlet & Gold Cheer Dress": "Cheer Dress",
+    "The Uptown Baby A+ Sleep Bag": "A+ Sleep Bag",
+    "Widgeon Hooded Barn Jacket": "Hooded Barn Jacket",
+    "Little English MERIWETHER FLORAL Simply Smocked Dress": "Meriwether Floral Simply Smocked Dress",
+    "Little English MERIWETHER STRIPE Sleeveless Barrington Bubble": "Meriwether Stripe Barrington Bubble",
+    "Little English PATRIOTIC PLAID Evie Bloomer Set": "Patriotic Plaid Evie Bloomer Set",
+    "Little English PATRIOTIC PLAID Evie Dress": "Patriotic Plaid Evie Dress",
+    "Harding Lane GOLDEN RETREIVER Moss Green Kids Hat": "Golden Retriever Kids Hat, Moss Green",
+    "Harding Lane GREAT WHITE SHARK Navy Kids Hat": "Great White Shark Kids Hat, Navy",
+    "Harding Lane STEGOSAURUS Cobalt Kids Hat": "Stegosaurus Kids Hat, Cobalt",
+    "Harding Lane YELLOW LAB Navy Kids Hat": "Yellow Lab Kids Hat, Navy",
+    "Magnolia Baby Big Brother Printed LS Pajamas": "Big Brother Printed Pajamas",
+    "Magnolia Baby Big Sister Printed LS Pajamas": "Big Sister Printed Pajamas",
+    "Magnolia Baby Little Brother Embroidered Converter Gown": "Little Brother Converter Gown",
+    "Magnolia Baby Little Brother Embroidered Footie": "Little Brother Embroidered Footie",
+    "Jefferies 1603 White Nylon Knee High Socks": "White Nylon Knee High Socks",
+    "Jefferies 2143 Misty Ruffle Turn Cuff": "Misty Ruffle Turn Cuff Socks",
+    "Jefferies 2154 White Eyelet Socks": "White Eyelet Socks",
+    "Southern Saturday CRIMSON/GREY Elephant Bubble": "Elephant Bubble, Crimson & Grey",
+    "Southern Saturday CRIMSON/GREY Elephant Diaper Set": "Elephant Diaper Set, Crimson & Grey",
+    "Southern Saturday CRIMSON/GREY Elephant Dress": "Elephant Dress, Crimson & Grey",
+    "Blended Spirit MARCHING BOOTS Mardi Gras--Baby": "Marching Boots Mardi Gras Bubble",
+    "Trotter Street Kids ABIGAIL DRESS Lavender/Light Pink Stripe": "Abigail Dress, Lavender Stripe",
+    "Trotter Street Kids ABIGAIL PANT SET Lavender/Light Pink Stripe": "Abigail Pant Set, Lavender Stripe",
+    "Trotter Street Kids ABIGAIL ROMPER Lavender/Light Pink Stripe": "Abigail Romper, Lavender Stripe",
+    "Trotter Street Kids AMELIA BLOOMER PANT SET Light Pink Microgingham/Light Blue": "Amelia Bloomer Pant Set, Pink Microgingham",
+    "Widgeon BARN JACKET Caramel": "Barn Jacket, Caramel",
+    "Widgeon WARMPLUS FAVORITE JACKET Light Blue": "Warmplus Favorite Jacket, Light Blue",
+    "Mustard & Ketchup Kids Big Brother SS Tee": "Big Brother Tee",
+    "Mustard & Ketchup Kids Big Sister SS Tee": "Big Sister Tee",
+    "Apple of My Isla BALLET Go Bag - Large": "Ballet Go Bag, Large",
+    "Apple of My Isla BALLET Large Backpack": "Ballet Large Backpack",
+    "Apple of My Isla BALLET Lunchbox": "Ballet Lunchbox",
+    "Apple of My Isla BALLET Nap Mat": "Ballet Nap Mat",
+    "The Uptown Baby BIG BROTHER 2 Piece Pajama Set": "Big Brother 2 Piece Pajama Set",
+    "The Uptown Baby BIG SISTER 2 Piece Pajama Set": "Big Sister 2 Piece Pajama Set",
+    "Bob & Blossom BROTHER Denim Blue All in One": "Brother All In One, Denim Blue",
+    "Bob & Blossom BROTHER Denim Sweatshirt": "Brother Denim Sweatshirt",
+    "Bob & Blossom BROTHER Fern Sweatshirt": "Brother Fern Sweatshirt",
+    "Bob & Blossom BROTHER Sage Short Sleeve T-Shirt": "Brother Short Sleeve T-Shirt, Sage"
+  }
 }

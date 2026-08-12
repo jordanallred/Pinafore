@@ -62,7 +62,8 @@
     "shop_by_brand": "Shop by brand",
     "shop_by_size": "Shop by size",
     "size": "Size",
-    "featured_collection": "Featured collection"
+    "featured_collection": "Featured collection",
+    "collection_tiles": "Collection tiles"
   },
   "labels": {
     "accent_background": "Accent",
@@ -154,7 +155,8 @@
     "products_shown": "Products shown",
     "show_view_all": "Show “View all” link",
     "show_image": "Show featured image",
-    "show_author": "Show author"
+    "show_author": "Show author",
+    "swatch_limit": "Variant thumbnails shown"
   },
   "info": {
     "accent": "Used for badges, links, and focus outlines. Keep it distinct from your button color.",
@@ -189,7 +191,9 @@
     "filter_value": "Only needed when the filter value differs from the label, for example 2T versus 2-toddler.",
     "image_mobile": "Used on phones. Leave empty to use the main image.",
     "overlay": "Darkens the image behind the text so it stays readable.",
-    "size_collection": "Sizes link into this collection. Leave empty to search all products."
+    "size_collection": "Sizes link into this collection. Leave empty to search all products.",
+    "tile_image": "Leave empty to use the collection's own image.",
+    "tile_heading": "Leave empty to use the collection's name."
   },
   "options": {
     "alignment": {

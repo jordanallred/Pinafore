@@ -16,7 +16,7 @@
 {% enddoc %}
 
 {% liquid
-  assign card_sizes = sizes | default: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw'
+  assign card_sizes = sizes | default: '(min-width: 990px) 20vw, (min-width: 750px) 33vw, 50vw'
   assign loading = 'lazy'
   if lazy == false
     assign loading = 'eager'
@@ -34,27 +34,73 @@
   if settings.card_show_quick_add and product.available and product.variants.size == 1
     assign quick_add_ready = true
   endif
+
+  # The colourway axis, if this product has one.
+  assign color_option = nil
+  for option in product.options_with_values
+    assign option_key = option.name | downcase
+    if option_key == 'color' or option_key == 'colour' or option_key == 'team'
+      assign color_option = option
+      break
+    endif
+  endfor
+
+  # When the shopper has filtered to a colour, the card should show that
+  # colour — someone who filtered to Brown does not want to look at the Navy
+  # photograph and guess.
+  assign active_color = ''
+  for filter in collection.filters
+    assign filter_key = filter.label | downcase
+    if filter_key contains 'color' or filter_key contains 'colour'
+      for value in filter.active_values
+        assign active_color = value.label
+      endfor
+    endif
+  endfor
+
+  assign featured_value = nil
+  if color_option and active_color != blank
+    for value in color_option.values
+      if value.value == active_color
+        assign featured_value = value
+        break
+      endif
+    endfor
+  endif
+
+  assign card_media = product.featured_media
+  if featured_value and featured_value.variant.featured_media
+    assign card_media = featured_value.variant.featured_media
+  endif
+
+  # On a colourway product the second image is another colour, not another
+  # angle. Swapping it on plain card hover made the card appear to change
+  # which product it was, so the hover swap is reserved for products whose
+  # extra images really are alternate views.
+  if color_option
+    assign show_second = false
+  endif
 %}
 
 <article class="card" aria-labelledby="CardTitle-{{ product.id }}">
   <a class="card__media media media--ratio" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
-    {%- if product.featured_image -%}
+    {%- if card_media -%}
       {{
-        product.featured_image
-        | image_url: width: 900
+        card_media
+        | image_url: width: 800
         | image_tag:
-          widths: '200, 300, 400, 600, 900',
+          widths: '180, 260, 360, 540, 800',
           sizes: card_sizes,
           alt: card_alt,
           loading: loading,
-          class: 'card__image'
+          class: 'card__image card__image--main'
       }}
       {%- if show_second -%}
         {{
           second_image.preview_image
-          | image_url: width: 900
+          | image_url: width: 800
           | image_tag:
-            widths: '200, 300, 400, 600, 900',
+            widths: '180, 260, 360, 540, 800',
             sizes: card_sizes,
             alt: '',
             loading: 'lazy',
@@ -70,7 +116,6 @@
     </div>
   </a>
 
-  <div class="card__body">
     {%- if settings.card_show_vendor and product.vendor != blank -%}
       <span class="card__vendor">{{ product.vendor }}</span>
     {%- endif -%}
@@ -84,70 +129,61 @@
       <a class="card__link" href="{{ product.url }}">{{ product.title }}</a>
     </h3>
 
-    {% render 'price', product: product, context: 'card', show_from: true %}
+    <div class="card__price-row">
+      {% render 'price', product: product, context: 'card', show_from: true %}
+    </div>
 
-    {%- if settings.card_show_swatches -%}
-      {%- for option in product.options_with_values -%}
-        {%- assign option_key = option.name | downcase -%}
-        {%- if option_key == 'color' or option_key == 'colour' -%}
-          {%- liquid
-            # Without linked swatch metaobjects this row would be identical
-            # grey dots, which tells a customer nothing. Fall back to a plain
-            # count, which at least says "this comes in four colours".
-            assign card_has_swatches = false
-            for value in option.values
-              if value.swatch.color or value.swatch.image
-                assign card_has_swatches = true
-                break
-              endif
-            endfor
-          -%}
-          {%- if card_has_swatches -%}
-            <ul class="card__swatches" role="list" aria-label="{{ option.name }}">
-              {%- for value in option.values limit: 5 -%}
-                <li
-                  class="card__swatch"
-                  {% if value.swatch.color %}
-                    style="--swatch: {{ value.swatch.color }};"
-                  {% elsif value.swatch.image %}
-                    style="--swatch-image: url({{ value.swatch.image | image_url: width: 40 }});"
-                  {% endif %}
-                >
-                  <span class="visually-hidden">{{ value }}</span>
-                </li>
-              {%- endfor -%}
-              {%- if option.values.size > 5 -%}
-                <li class="card__swatch-more">+{{ option.values.size | minus: 5 }}</li>
+    {%- if settings.card_show_swatches and color_option and color_option.values.size > 1 -%}
+      {%- liquid
+        assign thumb_limit = settings.card_swatch_limit | default: 4
+        assign overflow = color_option.values.size | minus: thumb_limit
+      -%}
+      <ul class="card__variants" role="list" aria-label="{{ color_option.name }}">
+        {%- for value in color_option.values limit: thumb_limit -%}
+          {%- assign value_media = value.variant.featured_media -%}
+          <li>
+            {%- if value_media -%}
+              {%- assign value_preview = value_media | image_url: width: 800 -%}
+            {%- else -%}
+              {%- assign value_preview = '' -%}
+            {%- endif -%}
+            <a
+              class="card__variant{% if value.value == active_color %} is-active{% endif %}"
+              href="{{ value.variant.url | default: product.url }}"
+              aria-label="{{ product.title }} — {{ value }}"
+              {% if value_preview != blank %}
+                data-variant-image="{{ value_preview }}"
+              {% endif %}
+            >
+              {%- if value_media -%}
+                {{
+                  value_media
+                  | image_url: width: 120
+                  | image_tag:
+                    widths: '60, 120',
+                    sizes: '36px',
+                    alt: '',
+                    loading: 'lazy',
+                    class: 'card__variant-image'
+                }}
+              {%- else -%}
+                {%- comment -%}
+                  No per-colour photo on this product. A named chip still tells
+                  the shopper the colour exists, which an empty square does not.
+                {%- endcomment -%}
+                <span class="card__variant-name">{{ value }}</span>
               {%- endif -%}
-            </ul>
-          {%- elsif option.values.size > 1 -%}
-            {%- comment -%}
-              No swatch metaobjects configured. Rather than a count, list the
-              colour names — this is what boutiques in this category actually
-              do, and it lets someone scanning the grid see the colour they
-              want without opening the product. Shopify's native swatches do
-              not cover collection cards at all, so this is the primary
-              treatment here, not a fallback.
-            {%- endcomment -%}
-            <ul class="card__colors" role="list" aria-label="{{ option.name }}">
-              {%- for value in option.values limit: 4 -%}
-                <li>
-                  {%- if value.variant -%}
-                    <a class="card__color" href="{{ value.variant.url }}">{{ value }}</a>
-                  {%- else -%}
-                    <span class="card__color">{{ value }}</span>
-                  {%- endif -%}
-                </li>
-              {%- endfor -%}
-              {%- if option.values.size > 4 -%}
-                <li><span class="card__color card__color--more">
-                  {{ 'products.more_colors' | t: count: option.values.size | minus: 4 }}
-                </span></li>
-              {%- endif -%}
-            </ul>
-          {%- endif -%}
+            </a>
+          </li>
+        {%- endfor -%}
+        {%- if overflow > 0 -%}
+          <li>
+            <a class="card__variant card__variant--more" href="{{ product.url }}">
+              {{ 'products.more_colors' | t: count: overflow }}
+            </a>
+          </li>
         {%- endif -%}
-      {%- endfor -%}
+      </ul>
     {%- endif -%}
 
     {%- if quick_add_ready -%}
@@ -163,15 +199,55 @@
         </button>
       </form>
     {%- endif -%}
-  </div>
 </article>
 
 {% stylesheet %}
+  /*
+   * A fixed row structure, not a flex column. Every optional element —
+   * vendor, colours, quick add — used to push everything below it, so cards
+   * in the same row ended at different heights depending on which slots
+   * happened to be filled and whether a title wrapped. The rows are declared
+   * once here and each keeps its band whether or not it has content.
+   */
   .card {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2xs);
+    display: grid;
+    /*
+     * The explicit column is load-bearing. Without it the implicit column
+     * sizes to max-content, which is the image's intrinsic width — cards blew
+     * out to 1400-1900px wide. minmax(0, 1fr) also lets the title clamp
+     * instead of forcing the track open.
+     */
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(2.4em, auto) auto auto;
+    gap: var(--space-2xs) 0;
+    align-content: start;
+  }
+
+  .card__media {
+    grid-row: 1;
+  }
+
+  .card__vendor {
+    grid-row: 2;
+  }
+
+  .card__title {
+    grid-row: 3;
+    /* Two lines maximum, so a long name cannot shift the price out of line. */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card__price-row {
+    grid-row: 4;
+  }
+
+  .card__variants,
+  .card__quick-add {
+    grid-row: 5;
   }
 
   .card__media {
@@ -219,12 +295,6 @@
     flex-direction: column;
     gap: var(--space-3xs);
     align-items: flex-start;
-  }
-
-  .card__body {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
   }
 
   .card__vendor {
@@ -276,46 +346,61 @@
     border: var(--border-width) solid rgb(var(--color-foreground-rgb) / 0.15);
   }
 
-  .card__colors {
-    list-style: none;
-    margin: 0.2rem 0 0;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    /* Separated by a middot rather than a gap, so a wrapped row still reads
-       as one list instead of two stray words. */
-    gap: 0 0.15rem;
-  }
-
-  .card__colors li:not(:last-child)::after {
-    content: '·';
-    margin-inline: 0.15rem;
-    color: var(--color-foreground-muted);
-  }
-
-  .card__color {
-    /* Sits above the card's stretched title link so it is separately
-       clickable, which is the whole point of listing the colours. */
-    position: relative;
-    z-index: 1;
-    font-size: var(--text-2xs);
-    color: var(--color-foreground-muted);
-    text-decoration: none;
-  }
-
-  a.card__color:hover {
-    color: var(--color-foreground);
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-  }
-
-  .card__color--more {
-    font-variant-numeric: tabular-nums;
-  }
 
   .card__swatch-more {
     font-size: var(--text-2xs);
     color: var(--color-foreground-muted);
+  }
+
+  .card__variants {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs);
+  }
+
+  .card__variant {
+    /* Above the card's stretched title link, so each thumbnail is its own
+       target rather than being swallowed by the card-wide overlay. */
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    overflow: hidden;
+    border-radius: var(--radius-media);
+    outline: var(--border-width) solid var(--color-border);
+    outline-offset: -1px;
+    text-decoration: none;
+    transition: outline-color var(--duration-fast) var(--ease-out);
+  }
+
+  .card__variant:hover,
+  .card__variant.is-active {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: -2px;
+  }
+
+  .card__variant-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .card__variant-name,
+  .card__variant--more {
+    padding-inline: 0.35rem;
+    font-size: var(--text-2xs);
+    color: var(--color-foreground-muted);
+    white-space: nowrap;
+  }
+
+  .card__variant--more {
+    width: auto;
+    min-width: 2.25rem;
   }
 
   .card__quick-add {

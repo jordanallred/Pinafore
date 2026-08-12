@@ -43,21 +43,104 @@
         "color_scheme": "scheme_3"
       },
       "blocks": {
-        "nb": { "type": "size", "settings": { "label": "NB", "caption": "Newborn" } },
-        "m3": { "type": "size", "settings": { "label": "3M", "caption": "Baby" } },
-        "m6": { "type": "size", "settings": { "label": "6M", "caption": "Baby" } },
-        "m12": { "type": "size", "settings": { "label": "12M", "caption": "Baby" } },
-        "m18": { "type": "size", "settings": { "label": "18M", "caption": "Toddler" } },
-        "t2": { "type": "size", "settings": { "label": "2T", "caption": "Toddler" } },
-        "t3": { "type": "size", "settings": { "label": "3T", "caption": "Toddler" } },
-        "t4": { "type": "size", "settings": { "label": "4T", "caption": "Toddler" } },
-        "k5": { "type": "size", "settings": { "label": "5", "caption": "Little kid" } },
-        "k6": { "type": "size", "settings": { "label": "6", "caption": "Little kid" } },
-        "k7": { "type": "size", "settings": { "label": "7", "caption": "Big kid" } },
-        "k8": { "type": "size", "settings": { "label": "8", "caption": "Big kid" } }
+        "nb": {
+          "type": "size",
+          "settings": {
+            "label": "NB",
+            "caption": "Newborn"
+          }
+        },
+        "m3": {
+          "type": "size",
+          "settings": {
+            "label": "3M",
+            "caption": "Baby"
+          }
+        },
+        "m6": {
+          "type": "size",
+          "settings": {
+            "label": "6M",
+            "caption": "Baby"
+          }
+        },
+        "m12": {
+          "type": "size",
+          "settings": {
+            "label": "12M",
+            "caption": "Baby"
+          }
+        },
+        "m18": {
+          "type": "size",
+          "settings": {
+            "label": "18M",
+            "caption": "Toddler"
+          }
+        },
+        "t2": {
+          "type": "size",
+          "settings": {
+            "label": "2T",
+            "caption": "Toddler"
+          }
+        },
+        "t3": {
+          "type": "size",
+          "settings": {
+            "label": "3T",
+            "caption": "Toddler"
+          }
+        },
+        "t4": {
+          "type": "size",
+          "settings": {
+            "label": "4T",
+            "caption": "Toddler"
+          }
+        },
+        "k5": {
+          "type": "size",
+          "settings": {
+            "label": "5",
+            "caption": "Little kid"
+          }
+        },
+        "k6": {
+          "type": "size",
+          "settings": {
+            "label": "6",
+            "caption": "Little kid"
+          }
+        },
+        "k7": {
+          "type": "size",
+          "settings": {
+            "label": "7",
+            "caption": "Big kid"
+          }
+        },
+        "k8": {
+          "type": "size",
+          "settings": {
+            "label": "8",
+            "caption": "Big kid"
+          }
+        }
       },
       "block_order": [
-        "nb", "m3", "m6", "m12", "m18", "t2", "t3", "t4", "k5", "k6", "k7", "k8"
+        "nb",
+        "m3",
+        "m6",
+        "m12",
+        "m18",
+        "t2",
+        "t3",
+        "t4",
+        "k5",
+        "k6",
+        "k7",
+        "k8"
       ]
     },
     "brands": {
@@ -81,11 +164,50 @@
         "show_view_all": true,
         "color_scheme": "scheme_5"
       }
+    },
+    "seasons": {
+      "type": "collection-tiles",
+      "settings": {
+        "eyebrow": "Shop the season",
+        "heading": "New collections",
+        "columns": 3,
+        "overlay": 50,
+        "color_scheme": "scheme_1"
+      },
+      "blocks": {
+        "t1": {
+          "type": "tile",
+          "settings": {
+            "collection": "new-arrivals",
+            "caption": "Just in"
+          }
+        },
+        "t2": {
+          "type": "tile",
+          "settings": {
+            "collection": "collegiate",
+            "caption": "Game day"
+          }
+        },
+        "t3": {
+          "type": "tile",
+          "settings": {
+            "collection": "preorder",
+            "caption": "Ships soon"
+          }
+        }
+      },
+      "block_order": [
+        "t1",
+        "t2",
+        "t3"
+      ]
     }
   },
   "order": [
     "hero",
     "new-arrivals",
+    "seasons",
     "shop-by-size",
     "brands",
     "best-sellers"
