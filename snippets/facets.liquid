@@ -180,23 +180,52 @@
                   {%- endfor -%}
 
                 {%- else -%}
-                  {%- for value in filter.values -%}
-                    <label class="facet__row{% if value.count == 0 and value.active == false %} is-empty{% endif %}">
-                      <input
-                        type="checkbox"
-                        name="{{ value.param_name }}"
-                        value="{{ value.value }}"
-                        {% if value.active %}
-                          checked
-                        {% endif %}
-                        {% if value.count == 0 and value.active == false %}
-                          disabled
+                  {%- liquid
+                    # Shopify sets `presentation` to 'swatch' once the option is
+                    # linked to a colour metafield. When it is, the values are
+                    # taxonomy-grouped — a shopper picks "Red" and gets Apple
+                    # Red, Rose and Crimson without knowing any vendor's names
+                    # for them.
+                    assign is_swatch_filter = false
+                    if filter.presentation == 'swatch'
+                      assign is_swatch_filter = true
+                    endif
+                  -%}
+                  <div class="facet__values{% if is_swatch_filter %} facet__values--swatch{% endif %}">
+                    {%- for value in filter.values -%}
+                      {%- liquid
+                        assign is_disabled = false
+                        if value.count == 0 and value.active == false
+                          assign is_disabled = true
+                        endif
+                      -%}
+                      <label
+                        class="facet__row{% if is_disabled %} is-empty{% endif %}{% if is_swatch_filter %} facet__row--swatch{% endif %}"
+                        {% if is_swatch_filter and value.swatch.color %}
+                          style="--swatch: {{ value.swatch.color }};"
+                        {% elsif is_swatch_filter and value.swatch.image %}
+                          style="--swatch-image: url({{ value.swatch.image | image_url: width: 80 }});"
                         {% endif %}
                       >
-                      <span>{{ value.label }}</span>
-                      <span class="facet__value-count">{{ value.count }}</span>
-                    </label>
-                  {%- endfor -%}
+                        <input
+                          type="checkbox"
+                          name="{{ value.param_name }}"
+                          value="{{ value.value }}"
+                          {% if value.active %}
+                            checked
+                          {% endif %}
+                          {% if is_disabled %}
+                            disabled
+                          {% endif %}
+                        >
+                        {%- if is_swatch_filter -%}
+                          <span class="facet__swatch" aria-hidden="true"></span>
+                        {%- endif -%}
+                        <span class="facet__value-label">{{ value.label }}</span>
+                        <span class="facet__value-count">{{ value.count }}</span>
+                      </label>
+                    {%- endfor -%}
+                  </div>
               {%- endcase -%}
             </div>
           </details>
@@ -339,6 +368,44 @@
     min-height: var(--tap-target);
     font-size: var(--text-sm);
     cursor: pointer;
+  }
+
+  .facet__values {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /*
+   * A swatch filter reads better as a wrapped grid than a tall list — colour
+   * is scanned, not read.
+   */
+  .facet__values--swatch {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+    gap: var(--space-3xs);
+  }
+
+  .facet__swatch {
+    width: 1.15rem;
+    height: 1.15rem;
+    flex: none;
+    border-radius: var(--radius-full);
+    background-color: var(--swatch, var(--color-border));
+    background-image: var(--swatch-image, none);
+    background-size: cover;
+    border: var(--border-width) solid rgb(var(--color-foreground-rgb) / 0.2);
+  }
+
+  /* The colour name always stays visible: a bare dot cannot be named aloud,
+     and "Apple Red" is not guessable from a square of colour. */
+  .facet__value-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .facet__row--swatch .facet__value-count {
+    margin-left: 0;
   }
 
   .facet__row input {
