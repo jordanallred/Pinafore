@@ -327,6 +327,44 @@
     gap: var(--space-3xs);
   }
 
+  /*
+   * Shopify's dynamic checkout button ships with its own blue and its own
+   * corner radius, so the product page rendered a bright #0070-ish rectangle
+   * directly under a charcoal one — the loudest colour clash left on the site
+   * and the only element still outside the radius system.
+   *
+   * Restyled to the brand accent, which also gives navy a job on the product
+   * page and sets a clear hierarchy: charcoal Add to cart, navy Buy it now.
+   *
+   * Scope and limits: this reaches the *unbranded* button only. Branded wallet
+   * buttons (Shop Pay, PayPal, Google Pay) render inside Shopify-controlled
+   * iframes and cannot be themed — if the merchant enables those, they keep
+   * their own brand colours by design, and that is expected rather than a bug.
+   */
+  .product__accelerated .shopify-payment-button__button--unbranded {
+    min-height: var(--tap-target);
+    border-radius: var(--radius-button);
+    background-color: var(--color-accent);
+    color: var(--color-accent-foreground);
+    font-family: var(--font-body--family);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: opacity var(--duration-fast) var(--ease-out);
+  }
+
+  .product__accelerated .shopify-payment-button__button--unbranded:hover:not([disabled]) {
+    background-color: var(--color-accent);
+    opacity: 0.85;
+  }
+
+  /* The "More payment options" toggle Shopify renders beneath the button. */
+  .product__accelerated .shopify-payment-button__more-options {
+    font-size: var(--text-xs);
+    color: var(--color-foreground-muted);
+    text-underline-offset: 0.2em;
+  }
+
   .accordion {
     background-image: repeating-linear-gradient(
       90deg,
