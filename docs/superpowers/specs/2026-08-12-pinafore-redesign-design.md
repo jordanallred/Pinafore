@@ -1,0 +1,203 @@
+# Pinafore Theme Redesign — Design Spec
+
+**Date:** 2026-08-12
+**Store:** pinafore-bv80ud01.myshopify.com (migrating from littlemonkeytoes.com)
+**Theme:** Pinafore 0.1.0
+
+## Context
+
+Pinafore is the Shopify theme for a children's boutique carrying ~60 third-party
+brands. The merchandise is classic Southern children's clothing: smocked bubbles,
+gingham, Peter Pan collars, monogramming, gameday. That heritage — not generic
+pastel — is the source of the theme's visual identity.
+
+The theme already has a competent token layer in `snippets/css-variables.liquid`.
+The problem is not missing architecture; it is that the tokens resolve to values
+that contradict each other, and that the merchant settings select the worst
+combination available.
+
+## Problems (observed, not assumed)
+
+### P1 — Four radius languages on one screen
+
+`style_corners: round` resolves to `radius_control: 999`, `radius_card: 16`,
+`radius_media: 12`; `style_button_shape: pill` forces buttons to 999 as well.
+On the collection page this renders 999px pills (Filter and sort, PREORDER /
+25% OFF / SOLD OUT badges, 20 brand chips), 16px cards, 12px media, and 50%
+circles (swatches) simultaneously.
+
+Both reference sites hold exactly one language: poshpeanut.com clusters at
+12px (74 elements) and 16px (55); magneticme.com is 0px plus 50% for icon
+buttons only.
+
+### P2 — The accent has two identities
+
+`--color-accent` is `#35506E` (cool slate blue) in schemes 1/3/5 and `#E8CBAE`
+(warm sand) in schemes 2/4. The same semantic slot changes hue family as the
+page scrolls. `--color-sale` splits three ways: `#9A3B2B`, `#EE9781`, `#F6BCAB`.
+
+The slate blue is also the only cool element on a warm cream page, which is why
+the testimonial stars and PREORDER badge read as off-brand.
+
+### P3 — Cream and pure white sit adjacent
+
+Homepage band backgrounds, in order: `#2F2823` (hero) → `#F7E9E4` (marquee) →
+`#FBF6F0` → `#FBF6F0` → `#F7E9E4` → `#FBF6F0` → `#FBF6F0` → `#FFFFFF` →
+`#2F2823` (footer).
+
+`reviews-band` at `#FBF6F0` against `best-sellers` at `#FFFFFF` is a 5-point
+shift. Too small to read as intent, large enough to read as a rendering fault.
+Blush also appears twice at arbitrary intervals.
+
+### P4 — Padding is disproportionate to content
+
+`layout_density: spacious` applies a ×1.25 multiplier, and bands carry 50px/50px
+padding. But `sizes-band` is 279px tall in total, so padding dominates content.
+The hero is 979px of dark brown with no image behind it — a void above the fold.
+
+### P5 — Grid rows do not align
+
+Product titles that wrap to two lines ("Amelia Bloomer Pant Set, Pink
+Microgingham") push their price down, so prices sit at different heights across
+a row.
+
+### P6 — Mismatched product photography (highest leverage)
+
+Every one of ~60 brands supplies its own photo background: white, grey,
+lavender, ecru. Product media currently sits directly on the section background,
+so each card renders as a visibly mismatched rectangle against cream. Neither
+reference site has this problem — both are single brands shooting one lookbook.
+
+This is the defining visual problem of a multi-brand boutique and it is mostly
+not a color problem.
+
+### P7 — Scaffold leftovers
+
+`sections/hello-world.liquid` carries hardcoded `#f6f6f7`, `#eef3ff`, `8px` and
+`4px`. `assets/critical.css:199` hardcodes a `2px` radius.
+`sections/collection-tiles.liquid:155` hardcodes `#fff`.
+
+## Direction
+
+**Heirloom Soft.** Cream ground, one soft radius language, quiet chrome, and a
+single heritage-navy accent. Childhood is carried by the stitched seam and a
+scalloped band edge — sewn-garment references native to a pinafore — not by
+pastel chrome. The chrome recedes so that 60 brands' photography can coexist.
+
+## Design
+
+### D1 — One radius language
+
+Rewrite the preset table in `css-variables.liquid` so no preset can produce a
+clash:
+
+| preset  | control | card | media |
+|---------|---------|------|-------|
+| sharp   | 0       | 0    | 0     |
+| soft    | 6       | 8    | 8     |
+| round   | 10      | 12   | 12    |
+
+Store uses `round`. `style_button_shape` is set to `inherit` so buttons take
+`--radius-control`; the `pill` option remains available to merchants but is no
+longer selected.
+
+Exactly two shapes ship: **rounded rectangles at 10–12px**, and **true circles**
+(`50%`) reserved for color swatches, icon-only buttons (search, account, cart,
+carousel arrows), and quantity steppers. Brand chips, size chips, filter
+controls and badges move from 999px to `--radius-control`.
+
+### D2 — One accent hue, two lightness variants
+
+The accent keeps one hue identity site-wide. Light and dark schemes select
+different *lightness* of the same hue, never a different hue.
+
+| token | light schemes (1, 3, 5) | dark schemes (2, 4) |
+|-------|-------------------------|---------------------|
+| `--color-accent` | `#22406B` navy | `#A8C0DC` chambray |
+| `--color-sale`   | `#9A3B2B` brick | `#E2907F` clay |
+
+Sand `#E8CBAE` is removed from the accent slot entirely.
+
+Every pairing is validated for WCAG contrast against its own scheme background
+before commit: accent-as-text ≥ 4.5:1, `--color-border-control` ≥ 3:1.
+
+### D3 — Band rhythm
+
+Cream `#FBF6F0` is the ground. Rules:
+
+- **Cream and white are never adjacent.** `scheme_5` (`#FFFFFF`) is retired from
+  storefront use; the best-sellers band moves to cream.
+- **Blush** `#F7E9E4` appears at most twice per page, never adjacent to another
+  tinted band, always separated by at least two cream bands.
+- **Ink** `#2F2823` is reserved for the hero and footer.
+- `scheme_4` (sage) is retuned to pair with navy but is unused on the homepage.
+
+### D4 — Product media plate
+
+Every product image renders on its own fixed plate rather than directly on the
+section background:
+
+- Fixed `1 / 1` ratio, `object-fit: contain`, consistent internal padding
+- Plate background is a new `--color-media-plate` token, fixed at `#FFFFFF` on
+  light schemes and `#F6F1EA` on dark schemes. It is deliberately *not* derived
+  from `--color-background`, so the plate stays constant while bands change.
+- `--radius-media` corners and a 1px `--color-border` hairline, so a product
+  shot on true white still reads as a card
+
+Result: every card is identical regardless of which brand supplied the photo.
+White-background photos blend into the plate; grey and lavender ones sit inside
+a consistent frame instead of clashing with cream.
+
+### D5 — Spacing and alignment
+
+- `layout_density` moves from `spacious` to `default` (×1.0); `--section-spacing` becomes
+  `clamp(2rem, 1.5rem + 2vw, 3.5rem)`, giving 4–7rem between bands.
+- Short bands (marquee, sizes, brands) take a reduced-padding modifier so
+  padding never dominates their content.
+- Hero is capped at `72vh` and requires an image; with no image it falls back to
+  a cream editorial hero rather than a dark void.
+- Product card becomes a grid with the title area clamped to two lines and its
+  space reserved, so prices align across every row.
+
+### D6 — Type
+
+Playfair Display + Karla is kept — it mirrors the serif-display / sans-body
+structure of both references (Lora + Montserrat; SangBleu + Serenity).
+
+- `type_heading_scale` 115 → 105. At 115 the `--text-4xl` step reached 6.3rem.
+- `type_heading_letter_spacing` -1 → -0.5, matching Lora's -0.5px on Posh Peanut.
+- The vendor eyebrow moves from `--text-2xs` (~11px) to `--text-xs` for
+  legibility. Tracking stays at `0.12em` uppercase; both references do this.
+
+### D7 — Childhood motifs
+
+1. **Stitched seam.** Already defined in the token layer as a dashed gradient.
+   Promoted to the theme's sole structural divider between bands.
+2. **Scalloped edge.** CSS-only radial-gradient mask on the bottom edge of
+   feature bands. References pinafore hems, bibs and baby blankets — childhood
+   without pastel cliché, at zero image or JS cost.
+
+Nothing else. No patterns or illustration competing with 60 brands' photography.
+
+### D8 — Cleanup
+
+Delete `hello-world.liquid`. Audit `custom-section.liquid` for scaffold status.
+Replace the hardcoded values in `collection-tiles.liquid` and `critical.css`
+with tokens.
+
+## Scope
+
+In scope: token layer, homepage bands, collection/PLP, product/PDP, cart drawer,
+header, footer.
+
+Out of scope: navigation *content* (currently HOME / CATALOG / CONTACT — that is
+merchant data, not theme code), product photography, copy.
+
+## Verification
+
+- Contrast validated per scheme for accent-as-text and control borders
+- Radius audit: no `border-radius` outside `--radius-*` tokens; no `999px`
+  outside chips that opt in
+- Band-order audit: no cream/white adjacency on any template
+- Visual regression: homepage, collection, product, cart drawer screenshotted
+  before and after at desktop and mobile widths
