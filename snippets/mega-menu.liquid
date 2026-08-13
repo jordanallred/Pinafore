@@ -24,6 +24,18 @@
       break
     endif
   endfor
+
+  # Rows per column, rounded up, for the flat shape.
+  #
+  # The CSS asked for `grid-template-rows: repeat(auto-fill, ...)`, but
+  # auto-fill on the block axis of a grid with indefinite height resolves to a
+  # single repetition — so every flat panel laid itself out as one long
+  # horizontal row rather than the balanced columns this file documents. The
+  # row count has to be a real number, and only Liquid knows the item count.
+  assign flat_rows = link.links.size | plus: columns | minus: 1 | divided_by: columns
+  if flat_rows < 1
+    assign flat_rows = 1
+  endif
 %}
 
 <div class="mega" data-menu-panel>
@@ -54,7 +66,11 @@
         {%- endfor -%}
       </ul>
     {%- else -%}
-      <ul class="mega__flat" style="--mega-columns: {{ columns }};" role="list">
+      <ul
+        class="mega__flat"
+        style="--mega-columns: {{ columns }}; --mega-rows: {{ flat_rows }};"
+        role="list"
+      >
         {%- for child in link.links -%}
           <li>
             <a
@@ -116,7 +132,12 @@
     display: grid;
     grid-auto-flow: column;
     grid-template-columns: none;
-    grid-template-rows: repeat(auto-fill, minmax(0, auto));
+    /*
+     * An explicit count, not auto-fill: on the block axis of a grid whose
+     * height is indefinite, auto-fill resolves to one repetition, and the
+     * whole list came out as a single row.
+     */
+    grid-template-rows: repeat(var(--mega-rows, 1), auto);
   }
 
   .mega__column {
