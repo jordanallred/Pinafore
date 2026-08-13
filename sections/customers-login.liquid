@@ -10,10 +10,6 @@
 {%- liquid
   assign label_email = 'customers.login.email' | t
   assign label_password = 'customers.login.password' | t
-  assign recover_success = false
-  if form.posted_successfully?
-    assign recover_success = true
-  endif
 -%}
 
 <div class="login-band band color-{{ section.settings.color_scheme }} full-width">
@@ -52,13 +48,23 @@
 
     <hr class="seam">
 
-    <details class="auth__recover" {% if recover_success %}open{% endif %}>
-      <summary class="auth__recover-summary">
-        {{ 'customers.recover.title' | t }}
-      </summary>
+    {%- comment -%}
+      The disclosure sits *inside* the form, not around it.
 
-      {%- form 'recover_customer_password', class: 'form' -%}
-        {%- if recover_success -%}
+      `form` only exists within its own `{% form %}` block, so a
+      `form.posted_successfully?` test written above this point reads an
+      undefined object and is silently false — which meant requesting a reset
+      link re-rendered the empty form with no confirmation at all, and the
+      disclosure it lived in stayed shut. Wrapping the details in the form
+      puts `form` in scope for both the `open` attribute and the message.
+    {%- endcomment -%}
+    {%- form 'recover_customer_password', class: 'form' -%}
+      <details class="auth__recover" {% if form.posted_successfully? %}open{% endif %}>
+        <summary class="auth__recover-summary">
+          {{ 'customers.recover.title' | t }}
+        </summary>
+
+        {%- if form.posted_successfully? -%}
           {%- comment -%}
             role="status" rather than alert: this is a confirmation, and an
             assertive announcement would interrupt whatever the customer is
@@ -87,8 +93,8 @@
             {{ 'customers.recover.submit' | t }}
           </button>
         {%- endif -%}
-      {%- endform -%}
-    </details>
+      </details>
+    {%- endform -%}
 
     <p class="auth__note">
       {{ 'customers.login.no_account' | t }}
