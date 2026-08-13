@@ -16,37 +16,109 @@
         "heading": "The preorder is open",
         "text": "<p>Smocked dresses, corduroy, and everything they will actually wear to school.</p>",
         "button_label": "Shop the drop",
+        "button_url": "",
+        "alignment": "start",
         "height": 75,
         "overlay_opacity": 40,
-        "alignment": "start",
         "color_scheme": "scheme_1"
+      }
+    },
+    "marquee": {
+      "type": "marquee",
+      "blocks": {
+        "b1": {
+          "type": "item",
+          "settings": {
+            "text": "Free shipping over $100"
+          }
+        },
+        "b2": {
+          "type": "item",
+          "settings": {
+            "text": "60+ brands under one roof"
+          }
+        },
+        "b4": {
+          "type": "item",
+          "settings": {
+            "text": "Smocked, monogrammed, gift wrapped"
+          }
+        }
+      },
+      "block_order": [
+        "b1",
+        "b2",
+        "b4"
+      ],
+      "settings": {
+        "speed": 45,
+        "color_scheme": "scheme_3"
       }
     },
     "new-arrivals": {
       "type": "featured-collection",
       "settings": {
-        "collection": "new-arrivals",
         "eyebrow": "Just landed",
         "heading": "New this week",
+        "collection": "new-arrivals",
         "product_limit": 8,
         "columns": 4,
         "show_view_all": true,
         "color_scheme": "scheme_1"
       }
     },
+    "seasons": {
+      "type": "collection-tiles",
+      "blocks": {
+        "t1": {
+          "type": "tile",
+          "settings": {
+            "collection": "new-arrivals",
+            "heading": "",
+            "caption": "Just in",
+            "url": ""
+          }
+        },
+        "t2": {
+          "type": "tile",
+          "settings": {
+            "collection": "collegiate",
+            "heading": "",
+            "caption": "Game day",
+            "url": ""
+          }
+        },
+        "t3": {
+          "type": "tile",
+          "settings": {
+            "collection": "preorder",
+            "heading": "",
+            "caption": "Ships soon",
+            "url": ""
+          }
+        }
+      },
+      "block_order": [
+        "t1",
+        "t2",
+        "t3"
+      ],
+      "settings": {
+        "eyebrow": "Shop the season",
+        "heading": "New collections",
+        "columns": 3,
+        "overlay": 50,
+        "color_scheme": "scheme_1"
+      }
+    },
     "shop-by-size": {
       "type": "shop-by-size",
-      "settings": {
-        "eyebrow": "Find their fit",
-        "heading": "Shop by size",
-        "filter_key": "filter.v.option.size",
-        "color_scheme": "scheme_3"
-      },
       "blocks": {
         "nb": {
           "type": "size",
           "settings": {
             "label": "NB",
+            "value": "",
             "caption": "Newborn"
           }
         },
@@ -54,6 +126,7 @@
           "type": "size",
           "settings": {
             "label": "3M",
+            "value": "",
             "caption": "Baby"
           }
         },
@@ -61,6 +134,7 @@
           "type": "size",
           "settings": {
             "label": "6M",
+            "value": "",
             "caption": "Baby"
           }
         },
@@ -68,6 +142,7 @@
           "type": "size",
           "settings": {
             "label": "12M",
+            "value": "",
             "caption": "Baby"
           }
         },
@@ -75,6 +150,7 @@
           "type": "size",
           "settings": {
             "label": "18M",
+            "value": "",
             "caption": "Toddler"
           }
         },
@@ -82,6 +158,7 @@
           "type": "size",
           "settings": {
             "label": "2T",
+            "value": "",
             "caption": "Toddler"
           }
         },
@@ -89,6 +166,7 @@
           "type": "size",
           "settings": {
             "label": "3T",
+            "value": "",
             "caption": "Toddler"
           }
         },
@@ -96,6 +174,7 @@
           "type": "size",
           "settings": {
             "label": "4T",
+            "value": "",
             "caption": "Toddler"
           }
         },
@@ -103,6 +182,7 @@
           "type": "size",
           "settings": {
             "label": "5",
+            "value": "",
             "caption": "Little kid"
           }
         },
@@ -110,6 +190,7 @@
           "type": "size",
           "settings": {
             "label": "6",
+            "value": "",
             "caption": "Little kid"
           }
         },
@@ -117,6 +198,7 @@
           "type": "size",
           "settings": {
             "label": "7",
+            "value": "",
             "caption": "Big kid"
           }
         },
@@ -124,6 +206,7 @@
           "type": "size",
           "settings": {
             "label": "8",
+            "value": "",
             "caption": "Big kid"
           }
         }
@@ -141,7 +224,14 @@
         "k6",
         "k7",
         "k8"
-      ]
+      ],
+      "settings": {
+        "eyebrow": "Find their fit",
+        "heading": "Shop by size",
+        "collection": "",
+        "filter_key": "filter.v.option.size",
+        "color_scheme": "scheme_3"
+      }
     },
     "brands": {
       "type": "shop-by-brand",
@@ -149,107 +239,15 @@
         "eyebrow": "The labels we carry",
         "heading": "Shop by brand",
         "source": "auto",
+        "collection": "",
         "columns": 4,
+        "link_label": "",
+        "link_url": "",
         "color_scheme": "scheme_1"
       }
-    },
-    "best-sellers": {
-      "type": "featured-collection",
-      "settings": {
-        "collection": "best-sellers",
-        "eyebrow": "Most loved",
-        "heading": "Best sellers",
-        "product_limit": 8,
-        "columns": 4,
-        "show_view_all": true,
-        "color_scheme": "scheme_1"
-      }
-    },
-    "seasons": {
-      "type": "collection-tiles",
-      "settings": {
-        "eyebrow": "Shop the season",
-        "heading": "New collections",
-        "columns": 3,
-        "overlay": 50,
-        "color_scheme": "scheme_1"
-      },
-      "blocks": {
-        "t1": {
-          "type": "tile",
-          "settings": {
-            "collection": "new-arrivals",
-            "caption": "Just in"
-          }
-        },
-        "t2": {
-          "type": "tile",
-          "settings": {
-            "collection": "collegiate",
-            "caption": "Game day"
-          }
-        },
-        "t3": {
-          "type": "tile",
-          "settings": {
-            "collection": "preorder",
-            "caption": "Ships soon"
-          }
-        }
-      },
-      "block_order": [
-        "t1",
-        "t2",
-        "t3"
-      ]
-    },
-    "marquee": {
-      "type": "marquee",
-      "settings": {
-        "speed": 45,
-        "color_scheme": "scheme_3"
-      },
-      "blocks": {
-        "b1": {
-          "type": "item",
-          "settings": {
-            "text": "Free shipping over $100"
-          }
-        },
-        "b2": {
-          "type": "item",
-          "settings": {
-            "text": "60+ brands under one roof"
-          }
-        },
-        "b3": {
-          "type": "item",
-          "settings": {
-            "text": "Fall preorder now open"
-          }
-        },
-        "b4": {
-          "type": "item",
-          "settings": {
-            "text": "Smocked, monogrammed, gift wrapped"
-          }
-        }
-      },
-      "block_order": [
-        "b1",
-        "b2",
-        "b3",
-        "b4"
-      ]
     },
     "reviews": {
       "type": "testimonials",
-      "settings": {
-        "eyebrow": "From our customers",
-        "heading": "What parents are saying",
-        "alignment": "center",
-        "color_scheme": "scheme_1"
-      },
       "blocks": {
         "r1": {
           "type": "review",
@@ -293,7 +291,25 @@
         "r2",
         "r3",
         "r4"
-      ]
+      ],
+      "settings": {
+        "eyebrow": "From our customers",
+        "heading": "What parents are saying",
+        "alignment": "center",
+        "color_scheme": "scheme_1"
+      }
+    },
+    "best-sellers": {
+      "type": "featured-collection",
+      "settings": {
+        "eyebrow": "Most loved",
+        "heading": "Best sellers",
+        "collection": "best-sellers",
+        "product_limit": 8,
+        "columns": 4,
+        "show_view_all": true,
+        "color_scheme": "scheme_1"
+      }
     }
   },
   "order": [
