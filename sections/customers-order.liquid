@@ -1,0 +1,272 @@
+{% comment %}
+  A single order.
+
+  This one is a genuine table — line items are tabular data with a header row,
+  and a screen reader needs the column association to read "Quantity, 2"
+  rather than a loose number. On a phone it scrolls inside its own container
+  rather than pushing the page sideways.
+{% endcomment %}
+
+<div class="order-band band color-{{ section.settings.color_scheme }} full-width section-spacing">
+  <div class="order-detail band__inner">
+    <header class="order-detail__header">
+      <a class="order-detail__back" href="{{ routes.account_url }}">
+        {% render 'icon', icon: 'arrow-right', size: '0.9rem' %}
+        {{ 'customers.order.back' | t }}
+      </a>
+      <h1 class="order-detail__title">
+        {{ 'customers.order.number' | t: number: order.name }}
+      </h1>
+      {%- comment -%}
+        Formatted first. Written inline as
+        `t: date: order.created_at | date: format: 'date'` the trailing pipe
+        binds to the whole expression and swallows the argument list.
+      {%- endcomment -%}
+      {%- assign placed_on = order.created_at | date: format: 'date' -%}
+      <p class="order-detail__date">
+        {{ 'customers.order.placed_on' | t: date: placed_on }}
+      </p>
+      {%- if order.cancelled -%}
+        <p class="form__errors" role="status">
+          {{ 'customers.order.cancelled' | t: reason: order.cancel_reason_label }}
+        </p>
+      {%- endif -%}
+    </header>
+
+    <div class="order-detail__table-wrap">
+      <table class="order-table">
+        <caption class="visually-hidden">
+          {{ 'customers.order.items_caption' | t: number: order.name }}
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">{{ 'customers.order.product' | t }}</th>
+            <th scope="col">{{ 'customers.order.price' | t }}</th>
+            <th scope="col">{{ 'customers.order.quantity' | t }}</th>
+            <th scope="col">{{ 'customers.order.total' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {%- for line_item in order.line_items -%}
+            <tr>
+              <th scope="row" class="order-table__product">
+                <span class="order-table__title">{{ line_item.title }}</span>
+                {%- if line_item.fulfillment -%}
+                  <span class="order-table__meta">
+                    {{ 'customers.order.fulfilled_on' | t }}
+                    {{ line_item.fulfillment.created_at | date: format: 'date' }}
+                    {%- if line_item.fulfillment.tracking_url -%}
+                      &middot;
+                      <a href="{{ line_item.fulfillment.tracking_url }}">
+                        {{ 'customers.order.track' | t }}
+                      </a>
+                    {%- endif -%}
+                  </span>
+                {%- endif -%}
+              </th>
+              <td>{{ line_item.original_price | money }}</td>
+              <td>{{ line_item.quantity }}</td>
+              <td>{{ line_item.final_line_price | money }}</td>
+            </tr>
+          {%- endfor -%}
+        </tbody>
+        <tfoot>
+          <tr>
+            <th scope="row" colspan="3">{{ 'cart.subtotal' | t }}</th>
+            <td>{{ order.line_items_subtotal_price | money }}</td>
+          </tr>
+          {%- for discount in order.cart_level_discount_applications -%}
+            <tr>
+              <th scope="row" colspan="3">{{ discount.title }}</th>
+              <td>-{{ discount.total_allocated_amount | money }}</td>
+            </tr>
+          {%- endfor -%}
+          {%- for shipping_method in order.shipping_methods -%}
+            <tr>
+              <th scope="row" colspan="3">
+                {{ 'customers.order.shipping' | t }} ({{ shipping_method.title }})
+              </th>
+              <td>{{ shipping_method.price | money }}</td>
+            </tr>
+          {%- endfor -%}
+          {%- for tax_line in order.tax_lines -%}
+            <tr>
+              <th scope="row" colspan="3">
+                {{ 'customers.order.tax' | t }} ({{ tax_line.title }})
+              </th>
+              <td>{{ tax_line.price | money }}</td>
+            </tr>
+          {%- endfor -%}
+          <tr class="order-table__total">
+            <th scope="row" colspan="3">{{ 'customers.order.total' | t }}</th>
+            <td>{{ order.total_net_amount | money }}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="order-detail__addresses">
+      <section aria-labelledby="OrderBilling">
+        <h2 class="order-detail__heading" id="OrderBilling">
+          {{ 'customers.order.billing_address' | t }}
+        </h2>
+        <address>{{ order.billing_address | format_address }}</address>
+      </section>
+      <section aria-labelledby="OrderShipping">
+        <h2 class="order-detail__heading" id="OrderShipping">
+          {{ 'customers.order.shipping_address' | t }}
+        </h2>
+        <address>{{ order.shipping_address | format_address }}</address>
+      </section>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .order-detail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .order-detail__header {
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .order-detail__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    justify-self: start;
+    min-height: var(--tap-target);
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+
+  /* The shared arrow icon points forward; this one goes back. */
+  .order-detail__back svg {
+    transform: scaleX(-1);
+  }
+
+  .order-detail__title {
+    margin: 0;
+  }
+
+  .order-detail__date {
+    margin: 0;
+    color: var(--color-foreground-muted);
+    font-size: var(--text-sm);
+  }
+
+  /* Wide content scrolls inside its own box, never the page body. */
+  .order-detail__table-wrap {
+    overflow-x: auto;
+  }
+
+  .order-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: start;
+    font-size: var(--text-sm);
+  }
+
+  .order-table th,
+  .order-table td {
+    padding: var(--space-2xs) var(--space-xs);
+    text-align: start;
+    vertical-align: top;
+  }
+
+  .order-table thead th {
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-foreground-muted);
+    white-space: nowrap;
+  }
+
+  .order-table tbody tr,
+  .order-table thead tr {
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--color-border) 0 var(--seam-dash),
+      transparent var(--seam-dash) calc(var(--seam-dash) + var(--seam-gap))
+    );
+    background-repeat: no-repeat;
+    background-size: 100% var(--seam-weight);
+    background-position: bottom left;
+  }
+
+  .order-table__product {
+    font-weight: 600;
+    min-width: 14rem;
+  }
+
+  .order-table__title {
+    display: block;
+  }
+
+  .order-table__meta {
+    display: block;
+    margin-block-start: 0.2em;
+    font-weight: 400;
+    font-size: var(--text-2xs);
+    color: var(--color-foreground-muted);
+  }
+
+  .order-table td:not(.order-table__product) {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .order-table tfoot th {
+    text-align: end;
+    font-weight: 400;
+    color: var(--color-foreground-muted);
+  }
+
+  .order-table__total th,
+  .order-table__total td {
+    font-weight: 700;
+    color: var(--color-foreground);
+    font-size: var(--text-base);
+  }
+
+  .order-detail__addresses {
+    display: grid;
+    gap: var(--space-md);
+  }
+
+  @media screen and (min-width: 750px) {
+    .order-detail__addresses {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .order-detail__heading {
+    margin: 0 0 var(--space-2xs);
+    font-size: var(--text-base);
+  }
+
+  .order-detail__addresses address {
+    font-style: normal;
+    line-height: var(--leading-normal);
+    color: var(--color-foreground-muted);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.order",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme_1"
+    }
+  ]
+}
+{% endschema %}

@@ -93,7 +93,12 @@ class Store:
                 continue
 
             self._respect_budget(payload)
-            if errors and payload.get('data') is None:
+            if errors:
+                # Raise whenever `errors` is present, not only when `data` is
+                # entirely null. A denied scope comes back as an error
+                # alongside a `data` object whose field is null, so the
+                # previous check let it through as "the mutation returned
+                # nothing" and hid the one line that said which scope to add.
                 raise RuntimeError(json.dumps(errors)[:800])
             return payload.get('data') or {}
         raise RuntimeError('exhausted retries')

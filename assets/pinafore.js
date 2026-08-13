@@ -699,4 +699,55 @@
       this.input.setAttribute('aria-expanded', 'true');
     }
   });
+
+  /**
+   * Country -> province pairing in the address book.
+   *
+   * `country_option_tags` puts each country's subdivisions on the <option> as
+   * a `data-provinces` JSON array, so the whole behaviour is local: no fetch,
+   * and no dependency on Shopify's own country selector script, which is a
+   * remote file this theme would otherwise be the only reason to load.
+   *
+   * The province field is hidden rather than emptied for countries that have
+   * none — an empty labelled <select> reads to a screen reader as a control
+   * that failed to load.
+   */
+  define('pinafore-address', class extends HTMLElement {
+    connectedCallback() {
+      this.querySelectorAll('[data-address-country]').forEach(function (country) {
+        var province = this.querySelector('#' + country.dataset.provinceTarget);
+        var wrap = this.querySelector('#' + country.dataset.provinceWrap);
+        if (!province || !wrap) return;
+
+        // Restore the saved country before wiring up, so the province list is
+        // built from the right country on first paint.
+        if (country.dataset.default) country.value = country.dataset.default;
+
+        var sync = function () {
+          var option = country.options[country.selectedIndex];
+          var values = [];
+          try {
+            values = JSON.parse(option.getAttribute('data-provinces') || '[]');
+          } catch (e) { /* malformed attribute: treat as no provinces */ }
+
+          province.innerHTML = '';
+          if (!values.length) {
+            wrap.hidden = true;
+            return;
+          }
+          values.forEach(function (pair) {
+            var opt = document.createElement('option');
+            opt.value = pair[0];
+            opt.textContent = pair[1];
+            province.appendChild(opt);
+          });
+          wrap.hidden = false;
+          if (province.dataset.default) province.value = province.dataset.default;
+        };
+
+        sync();
+        country.addEventListener('change', sync);
+      }, this);
+    }
+  });
 })();

@@ -1,0 +1,134 @@
+{% comment %}
+  Sign in, plus the password-recovery form.
+
+  Shopify posts recovery to the same URL, and signals which state to show with
+  `form.posted_successfully?` on the recover form and the `#recover` fragment.
+  Both forms live here and the recovery one is a disclosure rather than a
+  separate page, so a customer who mistypes a password never loses their place.
+{% endcomment %}
+
+{%- liquid
+  assign label_email = 'customers.login.email' | t
+  assign label_password = 'customers.login.password' | t
+  assign recover_success = false
+  if form.posted_successfully?
+    assign recover_success = true
+  endif
+-%}
+
+<div class="login-band band color-{{ section.settings.color_scheme }} full-width">
+  <div class="auth band__inner">
+    <header class="auth__header">
+      <h1 class="auth__title">{{ 'customers.login.title' | t }}</h1>
+    </header>
+
+    {%- form 'customer_login', class: 'form' -%}
+      {%- if form.errors -%}
+        <div class="form__errors" role="alert">{{ form.errors | default_errors }}</div>
+      {%- endif -%}
+
+      {% render 'form-field',
+        id: 'LoginEmail',
+        name: 'customer[email]',
+        label: label_email,
+        type: 'email',
+        autocomplete: 'email',
+        required: true
+      %}
+
+      {% render 'form-field',
+        id: 'LoginPassword',
+        name: 'customer[password]',
+        label: label_password,
+        type: 'password',
+        autocomplete: 'current-password',
+        required: true
+      %}
+
+      <button type="submit" class="button button--full">
+        {{ 'customers.login.submit' | t }}
+      </button>
+    {%- endform -%}
+
+    <hr class="seam">
+
+    <details class="auth__recover" {% if recover_success %}open{% endif %}>
+      <summary class="auth__recover-summary">
+        {{ 'customers.recover.title' | t }}
+      </summary>
+
+      {%- form 'recover_customer_password', class: 'form' -%}
+        {%- if recover_success -%}
+          {%- comment -%}
+            role="status" rather than alert: this is a confirmation, and an
+            assertive announcement would interrupt whatever the customer is
+            reading rather than politely following it.
+          {%- endcomment -%}
+          <p class="form__success" role="status">
+            {{ 'customers.recover.success' | t }}
+          </p>
+        {%- else -%}
+          <p class="auth__note">{{ 'customers.recover.instructions' | t }}</p>
+
+          {%- if form.errors -%}
+            <div class="form__errors" role="alert">{{ form.errors | default_errors }}</div>
+          {%- endif -%}
+
+          {% render 'form-field',
+            id: 'RecoverEmail',
+            name: 'email',
+            label: label_email,
+            type: 'email',
+            autocomplete: 'email',
+            required: true
+          %}
+
+          <button type="submit" class="button button--secondary button--full">
+            {{ 'customers.recover.submit' | t }}
+          </button>
+        {%- endif -%}
+      {%- endform -%}
+    </details>
+
+    <p class="auth__note">
+      {{ 'customers.login.no_account' | t }}
+      <a href="{{ routes.account_register_url }}">{{ 'customers.register.title' | t }}</a>
+    </p>
+  </div>
+</div>
+
+{% stylesheet %}
+  .auth__recover-summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--tap-target);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .auth__recover-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .auth__recover[open] .auth__recover-summary {
+    margin-block-end: var(--space-xs);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.login",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme_1"
+    }
+  ]
+}
+{% endschema %}

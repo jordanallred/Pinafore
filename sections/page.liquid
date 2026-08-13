@@ -1,17 +1,337 @@
 {% comment %}
-  This section is used in the page template to render store pages like About us
-  or Contact us.
+  Static pages: About, Shipping & Returns, Size Guide, FAQ, Contact.
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/page
+  Built from blocks rather than dumping `page.content`, because the pages a
+  boutique actually needs are not prose. Shipping & Returns is a FAQ, the size
+  guide is a table per vendor, and Contact needs a form. A shop owner can
+  compose those in the editor here without a developer.
+
+  The rich-text block still renders `page.content` when it is the only block,
+  so an imported page looks right before anyone touches the editor.
 {% endcomment %}
 
-<h1>{{ page.title }}</h1>
+<div class="page-band band color-{{ section.settings.color_scheme }} full-width section-spacing">
+  <div class="page band__inner page--{{ section.settings.width }}">
+    {%- unless section.settings.hide_title -%}
+      <header class="page__header page__header--{{ section.settings.alignment }}">
+        {%- if section.settings.eyebrow != blank -%}
+          <span class="eyebrow">{{ section.settings.eyebrow }}</span>
+        {%- endif -%}
+        <h1 class="page__title">{{ page.title }}</h1>
+      </header>
+    {%- endunless -%}
 
-{{ page.content }}
+    {%- if section.blocks.size > 0 -%}
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+
+          {%- when 'content' -%}
+            <div class="page__content rte" {{ block.shopify_attributes }}>
+              {{ page.content }}
+            </div>
+
+          {%- when 'text' -%}
+            <div class="page__block" {{ block.shopify_attributes }}>
+              {%- if block.settings.heading != blank -%}
+                <h2 class="page__heading">{{ block.settings.heading }}</h2>
+              {%- endif -%}
+              <div class="rte">{{ block.settings.text }}</div>
+            </div>
+
+          {%- when 'faq' -%}
+            <div class="page__block" {{ block.shopify_attributes }}>
+              {%- if block.settings.heading != blank -%}
+                <h2 class="page__heading">{{ block.settings.heading }}</h2>
+              {%- endif -%}
+              {%- comment -%}
+                Native <details>: keyboard and screen-reader behaviour for
+                free, and it stays usable with JavaScript disabled.
+              {%- endcomment -%}
+              <details class="page__faq seam-block-end">
+                <summary class="page__faq-summary">{{ block.settings.question }}</summary>
+                <div class="page__faq-answer rte">{{ block.settings.answer }}</div>
+              </details>
+            </div>
+
+          {%- when 'image' -%}
+            {%- if block.settings.image != blank -%}
+              <figure class="page__figure" {{ block.shopify_attributes }}>
+                <span class="media">
+                  {{
+                    block.settings.image
+                    | image_url: width: 1600
+                    | image_tag:
+                      widths: '400, 700, 1000, 1400, 1600',
+                      sizes: '(min-width: 990px) 60vw, 100vw',
+                      alt: block.settings.image.alt,
+                      loading: 'lazy',
+                      class: 'page__image'
+                  }}
+                </span>
+                {%- if block.settings.caption != blank -%}
+                  <figcaption class="page__caption">{{ block.settings.caption }}</figcaption>
+                {%- endif -%}
+              </figure>
+            {%- endif -%}
+
+          {%- when 'contact' -%}
+            <div class="page__block" {{ block.shopify_attributes }}>
+              {%- if block.settings.heading != blank -%}
+                <h2 class="page__heading">{{ block.settings.heading }}</h2>
+              {%- endif -%}
+              {%- liquid
+                # Resolved up front: a filter inside a tag's argument list is
+                # read as the next positional argument, which silently breaks
+                # the call rather than erroring.
+                assign label_name = 'contact.name' | t
+                assign label_email = 'contact.email' | t
+                assign label_phone = 'contact.phone' | t
+                assign label_message = 'contact.message' | t
+              -%}
+              {%- form 'contact', class: 'form' -%}
+                {%- if form.posted_successfully? -%}
+                  <p class="form__success" role="status">
+                    {{ 'contact.success' | t }}
+                  </p>
+                {%- elsif form.errors -%}
+                  <div class="form__errors" role="alert">
+                    {{ form.errors | default_errors }}
+                  </div>
+                {%- endif -%}
+
+                <div class="form__row form__row--split">
+                  {% render 'form-field',
+                    id: 'ContactName',
+                    name: 'contact[name]',
+                    label: label_name,
+                    autocomplete: 'name',
+                    required: true
+                  %}
+                  {% render 'form-field',
+                    id: 'ContactEmail',
+                    name: 'contact[email]',
+                    label: label_email,
+                    type: 'email',
+                    autocomplete: 'email',
+                    required: true
+                  %}
+                </div>
+
+                {% render 'form-field',
+                  id: 'ContactPhone',
+                  name: 'contact[phone]',
+                  label: label_phone,
+                  type: 'tel',
+                  autocomplete: 'tel'
+                %}
+
+                {% render 'form-field',
+                  id: 'ContactBody',
+                  name: 'contact[body]',
+                  label: label_message,
+                  type: 'textarea',
+                  required: true
+                %}
+
+                <div class="form__actions">
+                  <button type="submit" class="button">{{ 'contact.submit' | t }}</button>
+                </div>
+              {%- endform -%}
+            </div>
+
+          {%- when '@app' -%}
+            {% render block %}
+
+        {%- endcase -%}
+      {%- endfor -%}
+    {%- else -%}
+      <div class="page__content rte">{{ page.content }}</div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  /*
+   * Prose caps at a readable measure regardless of the page width setting;
+   * a shipping policy set across a 1400px viewport is unreadable.
+   */
+  .page--narrow {
+    max-width: 44rem;
+  }
+
+  .page__header {
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .page__header--center {
+    text-align: center;
+    justify-items: center;
+  }
+
+  .page__title {
+    margin: 0;
+  }
+
+  .page__heading {
+    margin: 0 0 var(--space-2xs);
+    font-size: var(--text-xl);
+  }
+
+  .page__block {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page__faq {
+    padding-block: var(--space-xs);
+  }
+
+  .page__faq-summary {
+    /* The default marker is tiny and inconsistent across browsers. */
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    min-height: var(--tap-target);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .page__faq-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .page__faq-summary::after {
+    content: '+';
+    font-size: var(--text-lg);
+    line-height: 1;
+    color: var(--color-foreground-muted);
+  }
+
+  .page__faq[open] .page__faq-summary::after {
+    content: '\2013';
+  }
+
+  .page__faq-answer {
+    padding-block-end: var(--space-xs);
+    color: var(--color-foreground-muted);
+  }
+
+  .page__figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+
+  .page__image {
+    width: 100%;
+    height: auto;
+  }
+
+  .page__caption {
+    font-size: var(--text-sm);
+    color: var(--color-foreground-muted);
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:general.page",
-  "settings": []
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "t:labels.eyebrow" },
+    {
+      "type": "checkbox",
+      "id": "hide_title",
+      "label": "t:labels.hide_title",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "t:labels.alignment",
+      "options": [
+        { "value": "start", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" }
+      ],
+      "default": "start"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "t:labels.width",
+      "info": "t:info.page_width",
+      "options": [
+        { "value": "narrow", "label": "t:options.size.small" },
+        { "value": "wide", "label": "t:options.size.large" }
+      ],
+      "default": "narrow"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme_1"
+    }
+  ],
+  "blocks": [
+    { "type": "content", "name": "t:general.page_content", "limit": 1 },
+    {
+      "type": "text",
+      "name": "t:general.text",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "t:labels.heading" },
+        { "type": "richtext", "id": "text", "label": "t:labels.text" }
+      ]
+    },
+    {
+      "type": "faq",
+      "name": "t:general.faq",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "t:labels.heading" },
+        {
+          "type": "text",
+          "id": "question",
+          "label": "t:labels.question",
+          "default": "How long does shipping take?"
+        },
+        { "type": "richtext", "id": "answer", "label": "t:labels.answer" }
+      ]
+    },
+    {
+      "type": "image",
+      "name": "t:general.image",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "t:labels.image" },
+        { "type": "text", "id": "caption", "label": "t:labels.caption" }
+      ]
+    },
+    {
+      "type": "contact",
+      "name": "t:general.contact_form",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:labels.heading",
+          "default": "Send us a note"
+        }
+      ]
+    },
+    { "type": "@app" }
+  ],
+  "presets": [
+    { "name": "t:general.page", "blocks": [{ "type": "content" }] }
+  ]
 }
 {% endschema %}

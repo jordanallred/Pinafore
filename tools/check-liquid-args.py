@@ -32,8 +32,13 @@ INLINE = re.compile(r'\|\s*\w+:\s*[^,\n]*\|\s*\w+\s*,')
 #     {% form 'product', product, id: 'X-' | append: section.id %}
 # Liquid reads the piped expression as the next positional argument, so the
 # form type becomes the id. This one only surfaces at render time.
+#
+# Only tags that take named arguments belong here. `{% liquid %}` was in this
+# list and should never have been: inside a liquid block, `assign x = y | z`
+# is ordinary syntax, so every multi-line liquid block in the theme matched
+# and the check had to be read past rather than trusted.
 TAG_ARG = re.compile(
-    r'\{%-?\s*(?:form|render|include|section|paginate|liquid)\b[^%]*?'
+    r'\{%-?\s*(?:form|render|include|section)\b[^%]*?'
     r'\b\w+:\s*[^,%]*?\|\s*\w+'
 )
 
@@ -45,10 +50,21 @@ def main() -> int:
     for path in sorted(root.rglob('*.liquid')):
         if '.git' in path.parts:
             continue
-        lines = path.read_text().splitlines()
+        source = path.read_text()
+        lines = source.splitlines()
         for i, line in enumerate(lines, 1):
-            if SUSPECT.match(line) or INLINE.search(line) or TAG_ARG.search(line):
+            if SUSPECT.match(line) or INLINE.search(line):
                 problems.append((path.relative_to(root), i, line.strip()))
+
+        # Tag arguments have to be matched against the whole file, not line by
+        # line. A `{% render %}` call spread over several lines puts the tag
+        # name and the offending argument on different lines, and a per-line
+        # scan sees neither — which is how this check quietly passed a file it
+        # should have caught.
+        for match in TAG_ARG.finditer(source):
+            line_no = source.count('\n', 0, match.start()) + 1
+            snippet = ' '.join(match.group(0).split())
+            problems.append((path.relative_to(root), line_no, snippet[:120]))
 
     if not problems:
         print('OK  no filter chains inside filter arguments')
