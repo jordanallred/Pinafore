@@ -17,22 +17,19 @@
         "gift-wrap": {
           "type": "announcement",
           "settings": {
-            "text": "Free gift wrap on every order",
-            "link": ""
+            "text": "Free gift wrap on every order"
           }
         },
         "returns": {
           "type": "announcement",
           "settings": {
-            "text": "Easy 30-day returns",
-            "link": ""
+            "text": "Easy 30-day returns"
           }
         },
         "thursday": {
           "type": "announcement",
           "settings": {
-            "text": "New arrivals every Thursday",
-            "link": ""
+            "text": "New arrivals every Thursday"
           }
         }
       },
@@ -43,25 +40,18 @@
       ],
       "settings": {
         "autorotate": true,
-        "rotate_speed": 3,
-        "show_close": true,
+        "rotate_speed": 6,
+        "show_close": false,
         "color_scheme": "scheme_3"
       }
     },
     "header": {
       "type": "header",
-      "settings": {
-        "logo_width": 140,
-        "menu": "main-menu",
-        "sticky": true,
-        "mega_columns": 4,
-        "color_scheme": "",
-        "customer_account_menu": "customer-account-main-menu"
-      }
+      "settings": {}
     }
   },
   "order": [
     "announcement-bar",
     "header"
-  ]
+  ],
 }

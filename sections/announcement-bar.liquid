@@ -197,11 +197,22 @@
     text-decoration-thickness: 2px;
   }
 
+  /*
+   * Sized to the tap-target floor rather than to the icon. Padding alone left
+   * these at 34px — small enough to miss with a thumb, and the only controls
+   * in the theme that showed at every width without meeting the 44px minimum
+   * the rest of the buttons hold to.
+   *
+   * The bar itself is shorter than 44px, so the hit area is grown horizontally
+   * and allowed to overflow vertically instead of pushing the bar taller.
+   */
   .announcement__arrow,
   .announcement__close {
     display: grid;
     place-items: center;
-    padding: var(--space-2xs);
+    min-width: var(--tap-target);
+    min-height: var(--tap-target);
+    padding: 0;
     border: 0;
     background: none;
     color: inherit;
