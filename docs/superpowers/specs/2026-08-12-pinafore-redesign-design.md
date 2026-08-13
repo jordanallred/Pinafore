@@ -262,6 +262,26 @@ stays reachable through facets only. The threshold is re-evaluated when the full
 catalog lands; these counts reflect the 47-product seed.
 
 **Brands** dropdown lists vendors, linking to `/collections/vendors?q=<vendor>`.
+This is a bounded set of 12 real listing pages, not a combinatorial facet
+space, so it does not carry the sprawl risk that keeps facets out of the menu.
+Per-vendor automated collections would give cleaner URLs and is the natural
+upgrade if brand pages become a priority.
+
+**Collections created through the Admin API are not published to any sales
+channel.** `collectionCreate` succeeded and `productsCount` was correct, but
+every new collection returned 404 on the storefront because
+`resourcePublications` was empty — where the pre-existing `girls` collection
+showed `Online Store: isPublished true`. Each new collection needs a
+`publishablePublish` call against the Online Store publication
+(`read_publications` / `write_publications` to find and set it). Requesting
+`publishedOnCurrentPublication` in the mutation response additionally requires
+`read_product_listings`; omit it unless that scope is granted.
+
+Menu items bind by `resourceId` (type `COLLECTION`) rather than URL string, so
+renaming a collection handle cannot break the navigation.
+
+Verification: every menu destination is fetched and asserted 200 — 29 URLs,
+including all vendor links.
 
 ### D10 — Indexation hygiene
 
