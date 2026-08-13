@@ -46,30 +46,21 @@ TARGET = 'pinafore-bv80ud01.myshopify.com'
 # "Baby & Toddler Shoes" keeps working when a sandal is added underneath it.
 CAT = 'PRODUCT_CATEGORY_ID_WITH_DESCENDANTS'
 
+# Everything structural now comes from `build-taxonomy-nav.py`, which reads
+# the department tree out of Shopify's taxonomy instead of hardcoding node ids
+# here. What is left in this file is only what the taxonomy cannot express.
 SMART_RULES = {
-    # Footwear. 48 by category against 13 by tag.
-    'shoes': {'rules': [(CAT, 'EQUALS', 'aa-8-2')]},
-    'sandals': {'rules': [(CAT, 'EQUALS', 'aa-8-2-2')]},
-    'sneakers': {'rules': [(CAT, 'EQUALS', 'aa-8-2-5')]},
-    'boots': {'rules': [(CAT, 'EQUALS', 'aa-8-2-1')]},
-
-    # Clothing, by garment rather than by who it is for.
-    'dresses': {'any': True, 'rules': [
-        (CAT, 'EQUALS', 'aa-1-2-3'), (CAT, 'EQUALS', 'aa-1-4')]},
-    'tops': {'any': True, 'rules': [
-        (CAT, 'EQUALS', 'aa-1-2-9'), (CAT, 'EQUALS', 'aa-1-13')]},
-    'bottoms': {'any': True, 'rules': [
-        (CAT, 'EQUALS', 'aa-1-2-1'), (CAT, 'EQUALS', 'aa-1-14'),
-        (CAT, 'EQUALS', 'aa-1-15')]},
-    'outfit-sets': {'rules': [(CAT, 'EQUALS', 'aa-1-2-5')]},
-    'sleepwear': {'any': True, 'rules': [
-        (CAT, 'EQUALS', 'aa-1-2-6'), (CAT, 'EQUALS', 'aa-1-17')]},
-    'swim': {'rules': [(CAT, 'EQUALS', 'aa-1-2-8')]},
+    # Cross-branch departments. The taxonomy scatters carriers across Luggage
+    # & Bags, Handbags and Kitchen, which is right for a general marketplace
+    # and wrong for a shop where a parent thinks "bags".
     'bags': {'any': True, 'rules': [
         (CAT, 'EQUALS', 'lb-1'), (CAT, 'EQUALS', 'lb-6'),
         (CAT, 'EQUALS', 'lb-13'), (CAT, 'EQUALS', 'aa-5-4')]},
     'accessories': {'any': True, 'rules': [
         (CAT, 'EQUALS', 'aa-2'), (CAT, 'EQUALS', 'hg-11-3-7')]},
+
+    # Below the derived tool's threshold but worth a page in a shoe shop.
+    'boots': {'rules': [(CAT, 'EQUALS', 'aa-8-2-1')]},
 
     # Price-driven, and the only one that needs no vocabulary at all.
     'sale': {'rules': [('IS_PRICE_REDUCED', 'IS_SET', 'true')]},
@@ -425,7 +416,16 @@ def main():
     # been spent forces each tile to show something the others do not.
     used_products, used_types = set(), set()
 
-    for handle in list(SMART_RULES) + list(REPURPOSE) + ['new-arrivals', 'best-sellers']:
+    # Every non-empty collection, not a hardcoded list: the departments are
+    # derived by build-taxonomy-nav.py now, so this file cannot know their
+    # names ahead of time and should not try to.
+    all_handles = [
+        c['handle'] for c in store(
+            '{collections(first:100){nodes{handle productsCount{count} image{url}}}}'
+        )['collections']['nodes']
+        if c['productsCount']['count'] and not c['image']
+    ]
+    for handle in all_handles:
         data = store(BEST_IMAGE, {'handle': handle})['collectionByIdentifier']
         if not data:
             continue
