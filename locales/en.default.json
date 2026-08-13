@@ -145,7 +145,8 @@
     "more_colors": {
       "one": "+{{ count }} more",
       "other": "+{{ count }} more"
-    }
+    },
+    "read_full_policy": "Read the full policy"
   },
   "general": {
     "pagination": "Pagination",

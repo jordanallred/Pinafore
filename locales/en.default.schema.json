@@ -75,7 +75,8 @@
     "collection_tiles": "Collection tiles",
     "marquee": "Scrolling bar",
     "reviews": "Customer reviews",
-    "review": "Review"
+    "review": "Review",
+    "recommendations": "Product recommendations"
   },
   "labels": {
     "accent_background": "Accent",
@@ -171,7 +172,11 @@
     "swatch_limit": "Variant thumbnails shown",
     "speed": "Scroll speed",
     "rating": "Star rating",
-    "author": "Customer name"
+    "author": "Customer name",
+    "content_source": "Content source",
+    "metafield": "Metafield",
+    "assurance": "Reassurance line",
+    "intent": "Recommendation type"
   },
   "info": {
     "accent": "Used for badges, links, and focus outlines. Keep it distinct from your button color.",
@@ -209,7 +214,11 @@
     "size_collection": "Sizes link into this collection. Leave empty to search all products.",
     "tile_image": "Leave empty to use the collection's own image.",
     "tile_heading": "Leave empty to use the collection's name.",
-    "marquee_speed": "Higher is slower. Motion stops automatically for visitors who ask their device to reduce it."
+    "marquee_speed": "Higher is slower. Motion stops automatically for visitors who ask their device to reduce it.",
+    "content_source": "Where this panel gets its text. Policies come from Settings > Policies, so they always match what the customer sees at checkout. A panel with no content is not shown.",
+    "metafield": "Namespace and key, for example custom.fabric_care. Products without a value simply do not show this panel.",
+    "assurance": "One short line under the buy buttons. Shown at the moment the shopper is deciding.",
+    "intent": "Related shows similar products. Complementary shows things that go with it, which you set up in Shopify’s Search & Discovery app."
   },
   "options": {
     "alignment": {
@@ -265,6 +274,17 @@
     "brand_source": {
       "auto": "Automatic",
       "curated": "Manual"
+    },
+    "content_source": {
+      "custom": "Custom text",
+      "metafield": "Product metafield",
+      "shipping_policy": "Shipping policy",
+      "refund_policy": "Refund policy",
+      "terms_of_service": "Terms of service"
+    },
+    "intent": {
+      "related": "Related products",
+      "complementary": "Goes well with"
     }
   },
   "units": {

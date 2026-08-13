@@ -12,14 +12,28 @@
     "main": {
       "type": "product",
       "blocks": {
-        "vendor": { "type": "vendor", "settings": {} },
-        "title": { "type": "title", "settings": {} },
-        "badges": { "type": "badges", "settings": {} },
+        "vendor": {
+          "type": "vendor",
+          "settings": {}
+        },
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "badges": {
+          "type": "badges",
+          "settings": {}
+        },
         "price": {
           "type": "price",
-          "settings": { "show_preorder_note": true }
+          "settings": {
+            "show_preorder_note": true
+          }
         },
-        "variant_picker": { "type": "variant_picker", "settings": {} },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {}
+        },
         "buy_buttons": {
           "type": "buy_buttons",
           "settings": {
@@ -27,20 +41,29 @@
             "show_dynamic_checkout": true
           }
         },
-        "pickup": { "type": "pickup", "settings": {} },
-        "description": { "type": "description", "settings": {} },
+        "pickup": {
+          "type": "pickup",
+          "settings": {}
+        },
+        "description": {
+          "type": "description",
+          "settings": {}
+        },
         "shipping": {
           "type": "accordion",
           "settings": {
             "heading": "Shipping and returns",
-            "content": "<p>Free shipping on orders over $100. Returns accepted within 30 days on unworn items with tags attached.</p>"
+            "content": "<p>Free shipping on orders over $100. Returns accepted within 30 days on unworn items with tags attached.</p>",
+            "content_source": "custom"
           }
         },
         "fabric": {
           "type": "accordion",
           "settings": {
             "heading": "Fabric and care",
-            "content": "<p>Machine wash cold on gentle, tumble dry low. Wash with like colors.</p>"
+            "content": "<p>Machine wash cold on gentle, tumble dry low. Wash with like colors.</p>",
+            "content_source": "metafield",
+            "metafield": "custom.fabric_care"
           }
         }
       },
@@ -61,7 +84,21 @@
         "show_size_guide": true,
         "color_scheme": "scheme_1"
       }
+    },
+    "recommendations": {
+      "type": "product-recommendations",
+      "settings": {
+        "eyebrow": "Keep looking",
+        "heading": "You might also like",
+        "intent": "related",
+        "products_to_show": 4,
+        "columns": 4,
+        "color_scheme": "scheme_1"
+      }
     }
   },
-  "order": ["main"]
+  "order": [
+    "main",
+    "recommendations"
+  ]
 }

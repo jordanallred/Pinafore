@@ -77,7 +77,7 @@
             </div>
 
           {%- when 'variant_picker' -%}
-            <div {{ block.shopify_attributes }}>
+            <div class="product__variants" {{ block.shopify_attributes }}>
               {% render 'variant-picker', product: product, section: section %}
             </div>
 
@@ -137,6 +137,15 @@
                   <div class="product__accelerated">{{ form | payment_button }}</div>
                 {%- endif -%}
               {%- endform -%}
+
+              {%- comment -%}
+                The promises in the marquee are made at the top of the page and
+                then never repeated where the decision is actually taken. This
+                is the one place a shopper is weighing the purchase.
+              {%- endcomment -%}
+              {%- if block.settings.assurance != blank -%}
+                <p class="product__assurance">{{ block.settings.assurance }}</p>
+              {%- endif -%}
             </div>
 
           {%- when 'pickup' -%}
@@ -197,13 +206,61 @@
             {%- endif -%}
 
           {%- when 'accordion' -%}
-            <details class="accordion" {{ block.shopify_attributes }}>
-              <summary class="accordion__summary">
-                {{ block.settings.heading }}
-                {% render 'icon', icon: 'chevron-down', class: 'accordion__chevron' %}
-              </summary>
-              <div class="accordion__body rte">{{ block.settings.content }}</div>
-            </details>
+            {%- liquid
+              # Resolve the panel from its chosen source.
+              #
+              # These panels shipped as static rich text, which meant every
+              # product on the store showed a byte-identical "Fabric and care"
+              # — the same paragraph on a leather T-strap and a smocked cotton
+              # dress. Wrong information presented confidently is worse than no
+              # panel, so a panel that resolves to nothing is not rendered.
+              #
+              # Policies read from Shopify's own settings rather than being
+              # retyped here. That is the copy the customer also sees at
+              # checkout, so retyping it guarantees the two drift apart.
+              assign panel_html = ''
+              assign panel_url = ''
+
+              case block.settings.content_source
+                when 'metafield'
+                  assign mf_parts = block.settings.metafield | split: '.'
+                  assign mf = product.metafields[mf_parts[0]][mf_parts[1]]
+                  if mf != blank
+                    capture panel_html
+                      echo mf | metafield_tag
+                    endcapture
+                  endif
+                when 'shipping_policy'
+                  assign panel_html = shop.shipping_policy.body
+                  assign panel_url = shop.shipping_policy.url
+                when 'refund_policy'
+                  assign panel_html = shop.refund_policy.body
+                  assign panel_url = shop.refund_policy.url
+                when 'terms_of_service'
+                  assign panel_html = shop.terms_of_service.body
+                  assign panel_url = shop.terms_of_service.url
+                else
+                  assign panel_html = block.settings.content
+              endcase
+            -%}
+            {%- if panel_html != blank -%}
+              <details class="accordion" {{ block.shopify_attributes }}>
+                <summary class="accordion__summary">
+                  {{ block.settings.heading }}
+                  {% render 'icon', icon: 'chevron-down', class: 'accordion__chevron' %}
+                </summary>
+                <div class="accordion__body rte">
+                  {{ panel_html }}
+                  {%- if panel_url != blank -%}
+                    <p>
+                      <a class="accordion__policy" href="{{ panel_url }}">
+                        {{ 'products.read_full_policy' | t }}
+                      </a>
+                    </p>
+                  {%- endif -%}
+                </div>
+              </details>
+            {%- endif -%}
 
           {%- when 'text' -%}
             <div class="product__text rte" {{ block.shopify_attributes }}>
@@ -259,10 +316,42 @@
     gap: var(--space-lg);
   }
 
+  /*
+   * The information column was a flat stack on a single uniform gap, so the
+   * vendor, the title, the price, the size picker and the buy button were all
+   * exactly as far apart as each other. Nothing grouped, so nothing read as
+   * more important than anything else.
+   *
+   * The base gap is now the tight within-group rhythm, and the elements that
+   * begin a new group open their own space above. Four groups: who made it and
+   * what it is; what it costs; what to choose; how to buy. Everything after
+   * that is reference material and sits further away again.
+   */
   .product__info {
     display: flex;
     flex-direction: column;
-    gap: var(--space-sm);
+    gap: var(--space-3xs);
+  }
+
+  .product__price { margin-block-start: var(--space-2xs); }
+  .product__variants { margin-block-start: var(--space-sm); }
+  .product__buy { margin-block-start: var(--space-sm); }
+  .product__pickup { margin-block-start: var(--space-2xs); }
+  .product__description,
+  .product__text { margin-block-start: var(--space-md); }
+
+  /* First accordion opens the reference group; the rest stack flush. */
+  .product__info > .accordion:first-of-type { margin-block-start: var(--space-sm); }
+
+  /*
+   * The badges wrapper is always in the DOM but renders nothing on a product
+   * that is in stock, full price and not on preorder — which is most of them.
+   * It is not `:empty` (Liquid leaves whitespace behind), so it survived as a
+   * zero-height flex child still claiming a gap on each side: 32px of dead
+   * space between the title and the price on the majority of the catalogue.
+   */
+  .product__badges:not(:has(.badge)) {
+    display: none;
   }
 
   .product__vendor {
@@ -304,7 +393,9 @@
   .product__buy {
     display: flex;
     flex-direction: column;
-    gap: var(--space-2xs);
+    /* Enough air that the two actions read as a pair of choices rather than
+       one control that has been split in half. */
+    gap: var(--space-xs);
   }
 
   .product__qty {
@@ -330,22 +421,28 @@
   /*
    * Shopify's dynamic checkout button ships with its own blue and its own
    * corner radius, so the product page rendered a bright #0070-ish rectangle
-   * directly under a charcoal one — the loudest colour clash left on the site
-   * and the only element still outside the radius system.
+   * directly under a dark one — outside both the palette and the radius system.
    *
-   * Restyled to the brand accent, which also gives navy a job on the product
-   * page and sets a clear hierarchy: charcoal Add to cart, navy Buy it now.
+   * It is now tonal rather than solid. Two full-width solid buttons stacked
+   * 8px apart gave the page two equally loud primary actions, and the accent
+   * one was winning — a boutique wants the basket, not a single-item express
+   * checkout, because gift wrapping and multi-item orders happen in the cart.
+   * Solid dark leads, tinted accent follows, and the pair now has a visible
+   * separation rather than sitting flush.
    *
-   * Scope and limits: this reaches the *unbranded* button only. Branded wallet
-   * buttons (Shop Pay, PayPal, Google Pay) render inside Shopify-controlled
-   * iframes and cannot be themed — if the merchant enables those, they keep
-   * their own brand colours by design, and that is expected rather than a bug.
+   * Scope and limits: this reaches the *unbranded* button only — verified in
+   * the DOM as `shopify-buy-it-now-button > .shopify-payment-button__button
+   * --unbranded`, which carries no Shop branding of any kind. If the merchant
+   * enables Shop Pay, its branded purple button renders as a separate element
+   * inside the same `<shopify-accelerated-checkout>` wrapper and this selector
+   * cannot reach it, so wallet recognition is preserved by construction.
    */
   .product__accelerated .shopify-payment-button__button--unbranded {
     min-height: var(--tap-target);
     border-radius: var(--radius-button);
-    background-color: var(--color-accent);
-    color: var(--color-accent-foreground);
+    background-color: rgb(var(--color-accent-rgb) / 0.1);
+    color: var(--color-accent);
+    box-shadow: inset 0 0 0 var(--border-width) rgb(var(--color-accent-rgb) / 0.45);
     font-family: var(--font-body--family);
     font-size: var(--text-sm);
     font-weight: 600;
@@ -354,14 +451,31 @@
   }
 
   .product__accelerated .shopify-payment-button__button--unbranded:hover:not([disabled]) {
-    background-color: var(--color-accent);
-    opacity: 0.85;
+    background-color: rgb(var(--color-accent-rgb) / 0.18);
+    opacity: 1;
   }
 
   /* The "More payment options" toggle Shopify renders beneath the button. */
   .product__accelerated .shopify-payment-button__more-options {
     font-size: var(--text-xs);
     color: var(--color-foreground-muted);
+    text-underline-offset: 0.2em;
+  }
+
+  /*
+   * Sits under the pair, not between them, so it reads as a footnote to the
+   * whole decision rather than a label for either button.
+   */
+  .product__assurance {
+    margin-block-start: var(--space-2xs);
+    font-size: var(--text-xs);
+    line-height: var(--leading-snug);
+    color: var(--color-foreground-muted);
+    text-wrap: pretty;
+  }
+
+  .accordion__policy {
+    font-size: var(--text-xs);
     text-underline-offset: 0.2em;
   }
 
@@ -508,6 +622,13 @@
           "label": "t:labels.show_accelerated_checkout",
           "info": "t:info.show_accelerated_checkout",
           "default": true
+        },
+        {
+          "type": "text",
+          "id": "assurance",
+          "label": "t:labels.assurance",
+          "info": "t:info.assurance",
+          "default": "Free shipping over $100 · Gift wrapping at checkout"
         }
       ]
     },
@@ -524,9 +645,30 @@
           "default": "Shipping and returns"
         },
         {
+          "type": "select",
+          "id": "content_source",
+          "label": "t:labels.content_source",
+          "info": "t:info.content_source",
+          "options": [
+            { "value": "custom", "label": "t:options.content_source.custom" },
+            { "value": "metafield", "label": "t:options.content_source.metafield" },
+            { "value": "shipping_policy", "label": "t:options.content_source.shipping_policy" },
+            { "value": "refund_policy", "label": "t:options.content_source.refund_policy" },
+            { "value": "terms_of_service", "label": "t:options.content_source.terms_of_service" }
+          ],
+          "default": "custom"
+        },
+        {
           "type": "richtext",
           "id": "content",
           "label": "t:labels.text"
+        },
+        {
+          "type": "text",
+          "id": "metafield",
+          "label": "t:labels.metafield",
+          "info": "t:info.metafield",
+          "default": "custom.fabric_care"
         }
       ]
     },

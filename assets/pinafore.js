@@ -458,6 +458,58 @@
     }
   });
 
+  /* ------------------------------------------------- product recommendations */
+
+  /*
+   * Shopify only computes recommendations on a request to the recommendations
+   * endpoint, so the section renders empty in the product page's own response
+   * and the real markup is fetched and swapped in here.
+   *
+   * The fetch waits until the section is close to the viewport. On a product
+   * page most visitors never scroll past the accordions, and there is no point
+   * spending a request on a band nobody reaches. If the fetch fails the section
+   * simply stays empty — it is a merchandising extra, never a dependency.
+   */
+  customElements.define('pinafore-recommendations', class extends HTMLElement {
+    connectedCallback() {
+      var url = this.dataset.url;
+      if (!url) return;
+
+      if (!('IntersectionObserver' in window)) {
+        this.load(url);
+        return;
+      }
+
+      var self = this;
+      var observer = new IntersectionObserver(
+        function (entries) {
+          if (!entries[0].isIntersecting) return;
+          observer.disconnect();
+          self.load(url);
+        },
+        { rootMargin: '400px' }
+      );
+      observer.observe(this);
+    }
+
+    load(url) {
+      var self = this;
+      fetch(url)
+        .then(function (response) {
+          if (!response.ok) throw new Error('recommendations unavailable');
+          return response.text();
+        })
+        .then(function (html) {
+          var parsed = new DOMParser().parseFromString(html, 'text/html');
+          var fresh = parsed.querySelector('pinafore-recommendations');
+          if (!fresh) return;
+          var markup = fresh.innerHTML.trim();
+          if (markup) self.innerHTML = markup;
+        })
+        .catch(function () { /* leave the band empty */ });
+    }
+  });
+
   /* ----------------------------------------------------------- sticky ATC */
 
   customElements.define('pinafore-sticky-atc', class extends HTMLElement {
