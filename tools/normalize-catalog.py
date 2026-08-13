@@ -142,6 +142,9 @@ def load_map():
     return {
         'global': clean(sizes['global']),
         'by_vendor': {v: clean(t) for v, t in sizes['by_vendor'].items()},
+        'force_merge': {v: set(clean(t))
+                        for v, t in sizes.get('force_merge', {}).items()
+                        if isinstance(t, dict)},
         'types': clean(raw['product_types']),
         'tags': clean(raw['tags']),
         'categories': raw['categories']['by_handle'],
@@ -222,7 +225,13 @@ def plan_sizes(product, rules):
         losers = [v for v in vids if v != survivor]
         survivor_label = mapped[survivor][0]
 
-        certain = all(formatting_only(mapped[v][0], new) for v in losers)
+        # Either the collision is self-evident from the spelling, or the map
+        # names it explicitly as settled by the brand's published chart.
+        authorised = rules['force_merge'].get(vendor, set())
+        certain = all(
+            formatting_only(mapped[v][0], new) or mapped[v][0] in authorised
+            for v in losers
+        )
         held = sum(stock[mapped[v][0]] for v in losers)
 
         if not certain and held > 0:

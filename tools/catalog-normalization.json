@@ -23,6 +23,23 @@
     ],
     "merge_policy": "keep_higher_inventory",
 
+    "force_merge": {
+      "_note": [
+        "A semantic merge is normally refused when the duplicate holds stock,",
+        "because choosing one side deletes sellable units and summing risks",
+        "overselling. These are the cases where the brand's published chart",
+        "settles it and the owner has accepted a stock recount afterwards.",
+        "",
+        "Stock is summed rather than discarded -- 6Y's 4 units join 6's 8 --",
+        "so nothing is written off before the recount happens."
+      ],
+      "Properly Tied": {
+        "6Y": "Properly Tied publish no Y sizes; the run is 5, 6, 7 then YS (8).",
+        "7Y": "Same.",
+        "YS": "'YS' and 'YS (8)' are the same published size."
+      }
+    },
+
     "global": {
       "_case_only": "Lowercase toddler and 6X sizes; Shopify treats '2t' and '2T' as different filter values, which splits every Shop-by-size chip in two.",
       "2t": "2T",
@@ -85,22 +102,30 @@
     "by_vendor": {
       "Properly Tied": {
         "_note": [
-          "Two problems, both inside one vendor.",
+          "Properly Tied's published run is exactly:",
+          "  2T, 3T, 4T, 5, 6, 7, YS (8), YM (10/12), YL (14/16), YXL (18)",
+          "confirmed against the brand's own chart as reproduced by two",
+          "stockists (Cottontails Monroe, Tiny Town). The brand's spelling is",
+          "the target, which is why the annotations use a slash rather than",
+          "the hyphen the source data happened to use.",
+          "",
+          "Two problems, both inside this one vendor.",
           "",
           "First, youth sizes are written both bare and annotated -- 'YS' on 20",
-          "products and 'YS (8)' on 45. Same size. Keeping the annotation is",
-          "the more useful of the two for a parent shopping by age.",
+          "products and 'YS (8)' on 45. Same size.",
           "",
           "Second, 'Mallard Shorts' and one other product carry a duplicate",
           "encoding of the whole run: 2Y/3Y/4Y alongside 2t/3t/4t and 5Y/6Y/7Y",
-          "alongside 5/6/7, with a separate variant for each. Properly Tied's",
-          "published size chart has no Y sizes at all, so these are the same",
-          "garment listed twice and get merged."
+          "alongside 5/6/7, with a separate variant for each. There is no Y",
+          "size anywhere in the published chart, so these are the same garment",
+          "listed twice."
         ],
         "YS": "YS (8)",
-        "YM": "YM (10-12)",
-        "YL": "YL (14-16)",
+        "YM": "YM (10/12)",
+        "YL": "YL (14/16)",
         "YXL": "YXL (18)",
+        "YM (10-12)": "YM (10/12)",
+        "YL (14-16)": "YL (14/16)",
         "2Y": "2T",
         "3Y": "3T",
         "4Y": "4T",
@@ -113,33 +138,43 @@
         "_note": [
           "Chus is sized in EU. One product spells out the US equivalent and",
           "the other does not, so the same shoe size appears as both '21' and",
-          "'21 (US-5)'. The US mapping below is Chus's own, taken from the",
-          "annotated run on CHRIS Canvas T-Straps -- not calculated."
+          "'21 (US-5)'.",
+          "",
+          "The US values below are the brand's own published chart, not the",
+          "store's annotations and not a calculated conversion. The two",
+          "disagree in three places, and the brand wins: EU 23 is US 6.5-7 (the",
+          "store said 7), EU 30 is US 12-12.5 (the store said 12.5), and EU 32",
+          "is Y1 (the store said '1 youth'). Chus also runs small enough that",
+          "they publish half-size spans deliberately, so flattening 6.5-7 to a",
+          "single number would be discarding fitting advice, not tidying it."
         ],
         "21": "21 (US 5)",
         "22": "22 (US 6)",
-        "23": "23 (US 7)",
+        "23": "23 (US 6.5-7)",
         "24": "24 (US 7.5)",
         "25": "25 (US 8)",
         "26": "26 (US 9)",
         "27": "27 (US 10)",
         "28": "28 (US 11)",
         "29": "29 (US 12)",
-        "30": "30 (US 12.5)",
+        "30": "30 (US 12-12.5)",
         "31": "31 (US 13)",
-        "32": "32 (US 1 Youth)",
+        "32": "32 (US Y1)",
         "21 (US-5)": "21 (US 5)",
         "22 (US-6)": "22 (US 6)",
-        "23(US-7)": "23 (US 7)",
+        "23(US-7)": "23 (US 6.5-7)",
+        "23 (US 7)": "23 (US 6.5-7)",
         "24 (US-7 1/2)": "24 (US 7.5)",
         "25 (US-8)": "25 (US 8)",
         "26 (US-9)": "26 (US 9)",
         "27 (US-10)": "27 (US 10)",
         "28 (US-11)": "28 (US 11)",
         "29 (US-12)": "29 (US 12)",
-        "30 (US-12 1/2)": "30 (US 12.5)",
+        "30 (US-12 1/2)": "30 (US 12-12.5)",
+        "30 (US 12.5)": "30 (US 12-12.5)",
         "31 (US-13)": "31 (US 13)",
-        "32 (US-1 youth)": "32 (US 1 Youth)"
+        "32 (US-1 youth)": "32 (US Y1)",
+        "32 (US 1 Youth)": "32 (US Y1)"
       }
     },
 
@@ -156,13 +191,13 @@
 
       "C4-C13, J1-J4 (Floafers)": "Child and Junior, the brand's own scheme, already consistent.",
 
-      "XS (3/4) / S (6/8) / M (8/10) vs XS (7/8) / S (8/10) / M (10/12) / L (12/14)": "Two vendors' letter runs that disagree about what a Small is. Collapsing them to bare letters would put a 4-year-old and an 8-year-old in the same filter bucket.",
+      "XS (3/4) / S (6/8) / M (8/10) (Mustard & Ketchup) vs XS (7/8) / S (8/10) / M (10/12) / L (12/14) (Prodoh)": "Two vendors' letter runs that disagree about what a Small is, and both are correct: Prodoh's chart publishes XS as 7/8 and Mustard & Ketchup's publishes XS as 3/4. The brand's chart is the source of truth, so a Small meaning a 4-year-old at one label and an 8-year-old at another is left standing. Parents in this category read the parenthetical, which is why both runs keep it.",
 
       "Infant / Toddler (Apple of My Isla bib)": "Descriptive, and a bib has no numeric size.",
 
       "6-18 mo (The Uptown Baby sleep bag)": "A real single-size range.",
 
-      "Large (Chus)": "An orphan alpha size sitting inside an otherwise EU-numbered run of a single product. This looks like a data-entry error at source, but it is a purchasable variant with stock and guessing which EU size it means would be inventing inventory. Flagged for the owner.",
+      "Large (Chus)": "Chus publish EU sizes only -- there is no Large anywhere in their chart -- so this is a data-entry error rather than a size. It is exactly one variant, 'Light Blue / Large' on CHRIS Canvas T-Straps (SKU-265-Large-...), holding 10 units. Chus has since been dropped from the live storefront, so there is nothing left to cross-check it against, and picking an EU size for it would be inventing inventory. Left for the BigCommerce admin export to settle.",
 
       "Numeric sizes shared between shoes and clothing": "A '7' is both a shirt size and a shoe size in this catalog. That is not fixable by renaming -- it needs the size filter scoped by product category, which the taxonomy assignments below make possible."
     }
