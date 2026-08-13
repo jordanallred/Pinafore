@@ -393,8 +393,23 @@
   .product__buy {
     display: flex;
     flex-direction: column;
-    /* Enough air that the two actions read as a pair of choices rather than
-       one control that has been split in half. */
+    gap: var(--space-xs);
+  }
+
+  /*
+   * The gap has to live on the form, not on .product__buy.
+   *
+   * .product__buy's only children are the <form> and the reassurance line, so
+   * a gap there spaces those two and does nothing at all for the buttons —
+   * both of which are inside the form, which is display:block. Add to cart and
+   * Buy it now were sitting at a measured 0px apart, sharing an edge.
+   *
+   * Hidden inputs are display:none and so are skipped by flex gap; the
+   * quantity field, when enabled, correctly takes the same spacing.
+   */
+  .product__buy form {
+    display: flex;
+    flex-direction: column;
     gap: var(--space-xs);
   }
 
