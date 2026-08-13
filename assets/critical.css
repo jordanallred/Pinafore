@@ -24,6 +24,17 @@ body {
   min-height: 100svh;
 }
 
+/*
+ * The body was already a full-height column, but nothing claimed the leftover
+ * space, so on any short page — 404, an empty cart, a two-product collection —
+ * the footer stopped wherever the content ended and left a band of bare page
+ * ground beneath it. Letting main absorb the slack pins the footer to the
+ * bottom of the viewport without pinning it on long pages.
+ */
+main {
+  flex: 1 0 auto;
+}
+
 html:has(dialog[scroll-lock][open], details[scroll-lock][open]) {
   overflow: hidden;
 }
