@@ -19,6 +19,20 @@
 
   /* ------------------------------------------------------------ helpers */
 
+  /* Is point p inside triangle abc? Used by the mega menu's aim test. */
+  function inTriangle(p, a, b, c) {
+    var d1 = sign(p, a, b);
+    var d2 = sign(p, b, c);
+    var d3 = sign(p, c, a);
+    var neg = d1 < 0 || d2 < 0 || d3 < 0;
+    var pos = d1 > 0 || d2 > 0 || d3 > 0;
+    return !(neg && pos);
+  }
+
+  function sign(p, a, b) {
+    return (p[0] - b[0]) * (a[1] - b[1]) - (a[0] - b[0]) * (p[1] - b[1]);
+  }
+
   function closeDialog(dialog) {
     if (!dialog || !dialog.open) return;
     // Let the slide-out finish before the element leaves the top layer.
@@ -187,9 +201,24 @@
 
       this.openTimer = null;
       this.closeTimer = null;
+      this.pending = null;
+      this.point = null;
 
-      this.addEventListener('pointerenter', this.onEnter.bind(this), true);
-      this.addEventListener('pointerleave', this.onLeave.bind(this), true);
+      /*
+       * The hover region is the whole header, not each <details>.
+       *
+       * A panel is `width: max-content` and centred on its label, so a 79px
+       * label routinely owns an 800px panel and most of that panel hangs over
+       * its neighbours. Closing on "left this <details>" therefore fired
+       * constantly — on the gutters between columns, on the panel's own
+       * padding, and on the band of header beside the label. Every one of
+       * those is somewhere the customer still means to be.
+       */
+      this.region = this.closest('.header') || this;
+
+      this.addEventListener('pointerover', this.onOver.bind(this));
+      this.addEventListener('pointermove', this.onMove.bind(this));
+      this.region.addEventListener('pointerleave', this.scheduleClose.bind(this));
       this.addEventListener('focusout', this.onFocusOut.bind(this));
       this.addEventListener('keydown', this.onKeydown.bind(this));
 
@@ -199,25 +228,68 @@
       }.bind(this));
     }
 
-    onEnter(event) {
-      var item = event.target.closest ? event.target.closest('[data-menu]') : null;
-      if (!item || !this.contains(item)) return;
+    onOver(event) {
+      var item = event.target.closest('[data-menu]');
+
+      if (!item || !this.contains(item)) {
+        // A top-level link with no panel of its own dismisses what is open.
+        // Header background — the band beside a label — deliberately does not:
+        // the pointer is still on its way somewhere.
+        if (event.target.closest('.nav-item')) this.scheduleClose();
+        return;
+      }
+
       clearTimeout(this.closeTimer);
+      if (item.open) {
+        clearTimeout(this.openTimer);
+        this.pending = null;
+        return;
+      }
+      this.pending = item;
+      this.armOpen();
+    }
+
+    /*
+     * Reaching the far side of a panel means crossing the labels it hangs
+     * over, and each of those would otherwise steal the menu mid-sweep. So
+     * while the pointer is still travelling toward the open panel, the
+     * pending open is pushed back on every move; it only lands once the
+     * pointer settles. Aim beats position — this is the same wedge test a
+     * desktop menu has always needed.
+     */
+    onMove(event) {
+      var prev = this.point;
+      this.point = [event.clientX, event.clientY];
+      if (this.pending && prev && this.headingForPanel(prev, this.point)) this.armOpen();
+    }
+
+    armOpen() {
+      clearTimeout(this.openTimer);
+      var item = this.pending;
+      if (!item) return;
       // Short delay so dragging the pointer across the nav doesn't flash
       // every panel on the way to the intended one.
       this.openTimer = setTimeout(function () {
+        this.pending = null;
         this.closeAll(item);
         item.open = true;
       }.bind(this), 90);
     }
 
-    onLeave(event) {
-      var item = event.target.closest ? event.target.closest('[data-menu]') : null;
-      if (!item) return;
+    headingForPanel(from, to) {
+      var open = this.querySelector('[data-menu][open] [data-menu-panel]');
+      if (!open) return false;
+      var r = open.getBoundingClientRect();
+      if (!r.width || to[1] > r.top) return false;
+      // Wedge from where the pointer was to the panel's leading edge.
+      return inTriangle(to, from, [r.left, r.top], [r.right, r.top]);
+    }
+
+    scheduleClose() {
       clearTimeout(this.openTimer);
-      this.closeTimer = setTimeout(function () {
-        item.open = false;
-      }, 180);
+      clearTimeout(this.closeTimer);
+      this.pending = null;
+      this.closeTimer = setTimeout(this.closeAll.bind(this, null), 180);
     }
 
     onFocusOut(event) {
