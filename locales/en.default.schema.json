@@ -66,7 +66,9 @@
     "collection_tiles": "Collection tiles",
     "marquee": "Scrolling bar",
     "reviews": "Customer reviews",
-    "review": "Review"
+    "review": "Review",
+    "announcement_bar": "Announcement bar",
+    "announcement": "Announcement"
   },
   "labels": {
     "accent_background": "Accent",
@@ -162,7 +164,10 @@
     "swatch_limit": "Variant thumbnails shown",
     "speed": "Scroll speed",
     "rating": "Star rating",
-    "author": "Customer name"
+    "author": "Customer name",
+    "autorotate": "Rotate automatically",
+    "rotate_speed": "Change every",
+    "show_close": "Show dismiss button"
   },
   "info": {
     "accent": "Used for badges, links, and focus outlines. Keep it distinct from your button color.",
@@ -200,7 +205,9 @@
     "size_collection": "Sizes link into this collection. Leave empty to search all products.",
     "tile_image": "Leave empty to use the collection's own image.",
     "tile_heading": "Leave empty to use the collection's name.",
-    "marquee_speed": "Higher is slower. Motion stops automatically for visitors who ask their device to reduce it."
+    "marquee_speed": "Higher is slower. Motion stops automatically for visitors who ask their device to reduce it.",
+    "announcement_autorotate": "Messages take turns. Rotation stops automatically for visitors who ask their device to reduce motion, and while the bar is hovered.",
+    "announcement_dismiss": "Customers who close the bar keep it hidden until you change the wording."
   },
   "options": {
     "alignment": {

@@ -10,7 +10,10 @@
     "previous": "Previous",
     "next": "Next",
     "loading": "Loading",
-    "primary_navigation": "Primary"
+    "primary_navigation": "Primary",
+    "announcement": "Announcement",
+    "previous_announcement": "Previous announcement",
+    "next_announcement": "Next announcement"
   },
   "404": {
     "title": "404",

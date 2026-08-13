@@ -89,6 +89,75 @@
     if (event.target.tagName === 'DIALOG') syncExpanded(event.target.id, false);
   }, true);
 
+  /* --------------------------------------------------- announcement bar */
+
+  customElements.define('pinafore-announcement', class extends HTMLElement {
+    connectedCallback() {
+      var close = this.querySelector('[data-announcement-close]');
+      if (close) close.addEventListener('click', this.dismiss.bind(this));
+
+      this.items = Array.prototype.slice.call(this.querySelectorAll('[data-announcement]'));
+      // One message is a static bar: no arrows to wire up, no timer to run.
+      if (this.items.length < 2) return;
+
+      this.index = 0;
+      var prev = this.querySelector('[data-announcement-prev]');
+      var next = this.querySelector('[data-announcement-next]');
+      if (prev) prev.addEventListener('click', this.nudge.bind(this, -1));
+      if (next) next.addEventListener('click', this.nudge.bind(this, 1));
+
+      var seconds = parseFloat(this.getAttribute('data-rotate'));
+      if (!seconds) return;
+      // Auto-advance is motion nobody asked for. Reduced-motion keeps the
+      // arrows and loses the timer, rather than losing the messages.
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      this.delay = seconds * 1000;
+      this.addEventListener('pointerenter', this.pause.bind(this));
+      this.addEventListener('pointerleave', this.play.bind(this));
+      this.addEventListener('focusin', this.pause.bind(this));
+      this.addEventListener('focusout', this.play.bind(this));
+      this.play();
+    }
+
+    disconnectedCallback() {
+      this.pause();
+    }
+
+    play() {
+      if (!this.delay) return;
+      this.pause();
+      this.timer = setInterval(this.step.bind(this, 1), this.delay);
+    }
+
+    pause() {
+      clearInterval(this.timer);
+    }
+
+    step(delta) {
+      this.items[this.index].removeAttribute('data-active');
+      this.index = (this.index + delta + this.items.length) % this.items.length;
+      this.items[this.index].setAttribute('data-active', '');
+    }
+
+    // An arrow press restarts the clock, so a message read on demand is not
+    // swapped out a moment later by a timer that was already half spent.
+    nudge(delta) {
+      this.step(delta);
+      this.play();
+    }
+
+    dismiss() {
+      this.pause();
+      this.hidden = true;
+      try {
+        localStorage.setItem('pinafore:announcement', this.getAttribute('data-dismiss-key'));
+      } catch (error) {
+        /* Private browsing modes can throw on storage access. */
+      }
+    }
+  });
+
   /* -------------------------------------------------------------- header */
 
   customElements.define('pinafore-header', class extends HTMLElement {
