@@ -1,0 +1,309 @@
+{
+  "_comment": [
+    "Hand-written normalization for the Little Monkey Toes catalog.",
+    "",
+    "Every entry below was decided by reading the actual size run, vendor and",
+    "product it appears on. Nothing here is inferred by pattern matching,",
+    "because pattern matching is exactly what breaks on this catalog: '2Y'",
+    "means a youth shoe size on Footmates and a duplicate of '2T' on Properly",
+    "Tied, and no rule can tell those apart from the string alone.",
+    "",
+    "That is also why sizes are split into a global map and a per-vendor map.",
+    "The global map holds only labels that mean the same thing everywhere in",
+    "this catalog -- case, punctuation and fraction-vs-decimal. Anything whose",
+    "meaning depends on who made the garment lives under by_vendor."
+  ],
+
+  "sizes": {
+    "_note": [
+      "Applied to Shopify product option values and to the matching variant",
+      "selectedOptions. Where a rename collides with a value the product",
+      "already carries, the two variants are the same physical size listed",
+      "twice and get merged -- see merge_policy."
+    ],
+    "merge_policy": "keep_higher_inventory",
+
+    "global": {
+      "_case_only": "Lowercase toddler and 6X sizes; Shopify treats '2t' and '2T' as different filter values, which splits every Shop-by-size chip in two.",
+      "2t": "2T",
+      "3t": "3T",
+      "4t": "4T",
+      "5t": "5T",
+      "6t": "6T",
+      "6x": "6X",
+      "1 youth": "1 Youth",
+      "2 youth": "2 Youth",
+      "3 youth": "3 Youth",
+      "4 youth": "4 Youth",
+
+      "_word_order": "L'Amour writes its baby shoe sizes the other way round from Footmates and Salt Water.",
+      "Baby 1": "1 Baby",
+      "Baby 2": "2 Baby",
+      "Baby 3": "3 Baby",
+
+      "_newborn": "Widgeon spells out Newborn; the rest of the catalog uses NB.",
+      "Newborn": "NB",
+
+      "_trailing_zero": "Footmates ships some shoe runs as '3.0' and others as '3'.",
+      "1.0": "1",
+      "2.0": "2",
+      "3.0": "3",
+      "4.0": "4",
+      "5.0": "5",
+      "6.0": "6",
+      "7.0": "7",
+      "8.0": "8",
+      "9.0": "9",
+      "10.0": "10",
+      "11.0": "11",
+      "12.0": "12",
+
+      "_fractions": "Half shoe sizes appear as both '3 1/2' and '3.5' across Footmates and Petit Jolie. Decimals sort correctly in a filter; fractions do not.",
+      "3 1/2": "3.5",
+      "4 1/2": "4.5",
+      "5 1/2": "5.5",
+      "6 1/2": "6.5",
+      "7 1/2": "7.5",
+      "8 1/2": "8.5",
+      "9 1/2": "9.5",
+      "10 1/2": "10.5",
+      "11 1/2": "11.5",
+      "12 1/2": "12.5",
+      "13 1/2": "13.5",
+      "1.5": "1.5",
+      "6 1/2Y": "6.5Y",
+      "11 1/2 -12 1/2": "11.5/12.5",
+
+      "_combined": "J Bailey lists its 4T as '4T/4R'; the rest of that run is plain.",
+      "4T/4R": "4T",
+
+      "_jefferies_case": "Jefferies capitalises 'Shoe Size' on three of six sock sizes and 'Shoe size' on the other three.",
+      "XS (Shoe Size 6-11)": "XS (Shoe size 6-11)",
+      "S (Shoe Size 9-1)": "S (Shoe size 9-1)"
+    },
+
+    "by_vendor": {
+      "Properly Tied": {
+        "_note": [
+          "Two problems, both inside one vendor.",
+          "",
+          "First, youth sizes are written both bare and annotated -- 'YS' on 20",
+          "products and 'YS (8)' on 45. Same size. Keeping the annotation is",
+          "the more useful of the two for a parent shopping by age.",
+          "",
+          "Second, 'Mallard Shorts' and one other product carry a duplicate",
+          "encoding of the whole run: 2Y/3Y/4Y alongside 2t/3t/4t and 5Y/6Y/7Y",
+          "alongside 5/6/7, with a separate variant for each. Properly Tied's",
+          "published size chart has no Y sizes at all, so these are the same",
+          "garment listed twice and get merged."
+        ],
+        "YS": "YS (8)",
+        "YM": "YM (10-12)",
+        "YL": "YL (14-16)",
+        "YXL": "YXL (18)",
+        "2Y": "2T",
+        "3Y": "3T",
+        "4Y": "4T",
+        "5Y": "5",
+        "6Y": "6",
+        "7Y": "7"
+      },
+
+      "Chus": {
+        "_note": [
+          "Chus is sized in EU. One product spells out the US equivalent and",
+          "the other does not, so the same shoe size appears as both '21' and",
+          "'21 (US-5)'. The US mapping below is Chus's own, taken from the",
+          "annotated run on CHRIS Canvas T-Straps -- not calculated."
+        ],
+        "21": "21 (US 5)",
+        "22": "22 (US 6)",
+        "23": "23 (US 7)",
+        "24": "24 (US 7.5)",
+        "25": "25 (US 8)",
+        "26": "26 (US 9)",
+        "27": "27 (US 10)",
+        "28": "28 (US 11)",
+        "29": "29 (US 12)",
+        "30": "30 (US 12.5)",
+        "31": "31 (US 13)",
+        "32": "32 (US 1 Youth)",
+        "21 (US-5)": "21 (US 5)",
+        "22 (US-6)": "22 (US 6)",
+        "23(US-7)": "23 (US 7)",
+        "24 (US-7 1/2)": "24 (US 7.5)",
+        "25 (US-8)": "25 (US 8)",
+        "26 (US-9)": "26 (US 9)",
+        "27 (US-10)": "27 (US 10)",
+        "28 (US-11)": "28 (US 11)",
+        "29 (US-12)": "29 (US 12)",
+        "30 (US-12 1/2)": "30 (US 12.5)",
+        "31 (US-13)": "31 (US 13)",
+        "32 (US-1 youth)": "32 (US 1 Youth)"
+      }
+    },
+
+    "left_alone": {
+      "_note": "Recorded so a later pass does not mistake these for oversights.",
+
+      "1Y / 2Y / 3Y / 4Y / 5Y / 6Y / 7Y on Footmates, Petit Jolie": "Genuine youth shoe sizes -- the run goes 11, 12, 13, then 1Y. Renaming these the way Properly Tied's are renamed would move a size-1 youth shoe into the toddler bucket.",
+
+      "1 YR / 2 YR / 4 YR / 6 YR (Bob & Blossom)": "Age-in-years sizing, internally consistent and used by no other vendor. Mapping it onto '2T' would assert a fit equivalence the vendor never published.",
+
+      "5-6y / 7-8y (Set Athletics)": "Same reason.",
+
+      "7/8, 8/10, 10/12 (Prodoh) and 2/3, 5/6, 13/1 (Petit Jolie)": "Real spanning sizes, not two sizes joined by a slash.",
+
+      "C4-C13, J1-J4 (Floafers)": "Child and Junior, the brand's own scheme, already consistent.",
+
+      "XS (3/4) / S (6/8) / M (8/10) vs XS (7/8) / S (8/10) / M (10/12) / L (12/14)": "Two vendors' letter runs that disagree about what a Small is. Collapsing them to bare letters would put a 4-year-old and an 8-year-old in the same filter bucket.",
+
+      "Infant / Toddler (Apple of My Isla bib)": "Descriptive, and a bib has no numeric size.",
+
+      "6-18 mo (The Uptown Baby sleep bag)": "A real single-size range.",
+
+      "Large (Chus)": "An orphan alpha size sitting inside an otherwise EU-numbered run of a single product. This looks like a data-entry error at source, but it is a purchasable variant with stock and guessing which EU size it means would be inventing inventory. Flagged for the owner.",
+
+      "Numeric sizes shared between shoes and clothing": "A '7' is both a shirt size and a shoe size in this catalog. That is not fixable by renaming -- it needs the size filter scoped by product category, which the taxonomy assignments below make possible."
+    }
+  },
+
+  "product_types": {
+    "_note": [
+      "74 types for 351 products, with singular/plural pairs splitting several",
+      "in half. Footwear takes the plural form Shopify's own taxonomy uses;",
+      "garments take the singular unless the word is only ever plural."
+    ],
+    "Dresses": "Dress",
+    "Sandal": "Sandals",
+    "Sneaker": "Sneakers",
+    "Mary Jane": "Mary Janes",
+    "T-Strap": "T-Straps",
+    "Short": "Shorts",
+    "Jogger": "Joggers",
+    "Skorts": "Skort",
+    "Swim Trunk": "Swim Trunks",
+    "Lunchbox": "Lunch Box",
+    "Polo Shirt": "Polo",
+    "Long Sleeve T-Shirt": "Long Sleeve Shirt",
+    "Outfit": "Outfit Set",
+
+    "_left_alone": {
+      "One-Piece vs One-Piece Swimsuit": "One product each, and 'One-Piece' could be a bodysuit rather than swimwear. Needs a look at the garment, not a rule.",
+      "Lounge Set vs Loungewear": "One is a two-piece set, the other a category. Not the same thing.",
+      "Shoes / Lace Up Shoe / Saddle Shoe / Tennis Shoes": "Four genuinely different footwear styles; only 'Shoes' is vague and it is a single product."
+    }
+  },
+
+  "tags": {
+    "_note": "Only the four pairs that differ purely by separator. Hyphenated wins because it is the more used form in every pair.",
+    "all in one": "all-in-one",
+    "back to school": "back-to-school",
+    "fall winter": "fall-winter",
+    "long sleeve": "long-sleeve",
+
+    "_left_alone": {
+      "vendor-name tags": "'pleat', 'prodoh', 'j bailey' and similar duplicate the vendor field. Harmless, and they may be driving existing automated collections, so removing them is a merchandising decision rather than a cleanup."
+    }
+  },
+
+  "categories": {
+    "_note": [
+      "Five products have no Shopify taxonomy category at all, and the bag",
+      "products that do have one disagree with each other -- backpacks split",
+      "between two categories, and a lunchbox filed under Toiletry Bags.",
+      "",
+      "Category matters more here than it looks: Shopify derives the standard",
+      "product attributes that Search & Discovery groups filters around from",
+      "it, so a wrong category is a broken filter."
+    ],
+
+    "by_handle": {
+      "oh-mint-square-lunch-box": {
+        "id": "gid://shopify/TaxonomyCategory/hg-11-3-7-1",
+        "was": null,
+        "why": "Uncategorised. Insulated soft lunch box."
+      },
+      "apple-of-my-isla-lunchbox": {
+        "id": "gid://shopify/TaxonomyCategory/hg-11-3-7-1",
+        "was": "Luggage & Bags > Cosmetic & Toiletry Bags > Toiletry Bags",
+        "why": "Filed as a toiletry bag."
+      },
+      "apple-of-my-isla-pastel-floral-lunchbox": {
+        "id": "gid://shopify/TaxonomyCategory/hg-11-3-7-1",
+        "was": "Handbags > School Bags",
+        "why": "Matches the other lunch boxes."
+      },
+      "apple-of-my-isla-sailboats-lunchbox": {
+        "id": "gid://shopify/TaxonomyCategory/hg-11-3-7-1",
+        "was": "Handbags > School Bags",
+        "why": "Matches the other lunch boxes."
+      },
+
+      "apple-of-my-isla-golf-take-it-tote": {
+        "id": "gid://shopify/TaxonomyCategory/lb-13",
+        "was": null,
+        "why": "Uncategorised. It is a tote."
+      },
+      "apple-of-my-isla-take-it-tote": {
+        "id": "gid://shopify/TaxonomyCategory/lb-13",
+        "was": "Handbags > School Bags",
+        "why": "Same product line as the Golf Take It Tote."
+      },
+
+      "apple-of-my-isla-tulips-large-backpack": {
+        "id": "gid://shopify/TaxonomyCategory/lb-1-12",
+        "was": "Handbags > School Bags",
+        "why": "Six other backpacks already sit under School Backpacks."
+      },
+      "apple-of-my-isla-dogs-large-backpack": {
+        "id": "gid://shopify/TaxonomyCategory/lb-1-12",
+        "was": "Handbags > School Bags",
+        "why": "Same."
+      },
+      "oh-mint-small-backpack-seersucker": {
+        "id": "gid://shopify/TaxonomyCategory/lb-1-12",
+        "was": "Handbags > School Bags",
+        "why": "Same."
+      },
+
+      "apple-of-my-isla-duffle-bag": {
+        "id": "gid://shopify/TaxonomyCategory/lb-6",
+        "was": "Duffel Bags > Gym Duffel Bags",
+        "why": "A child's weekender, not gym kit; matches the Oh Mint duffel."
+      },
+      "oh-mint-weekender-duffel-cheetah-seersucker": {
+        "id": "gid://shopify/TaxonomyCategory/lb-6",
+        "was": "Duffel Bags > Gym Duffel Bags",
+        "why": "Same product as oh-mint-weekender-duffel, which is already under Duffel Bags."
+      },
+
+      "properly-tied-ace-short": {
+        "id": "gid://shopify/TaxonomyCategory/aa-1-14",
+        "was": "Boys' Underwear > Boys' Underpants > Boxer Shorts",
+        "why": "Filed as underwear. It is a casual short."
+      },
+      "properly-tied-fairway-short": {
+        "id": "gid://shopify/TaxonomyCategory/aa-1-14",
+        "was": "Boys' Underwear > Boys' Underpants > Boxer Shorts",
+        "why": "Filed as underwear. It is a golf short."
+      },
+
+      "prodoh-harbor-hangin-short": {
+        "id": "gid://shopify/TaxonomyCategory/aa-1-14",
+        "was": null,
+        "why": "Uncategorised. Size run reaches 10/12, past Baby & Toddler."
+      },
+      "blue-quail-everyday-shorts": {
+        "id": "gid://shopify/TaxonomyCategory/aa-1-14",
+        "was": null,
+        "why": "Uncategorised."
+      },
+      "j-bailey-pete-shorts": {
+        "id": "gid://shopify/TaxonomyCategory/aa-1-14",
+        "was": null,
+        "why": "Uncategorised."
+      }
+    }
+  }
+}
