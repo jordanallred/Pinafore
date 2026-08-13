@@ -27,7 +27,7 @@
       "settings": {
         "collection": "new-arrivals",
         "eyebrow": "Just landed",
-        "heading": "New this week",
+        "heading": "New this season",
         "product_limit": 8,
         "columns": 4,
         "show_view_all": true,
@@ -168,8 +168,8 @@
     "seasons": {
       "type": "collection-tiles",
       "settings": {
-        "eyebrow": "Shop the season",
-        "heading": "New collections",
+        "eyebrow": "Ready when they are",
+        "heading": "Shop the season",
         "columns": 3,
         "overlay": 50,
         "color_scheme": "scheme_1"
@@ -179,21 +179,24 @@
           "type": "tile",
           "settings": {
             "collection": "new-arrivals",
-            "caption": "Just in"
+            "heading": "Fall & Winter",
+            "caption": "The new season"
           }
         },
         "t2": {
           "type": "tile",
           "settings": {
-            "collection": "collegiate",
-            "caption": "Game day"
+            "collection": "girls",
+            "heading": "Girls",
+            "caption": "Dresses, bubbles, bows"
           }
         },
         "t3": {
           "type": "tile",
           "settings": {
-            "collection": "preorder",
-            "caption": "Ships soon"
+            "collection": "boys",
+            "heading": "Boys",
+            "caption": "Tees, shorts, polos"
           }
         }
       },
