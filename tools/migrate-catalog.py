@@ -246,6 +246,18 @@ def build_input(product, location_id, status_mode):
 
 LOCATION = '{ locations(first: 1) { nodes { id name } } }'
 
+ONLINE_STORE = """
+{ publications(first: 10) { nodes { id name } } }
+"""
+
+PUBLISH = """
+mutation ($id: ID!, $input: [PublicationInput!]!) {
+  publishablePublish(id: $id, input: $input) {
+    userErrors { field message }
+  }
+}
+"""
+
 # The handle is passed as an identifier rather than left inside the input, so
 # a re-run updates the existing product instead of failing on a duplicate
 # handle. Without it, `--only` can never repair anything.
@@ -327,7 +339,13 @@ def main():
 
     target = Store(args.target)
     location_id = target(LOCATION)['locations']['nodes'][0]['id']
+    online_store = next(
+        (p['id'] for p in target(ONLINE_STORE)['publications']['nodes']
+         if p['name'] == 'Online Store'),
+        None,
+    )
     print(f'Target location: {location_id}')
+    print(f'Online Store publication: {online_store or "NOT FOUND — nothing will be visible"}')
 
     if args.wipe:
         wipe(target)
@@ -346,6 +364,19 @@ def main():
         errors = result['userErrors']
         if errors:
             failures.append((product['handle'], json.dumps(errors)[:300]))
+        elif online_store:
+            # `productSet` creates the product but publishes it to nothing, so
+            # a migration that reports 351/351 imported can still leave the
+            # storefront completely empty — the admin looks right and every
+            # product URL 404s. Publishing here means the two can never
+            # disagree again.
+            published = target(PUBLISH, {
+                'id': result['product']['id'],
+                'input': [{'publicationId': online_store}],
+            })['publishablePublish']
+            if published['userErrors']:
+                failures.append((product['handle'], json.dumps(published['userErrors'])[:300]))
+
         if i % 25 == 0:
             print(f'  {i}/{len(products)} ({len(failures)} failed)')
 
