@@ -16,7 +16,7 @@
 %}
 
 <div
-  class="marquee color-{{ section.settings.color_scheme }} full-width{% if section.settings.edge_scallop %} scallop-block-end{% endif %}"
+  class="marquee color-{{ section.settings.color_scheme }} full-width"
   style="--marquee-duration: {{ speed }}s;"
 >
   {%- comment -%}
@@ -140,13 +140,6 @@
       "step": 5,
       "unit": "s",
       "default": 40
-    },
-    {
-      "type": "checkbox",
-      "id": "edge_scallop",
-      "label": "t:labels.edge_scallop",
-      "info": "t:info.edge_scallop",
-      "default": true
     },
     {
       "type": "color_scheme",

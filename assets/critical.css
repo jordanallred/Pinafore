@@ -466,51 +466,6 @@ a {
   );
 }
 
-/* ------------------------------------------------------------- Scallop */
-
-/**
- * A scalloped bottom edge — the theme's second garment reference after the
- * seam. A pinafore hem, a bib edge, the border of a baby blanket.
- *
- * It carries childhood without reaching for pastel, which matters on a store
- * that frames other brands' photography: it is a silhouette, not a colour, so
- * it cannot clash with anything inside the band.
- *
- * Two mask layers: a repeating half-disc along the bottom strip, and a solid
- * fill for everything above it. The geometry only reads as a scallop while
- * --scallop-depth is half --scallop-size, which is how the tokens are set —
- * at that ratio the disc radius equals the strip height, so each bump meets
- * its neighbour exactly at the band edge with no flat run between them.
- *
- * Costs no image, no pseudo-element and no JavaScript, and inherits whatever
- * background the band already paints.
- */
-.scallop-block-end {
-  --scallop-mask:
-    radial-gradient(
-      circle at 50% 0,
-      #000 calc(var(--scallop-depth) - 0.5px),
-      #0000 var(--scallop-depth)
-    ),
-    linear-gradient(#000 0 0);
-
-  /* Keeps content clear of the notches the mask cuts. */
-  padding-block-end: calc(var(--scallop-depth) + var(--space-2xs));
-
-  -webkit-mask-image: var(--scallop-mask);
-  mask-image: var(--scallop-mask);
-  -webkit-mask-size:
-    var(--scallop-size) var(--scallop-depth),
-    100% calc(100% - var(--scallop-depth));
-  mask-size:
-    var(--scallop-size) var(--scallop-depth),
-    100% calc(100% - var(--scallop-depth));
-  -webkit-mask-position: bottom left, top left;
-  mask-position: bottom left, top left;
-  -webkit-mask-repeat: repeat-x, no-repeat;
-  mask-repeat: repeat-x, no-repeat;
-}
-
 /* --------------------------------------------------------------- Media */
 .media {
   position: relative;
