@@ -12,6 +12,7 @@
   blocking dialog.
 {% endcomment %}
 
+{%- if customer -%}
 <pinafore-address class="addresses-band band color-{{ section.settings.color_scheme }} full-width section-spacing">
   <div class="addresses band__inner">
     <header class="addresses__header">
@@ -99,6 +100,7 @@
     {%- endpaginate -%}
   </div>
 </pinafore-address>
+{%- endif -%}
 
 {% stylesheet %}
   .addresses {

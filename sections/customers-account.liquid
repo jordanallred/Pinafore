@@ -4,7 +4,16 @@
   Orders are a table on desktop and a stack of cards on phones, rather than a
   table forced to scroll sideways. Reading an order number by dragging a table
   horizontally is the kind of thing that only ever gets tested on a laptop.
+
+  Everything is guarded on `customer`. Shopify never serves this template to a
+  signed-out visitor, so the guard is not needed for the storefront — but the
+  theme editor and the Section Rendering API both render sections with no
+  customer in scope, and `{% paginate customer.orders %}` throws outright
+  there. A section that errors in its own preview is a section a merchant
+  cannot safely place.
 {% endcomment %}
+
+{%- if customer -%}
 
 <div class="account-band band color-{{ section.settings.color_scheme }} full-width section-spacing">
   <div class="account band__inner">
@@ -76,6 +85,7 @@
     </div>
   </div>
 </div>
+{%- endif -%}
 
 {% stylesheet %}
   .account {
