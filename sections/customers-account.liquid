@@ -1,0 +1,201 @@
+{% comment %}
+  Account overview: order history and the default address.
+
+  Orders are a table on desktop and a stack of cards on phones, rather than a
+  table forced to scroll sideways. Reading an order number by dragging a table
+  horizontally is the kind of thing that only ever gets tested on a laptop.
+{% endcomment %}
+
+<div class="account-band band color-{{ section.settings.color_scheme }} full-width section-spacing">
+  <div class="account band__inner">
+    <header class="account__header">
+      <div>
+        <h1 class="account__title">{{ 'customers.account.title' | t }}</h1>
+        <p class="account__email">{{ customer.email }}</p>
+      </div>
+      <a class="account__logout" href="{{ routes.account_logout_url }}">
+        {{ 'customers.account.logout' | t }}
+      </a>
+    </header>
+
+    <div class="account__layout">
+      <section class="account__orders" aria-labelledby="AccountOrders">
+        <h2 class="account__heading" id="AccountOrders">
+          {{ 'customers.account.orders' | t }}
+        </h2>
+
+        {%- paginate customer.orders by 12 -%}
+          {%- if customer.orders.size > 0 -%}
+            <ul class="orders" role="list">
+              {%- for order in customer.orders -%}
+                <li class="order seam-block-end">
+                  <a class="order__number" href="{{ order.customer_url }}">
+                    {{ 'customers.order.number' | t: number: order.name }}
+                  </a>
+                  <span class="order__date">
+                    {{ order.created_at | date: format: 'date' }}
+                  </span>
+                  <span class="order__status">
+                    {{ order.financial_status_label }} &middot;
+                    {{ order.fulfillment_status_label }}
+                  </span>
+                  <span class="order__total">{{ order.total_net_amount | money }}</span>
+                </li>
+              {%- endfor -%}
+            </ul>
+
+            {%- if paginate.pages > 1 -%}
+              {% render 'pagination', paginate: paginate %}
+            {%- endif -%}
+          {%- else -%}
+            <p class="account__empty">{{ 'customers.account.no_orders' | t }}</p>
+            <a class="button" href="{{ routes.all_products_collection_url }}">
+              {{ 'collections.browse_all' | t }}
+            </a>
+          {%- endif -%}
+        {%- endpaginate -%}
+      </section>
+
+      <aside class="account__aside" aria-labelledby="AccountAddress">
+        <h2 class="account__heading" id="AccountAddress">
+          {{ 'customers.account.default_address' | t }}
+        </h2>
+
+        {%- if customer.default_address -%}
+          <address class="account__address">
+            {{ customer.default_address | format_address }}
+          </address>
+        {%- else -%}
+          <p class="account__empty">{{ 'customers.addresses.none' | t }}</p>
+        {%- endif -%}
+
+        <a class="button button--secondary" href="{{ routes.account_addresses_url }}">
+          {{ 'customers.addresses.manage' | t }}
+        </a>
+      </aside>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .account {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .account__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-sm);
+  }
+
+  .account__title {
+    margin: 0;
+  }
+
+  .account__email {
+    margin: 0;
+    color: var(--color-foreground-muted);
+    font-size: var(--text-sm);
+  }
+
+  .account__logout {
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+
+  .account__layout {
+    display: grid;
+    gap: var(--space-lg);
+  }
+
+  @media screen and (min-width: 990px) {
+    .account__layout {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      gap: var(--space-xl);
+    }
+  }
+
+  .account__heading {
+    margin: 0 0 var(--space-xs);
+    font-size: var(--text-lg);
+  }
+
+  .orders {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /*
+   * Cards on a phone, a four-column row on desktop. A real <table> would be
+   * the honest markup for tabular data, but an order list is four short
+   * fields and the phone layout matters more than the semantics here — so the
+   * fields stay individually labelled instead.
+   */
+  .order {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-3xs) var(--space-sm);
+    padding-block: var(--space-sm);
+  }
+
+  @media screen and (min-width: 750px) {
+    .order {
+      grid-template-columns: 1fr auto auto auto;
+      align-items: baseline;
+      gap: var(--space-md);
+    }
+  }
+
+  .order__number {
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .order__date,
+  .order__status {
+    font-size: var(--text-sm);
+    color: var(--color-foreground-muted);
+  }
+
+  .order__total {
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+  }
+
+  .account__aside {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+
+  .account__address {
+    font-style: normal;
+    line-height: var(--leading-normal);
+    color: var(--color-foreground-muted);
+  }
+
+  .account__empty {
+    color: var(--color-foreground-muted);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.account",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme_1"
+    }
+  ]
+}
+{% endschema %}

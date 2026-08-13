@@ -26,29 +26,19 @@
       assign density = 1
   endcase
 
-  # One radius family, three intensities.
-  #
-  # Every preset keeps control, card and media within 2px of each other, so a
-  # button nested in a card never reads as a different shape language. The
-  # previous `round` preset paired a 999px control with a 16px card, which put
-  # pills, cards, media and circles on screen simultaneously.
-  #
-  # True circles are NOT a preset value. They are `--radius-round`, applied
-  # only to swatches, icon-only buttons and quantity steppers — elements whose
-  # shape carries meaning rather than style.
   case settings.style_corners
     when 'sharp'
       assign radius_control = 0
       assign radius_card = 0
       assign radius_media = 0
     when 'round'
-      assign radius_control = 10
-      assign radius_card = 12
+      assign radius_control = 999
+      assign radius_card = 16
       assign radius_media = 12
     else
-      assign radius_control = 6
-      assign radius_card = 8
-      assign radius_media = 8
+      assign radius_control = 4
+      assign radius_card = 6
+      assign radius_media = 4
   endcase
 
   if settings.style_button_shape == 'pill'
@@ -155,21 +145,7 @@
     --radius-button: {{ radius_button }}px;
     --radius-card: {{ radius_card }}px;
     --radius-media: {{ radius_media }}px;
-
-    /*
-     * Chips (brand, size, filter) and badges are tag-like, but they are still
-     * rectangles. Aliasing them to the control radius is what keeps 20 brand
-     * chips from reading as a separate shape system next to the product grid.
-     */
-    --radius-chip: var(--radius-control);
-
-    /*
-     * Reserved for elements whose roundness is semantic, not decorative:
-     * colour swatches, icon-only buttons, carousel arrows, quantity steppers.
-     * Never apply to a container that holds text.
-     */
-    --radius-round: 50%;
-
+    --radius-full: 999px;
     --media-ratio: {{ media_ratio }};
 
     /* Skeleton's base reset references this name for inputs. */
@@ -223,29 +199,8 @@
     that unscoped elements (dialogs, the body background) have valid tokens.
   {% endcomment %}
   {% for scheme in settings.color_schemes -%}
-    {%- comment -%}
-      The media plate is deliberately NOT derived from the scheme background.
-
-      This store carries third-party brands that each shoot on their own ground
-      — white, grey, lavender, ecru. Painting product media with the band colour
-      makes every one of those grounds visible as a mismatched rectangle. A
-      constant plate per lightness mode gives every card the same frame no
-      matter which vendor supplied the photo.
-
-      Lightness is read off the scheme rather than stored as a setting, so a
-      merchant recolouring a scheme cannot desynchronise the two.
-    {%- endcomment -%}
-    {%- assign bg_lightness = scheme.settings.background | color_extract: 'lightness' -%}
     {%- if forloop.first %}:root,{% endif %}
     .color-{{ scheme.id }} {
-      {% if bg_lightness > 50 -%}
-        --color-media-plate: #fffbf7;
-        --color-media-plate-border: rgb({{ scheme.settings.text.red }} {{ scheme.settings.text.green }} {{ scheme.settings.text.blue }} / 0.08);
-      {%- else -%}
-        --color-media-plate: #f4e7de;
-        --color-media-plate-border: rgb(255 255 255 / 0.12);
-      {%- endif %}
-
       --color-background: {{ scheme.settings.background }};
       --color-background-rgb: {{ scheme.settings.background.red }} {{ scheme.settings.background.green }} {{ scheme.settings.background.blue }};
       {% if scheme.settings.background_gradient != blank -%}

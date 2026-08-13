@@ -1,0 +1,124 @@
+{% doc %}
+  The address fields, for both the "add" form and each "edit" form.
+
+  Factored out for one reason above tidiness: every `id` here has to be unique
+  on the page. Written inline in the address-book loop, a customer with three
+  saved addresses gets three elements called `AddressCity`, and every `<label
+  for>` then points at the first one — so clicking the third address's City
+  label focuses the first address's field. The `suffix` makes that impossible.
+
+  @param {string} suffix - Unique per form instance, e.g. the address id or 'New'.
+  @param {object} [address] - An existing address to prefill. Omit for a new one.
+  @param {string} [country] - Country to preselect, from `form.country`.
+  @param {string} [province] - Province to preselect, from `form.province`.
+
+  @example
+  {% render 'address-form', suffix: address.id, address: address %}
+{% enddoc %}
+
+{%- liquid
+  assign label_first = 'customers.register.first_name' | t
+  assign label_last = 'customers.register.last_name' | t
+  assign label_company = 'customers.addresses.company' | t
+  assign label_address1 = 'customers.addresses.address1' | t
+  assign label_address2 = 'customers.addresses.address2' | t
+  assign label_city = 'customers.addresses.city' | t
+  assign label_zip = 'customers.addresses.zip' | t
+  assign label_phone = 'customers.addresses.phone' | t
+
+  assign first_id = 'AddressFirstName-' | append: suffix
+  assign last_id = 'AddressLastName-' | append: suffix
+  assign company_id = 'AddressCompany-' | append: suffix
+  assign line1_id = 'AddressLine1-' | append: suffix
+  assign line2_id = 'AddressLine2-' | append: suffix
+  assign city_id = 'AddressCity-' | append: suffix
+  assign zip_id = 'AddressZip-' | append: suffix
+  assign phone_id = 'AddressPhone-' | append: suffix
+  assign country_id = 'AddressCountry-' | append: suffix
+  assign province_id = 'AddressProvince-' | append: suffix
+  assign province_wrap_id = 'AddressProvinceWrap-' | append: suffix
+  assign default_id = 'AddressDefault-' | append: suffix
+-%}
+
+<div class="form__row form__row--split">
+  {% render 'form-field',
+    id: first_id, name: 'address[first_name]', label: label_first,
+    value: address.first_name, autocomplete: 'given-name' %}
+  {% render 'form-field',
+    id: last_id, name: 'address[last_name]', label: label_last,
+    value: address.last_name, autocomplete: 'family-name' %}
+</div>
+
+{% render 'form-field',
+  id: company_id, name: 'address[company]', label: label_company,
+  value: address.company, autocomplete: 'organization' %}
+
+{% render 'form-field',
+  id: line1_id, name: 'address[address1]', label: label_address1,
+  value: address.address1, autocomplete: 'address-line1', required: true %}
+
+{% render 'form-field',
+  id: line2_id, name: 'address[address2]', label: label_address2,
+  value: address.address2, autocomplete: 'address-line2' %}
+
+<div class="form__row form__row--split">
+  {% render 'form-field',
+    id: city_id, name: 'address[city]', label: label_city,
+    value: address.city, autocomplete: 'address-level2', required: true %}
+  {% render 'form-field',
+    id: zip_id, name: 'address[zip]', label: label_zip,
+    value: address.zip, autocomplete: 'postal-code', required: true %}
+</div>
+
+<div class="form__row form__row--split">
+  <div class="field">
+    <label class="field__label" for="{{ country_id }}">
+      {{ 'customers.addresses.country' | t }}
+    </label>
+    {%- comment -%}
+      `country_option_tags` carries every province as a data attribute, which
+      is what the province selector reads. The wrapper is marked so the script
+      can find its pair without needing ids threaded through JavaScript.
+    {%- endcomment -%}
+    <select
+      class="field__input"
+      id="{{ country_id }}"
+      name="address[country]"
+      autocomplete="country"
+      data-address-country
+      data-province-target="{{ province_id }}"
+      data-province-wrap="{{ province_wrap_id }}"
+      data-default="{{ address.country | default: country | escape }}"
+    >
+      {{ country_option_tags }}
+    </select>
+  </div>
+
+  <div class="field" id="{{ province_wrap_id }}" hidden>
+    <label class="field__label" for="{{ province_id }}">
+      {{ 'customers.addresses.province' | t }}
+    </label>
+    <select
+      class="field__input"
+      id="{{ province_id }}"
+      name="address[province]"
+      autocomplete="address-level1"
+      data-default="{{ address.province | default: province | escape }}"
+    ></select>
+  </div>
+</div>
+
+{% render 'form-field',
+  id: phone_id, name: 'address[phone]', label: label_phone,
+  value: address.phone, type: 'tel', autocomplete: 'tel' %}
+
+<div class="auth__optin">
+  <input
+    type="checkbox"
+    id="{{ default_id }}"
+    name="address[default]"
+    value="true"
+    {% if address.id and address.id == customer.default_address.id %}checked{% endif %}
+  >
+  <label for="{{ default_id }}">{{ 'customers.addresses.set_default' | t }}</label>
+</div>

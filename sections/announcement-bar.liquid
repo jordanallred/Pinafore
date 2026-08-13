@@ -1,0 +1,301 @@
+{% comment %}
+  Announcement bar: a thin band above the header carrying store-wide messages.
+
+  Lives in the `header` section group, so it renders on every template rather
+  than only where a merchant remembers to add it. It sits above the sticky
+  header and scrolls away with the page, which is what shoppers expect of an
+  announcement: it is read once, not carried around.
+
+  With one message this is static markup and no JavaScript runs. Only a second
+  message brings in the arrows and the timer.
+{% endcomment %}
+
+{% liquid
+  assign count = 0
+  for block in section.blocks
+    if block.settings.text != blank
+      assign count = count | plus: 1
+    endif
+  endfor
+%}
+
+{%- if count > 0 -%}
+  {%- comment -%}
+    The dismissal is keyed to the message text rather than to the section, so
+    that rewriting the bar brings it back for shoppers who closed the old one.
+    Otherwise a single dismissal would silence every future announcement.
+  {%- endcomment -%}
+  {%- capture dismiss_key -%}
+    {%- for block in section.blocks -%}{{ block.settings.text }}{%- endfor -%}
+  {%- endcapture -%}
+  {%- assign dismiss_key = dismiss_key | md5 -%}
+
+  {%- assign show_controls = false -%}
+  {%- if count > 1 -%}
+    {%- assign show_controls = true -%}
+  {%- endif -%}
+
+  <pinafore-announcement
+    id="Announcement-{{ section.id }}"
+    class="announcement color-{{ section.settings.color_scheme }} full-width{% if section.settings.show_close %} announcement--dismissible{% endif %}"
+    role="region"
+    aria-label="{{ 'accessibility.announcement' | t }}"
+    {% if show_controls and section.settings.autorotate %}
+      data-rotate="{{ section.settings.rotate_speed }}"
+    {% endif %}
+    {% if section.settings.show_close %}
+      data-dismiss-key="{{ dismiss_key }}"
+    {% endif %}
+  >
+    <div class="announcement__inner">
+      {%- if show_controls -%}
+        <button class="announcement__arrow" type="button" data-announcement-prev>
+          {% render 'icon', icon: 'chevron-left', size: '0.85rem' %}
+          <span class="visually-hidden">{{ 'accessibility.previous_announcement' | t }}</span>
+        </button>
+      {%- endif -%}
+
+      {%- comment -%}
+        Every message is in the DOM at once, stacked in a single grid cell so
+        the bar is as tall as its tallest message and never resizes mid-rotation.
+        Inactive messages are hidden with `visibility`, which takes them out of
+        the accessibility tree and out of the tab order in one step — no
+        `aria-hidden` bookkeeping, and no risk of focus landing on a link the
+        shopper cannot see.
+      {%- endcomment -%}
+      <div class="announcement__viewport">
+        {%- assign shown = 0 -%}
+        {%- for block in section.blocks -%}
+          {%- if block.settings.text == blank -%}
+            {%- continue -%}
+          {%- endif -%}
+          <div
+            class="announcement__item"
+            data-announcement
+            {% if shown == 0 %}
+              data-active
+            {% endif %}
+            {{ block.shopify_attributes }}
+          >
+            {%- if block.settings.link != blank -%}
+              <a class="announcement__text announcement__link" href="{{ block.settings.link }}">
+                {{- block.settings.text -}}
+              </a>
+            {%- else -%}
+              <span class="announcement__text">{{ block.settings.text }}</span>
+            {%- endif -%}
+          </div>
+          {%- assign shown = shown | plus: 1 -%}
+        {%- endfor -%}
+      </div>
+
+      {%- if show_controls -%}
+        <button class="announcement__arrow" type="button" data-announcement-next>
+          {% render 'icon', icon: 'chevron-right', size: '0.85rem' %}
+          <span class="visually-hidden">{{ 'accessibility.next_announcement' | t }}</span>
+        </button>
+      {%- endif -%}
+    </div>
+
+    {%- if section.settings.show_close -%}
+      {%- comment -%}
+        Positioned out of the centred flow so that closing the bar is available
+        without pushing the message off-centre.
+      {%- endcomment -%}
+      <button class="announcement__close" type="button" data-announcement-close>
+        {% render 'icon', icon: 'close', size: '0.85rem' %}
+        <span class="visually-hidden">{{ 'accessibility.close' | t }}</span>
+      </button>
+    {%- endif -%}
+  </pinafore-announcement>
+
+  {%- if section.settings.show_close -%}
+    {%- comment -%}
+      pinafore.js is deferred, so leaving this to the custom element would paint
+      a bar the shopper already dismissed and then yank it away, shifting the
+      page under them. This runs synchronously, before the bar paints. The
+      element itself still owns every other behaviour.
+
+      In the theme editor the bar always shows: a merchant who dismissed it once
+      should not be left wondering where their section went.
+    {%- endcomment -%}
+    <script>
+      (function () {
+        if (window.Shopify && Shopify.designMode) return;
+        try {
+          if (localStorage.getItem('pinafore:announcement') === {{ dismiss_key | json }}) {
+            document.getElementById('Announcement-{{ section.id }}').hidden = true;
+          }
+        } catch (error) {
+          /* Private browsing modes can throw on storage access. */
+        }
+      })();
+    </script>
+  {%- endif -%}
+{%- endif -%}
+
+{% stylesheet %}
+  .announcement {
+    position: relative;
+    display: block;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    padding-block: var(--space-xs);
+    padding-inline: var(--page-margin);
+  }
+
+  .announcement[hidden] {
+    display: none;
+  }
+
+  .announcement__inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2xs);
+  }
+
+  /* Keeps the message clear of the close button on narrow viewports. */
+  .announcement--dismissible .announcement__inner {
+    padding-inline: var(--space-lg);
+  }
+
+  .announcement__viewport {
+    display: grid;
+    text-align: center;
+  }
+
+  .announcement__item {
+    grid-area: 1 / 1;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--duration-base) var(--ease-out),
+      visibility var(--duration-base) var(--ease-out);
+  }
+
+  .announcement__item[data-active] {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .announcement__text {
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+  }
+
+  .announcement__link {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+    text-decoration-thickness: 1px;
+  }
+
+  .announcement__link:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  .announcement__arrow,
+  .announcement__close {
+    display: grid;
+    place-items: center;
+    padding: var(--space-2xs);
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity var(--duration-fast) var(--ease-out);
+  }
+
+  .announcement__arrow:hover,
+  .announcement__close:hover {
+    opacity: 1;
+  }
+
+  .announcement__close {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: var(--page-margin);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .announcement__item {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.announcement_bar",
+  "tag": "section",
+  "class": "announcement-section",
+  "max_blocks": 5,
+  "enabled_on": { "groups": ["header"] },
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "autorotate",
+      "label": "t:labels.autorotate",
+      "info": "t:info.announcement_autorotate",
+      "default": true
+    },
+    {
+      "visible_if": "{{ section.settings.autorotate }}",
+      "type": "range",
+      "id": "rotate_speed",
+      "label": "t:labels.rotate_speed",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "unit": "s",
+      "default": 6
+    },
+    {
+      "type": "checkbox",
+      "id": "show_close",
+      "label": "t:labels.show_close",
+      "info": "t:info.announcement_dismiss",
+      "default": false
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme_3"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "t:general.announcement",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:labels.text",
+          "default": "Free gift wrap on every order"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:labels.link_url"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.announcement_bar",
+      "blocks": [
+        { "type": "announcement", "settings": { "text": "Free gift wrap on every order" } },
+        { "type": "announcement", "settings": { "text": "Easy 30-day returns" } },
+        { "type": "announcement", "settings": { "text": "New arrivals every Thursday" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

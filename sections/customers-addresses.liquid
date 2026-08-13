@@ -1,0 +1,238 @@
+{% comment %}
+  The address book.
+
+  Each address gets a <details> for editing rather than a modal: nothing to
+  focus-trap, and it still works with JavaScript off.
+
+  Delete is a separate form sitting alongside the edit form, not a button
+  inside it — a nested form is invalid HTML and browsers resolve it by
+  discarding the inner one, so a delete button placed inside the edit form
+  submits an address update instead. It confirms through a disclosure rather
+  than `confirm()`, which keeps the destructive step deliberate without a
+  blocking dialog.
+{% endcomment %}
+
+<pinafore-address class="addresses-band band color-{{ section.settings.color_scheme }} full-width section-spacing">
+  <div class="addresses band__inner">
+    <header class="addresses__header">
+      <a class="addresses__back" href="{{ routes.account_url }}">
+        {% render 'icon', icon: 'arrow-right', size: '0.9rem' %}
+        {{ 'customers.order.back' | t }}
+      </a>
+      <h1 class="addresses__title">{{ 'customers.addresses.title' | t }}</h1>
+    </header>
+
+    <details class="addresses__new">
+      <summary class="button button--secondary addresses__new-summary">
+        {{ 'customers.addresses.add' | t }}
+      </summary>
+
+      {%- form 'customer_address', customer.new_address, class: 'form addresses__form' -%}
+        {%- if form.errors -%}
+          <div class="form__errors" role="alert">{{ form.errors | default_errors }}</div>
+        {%- endif -%}
+
+        {% render 'address-form',
+          suffix: 'New',
+          country: form.country,
+          province: form.province
+        %}
+
+        <div class="form__actions">
+          <button type="submit" class="button">{{ 'customers.addresses.save' | t }}</button>
+        </div>
+      {%- endform -%}
+    </details>
+
+    {%- paginate customer.addresses by 8 -%}
+      {%- if customer.addresses.size > 0 -%}
+        <ul class="addresses__list" role="list">
+          {%- for address in customer.addresses -%}
+            <li class="address-card">
+              {%- if address.id == customer.default_address.id -%}
+                <span class="address-card__badge">
+                  {{ 'customers.addresses.default' | t }}
+                </span>
+              {%- endif -%}
+
+              <address class="address-card__body">{{ address | format_address }}</address>
+
+              <details class="address-card__edit">
+                <summary class="address-card__action">
+                  {{ 'customers.addresses.edit' | t }}
+                </summary>
+
+                {%- form 'customer_address', address, class: 'form addresses__form' -%}
+                  {% render 'address-form', suffix: address.id, address: address %}
+                  <div class="form__actions">
+                    <button type="submit" class="button">
+                      {{ 'customers.addresses.save' | t }}
+                    </button>
+                  </div>
+                {%- endform -%}
+              </details>
+
+              <details class="address-card__delete">
+                <summary class="address-card__action address-card__action--danger">
+                  {{ 'customers.addresses.delete' | t }}
+                </summary>
+                <form method="post" action="{{ address.url }}">
+                  <input type="hidden" name="_method" value="delete">
+                  <p class="address-card__confirm">
+                    {{ 'customers.addresses.confirm_delete' | t }}
+                  </p>
+                  <button type="submit" class="button button--secondary">
+                    {{ 'customers.addresses.confirm_delete_action' | t }}
+                  </button>
+                </form>
+              </details>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+        {%- if paginate.pages > 1 -%}
+          {% render 'pagination', paginate: paginate %}
+        {%- endif -%}
+      {%- else -%}
+        <p class="addresses__empty">{{ 'customers.addresses.none' | t }}</p>
+      {%- endif -%}
+    {%- endpaginate -%}
+  </div>
+</pinafore-address>
+
+{% stylesheet %}
+  .addresses {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+  }
+
+  .addresses__header {
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .addresses__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    justify-self: start;
+    min-height: var(--tap-target);
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+
+  /* The shared arrow points forward; this one goes back. */
+  .addresses__back svg {
+    transform: scaleX(-1);
+  }
+
+  .addresses__title {
+    margin: 0;
+  }
+
+  .addresses__new {
+    width: 100%;
+  }
+
+  /* A <summary> styled as a button still needs the pointer affordance. */
+  .addresses__new-summary {
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .addresses__new-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .addresses__form {
+    width: min(34rem, 100%);
+    margin-block-start: var(--space-sm);
+  }
+
+  .addresses__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: grid;
+    gap: var(--space-md);
+  }
+
+  @media screen and (min-width: 750px) {
+    .addresses__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .address-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2xs);
+    padding: var(--space-sm);
+    border: var(--border-width) solid var(--color-border-control);
+    border-radius: var(--radius-card);
+  }
+
+  .address-card__badge {
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .address-card__body {
+    font-style: normal;
+    line-height: var(--leading-normal);
+  }
+
+  .address-card__edit,
+  .address-card__delete {
+    width: 100%;
+  }
+
+  .address-card__action {
+    list-style: none;
+    min-height: var(--tap-target);
+    display: inline-flex;
+    align-items: center;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .address-card__action::-webkit-details-marker {
+    display: none;
+  }
+
+  .address-card__action--danger {
+    color: var(--color-sale);
+  }
+
+  .address-card__confirm {
+    margin: 0 0 var(--space-2xs);
+    font-size: var(--text-sm);
+    color: var(--color-foreground-muted);
+  }
+
+  .addresses__empty {
+    color: var(--color-foreground-muted);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.addresses",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme_1"
+    }
+  ]
+}
+{% endschema %}

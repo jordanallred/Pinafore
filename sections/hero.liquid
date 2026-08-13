@@ -17,7 +17,7 @@
 %}
 
 <div
-  class="hero color-{{ section.settings.color_scheme }} full-width{% unless has_image %} hero--no-media{% endunless %}"
+  class="hero color-{{ section.settings.color_scheme }} full-width"
   style="--hero-height: {{ section.settings.height }}svh; --overlay: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"
 >
   {%- if has_image -%}
@@ -83,28 +83,6 @@
     grid-template-columns: var(--content-grid);
     min-height: var(--hero-height, 70svh);
     isolation: isolate;
-  }
-
-  /*
-   * No image set.
-   *
-   * The height setting exists to give a photograph room. Applied to a hero
-   * with no photograph it paints 75svh of flat scheme colour and pins the copy
-   * to the bottom of it — which is what the homepage shipped: a 979px slab of
-   * ink above the fold with three lines of type at the very bottom.
-   *
-   * With no media the hero becomes what it actually is, a typographic band:
-   * sized by its content, generously padded, copy optically centred. A
-   * merchant who adds an image gets the full-bleed treatment back with no
-   * further action.
-   */
-  .hero--no-media {
-    min-height: 0;
-  }
-
-  .hero--no-media .hero__content {
-    align-self: center;
-    padding-block: var(--space-2xl);
   }
 
   .hero__media {

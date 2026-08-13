@@ -89,6 +89,75 @@
     if (event.target.tagName === 'DIALOG') syncExpanded(event.target.id, false);
   }, true);
 
+  /* --------------------------------------------------- announcement bar */
+
+  customElements.define('pinafore-announcement', class extends HTMLElement {
+    connectedCallback() {
+      var close = this.querySelector('[data-announcement-close]');
+      if (close) close.addEventListener('click', this.dismiss.bind(this));
+
+      this.items = Array.prototype.slice.call(this.querySelectorAll('[data-announcement]'));
+      // One message is a static bar: no arrows to wire up, no timer to run.
+      if (this.items.length < 2) return;
+
+      this.index = 0;
+      var prev = this.querySelector('[data-announcement-prev]');
+      var next = this.querySelector('[data-announcement-next]');
+      if (prev) prev.addEventListener('click', this.nudge.bind(this, -1));
+      if (next) next.addEventListener('click', this.nudge.bind(this, 1));
+
+      var seconds = parseFloat(this.getAttribute('data-rotate'));
+      if (!seconds) return;
+      // Auto-advance is motion nobody asked for. Reduced-motion keeps the
+      // arrows and loses the timer, rather than losing the messages.
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      this.delay = seconds * 1000;
+      this.addEventListener('pointerenter', this.pause.bind(this));
+      this.addEventListener('pointerleave', this.play.bind(this));
+      this.addEventListener('focusin', this.pause.bind(this));
+      this.addEventListener('focusout', this.play.bind(this));
+      this.play();
+    }
+
+    disconnectedCallback() {
+      this.pause();
+    }
+
+    play() {
+      if (!this.delay) return;
+      this.pause();
+      this.timer = setInterval(this.step.bind(this, 1), this.delay);
+    }
+
+    pause() {
+      clearInterval(this.timer);
+    }
+
+    step(delta) {
+      this.items[this.index].removeAttribute('data-active');
+      this.index = (this.index + delta + this.items.length) % this.items.length;
+      this.items[this.index].setAttribute('data-active', '');
+    }
+
+    // An arrow press restarts the clock, so a message read on demand is not
+    // swapped out a moment later by a timer that was already half spent.
+    nudge(delta) {
+      this.step(delta);
+      this.play();
+    }
+
+    dismiss() {
+      this.pause();
+      this.hidden = true;
+      try {
+        localStorage.setItem('pinafore:announcement', this.getAttribute('data-dismiss-key'));
+      } catch (error) {
+        /* Private browsing modes can throw on storage access. */
+      }
+    }
+  });
+
   /* -------------------------------------------------------------- header */
 
   customElements.define('pinafore-header', class extends HTMLElement {
@@ -134,56 +203,21 @@
       var item = event.target.closest ? event.target.closest('[data-menu]') : null;
       if (!item || !this.contains(item)) return;
       clearTimeout(this.closeTimer);
-      clearTimeout(this.openTimer);
-
-      // Already showing: nothing to schedule. Re-running the open path here
-      // would let a pointer moving *within* an open panel restart the timer.
-      if (item.open) return;
-
-      /*
-       * A panel is much wider than the item that opens it, so its outer links
-       * sit underneath the *neighbouring* nav items — "Bags" under "Girls"
-       * renders directly below "Boys". Reaching them means crossing a sibling,
-       * and the sibling's own pointerenter used to steal the panel on the way
-       * past. That is why the menu only survived a perfect straight-down path.
-       *
-       * Geometry rules out the usual "safe triangle": the panel's top edge sits
-       * above the nav row's bottom edge, so there is no corridor between them
-       * to protect — the crossing happens at the same height as the trigger.
-       *
-       * So intent is measured by dwell instead. Switching away from an open
-       * panel demands a longer pause, and — the part that actually fixes it —
-       * the pointer must still be on the item when the timer fires. A pointer
-       * merely passing over a sibling has moved on by then and nothing
-       * switches. Opening from nothing stays quick.
-       */
-      var somethingOpen = this.querySelector('[data-menu][open]');
-      var delay = somethingOpen ? 260 : 90;
-
-      this.openTimer = setTimeout(
-        function () {
-          if (typeof item.matches === 'function' && !item.matches(':hover')) return;
-          this.closeAll(item);
-          item.open = true;
-        }.bind(this),
-        delay
-      );
+      // Short delay so dragging the pointer across the nav doesn't flash
+      // every panel on the way to the intended one.
+      this.openTimer = setTimeout(function () {
+        this.closeAll(item);
+        item.open = true;
+      }.bind(this), 90);
     }
 
     onLeave(event) {
       var item = event.target.closest ? event.target.closest('[data-menu]') : null;
       if (!item) return;
       clearTimeout(this.openTimer);
-      /*
-       * Nav items are separated by a ~24px gap that belongs to neither of
-       * them, so a pointer crossing it is briefly over nothing at all. The
-       * grace period has to outlast that crossing or the panel closes under a
-       * hand that never left the menu. Matched to the switch dwell above so
-       * the whole interaction has one tolerance rather than two.
-       */
       this.closeTimer = setTimeout(function () {
         item.open = false;
-      }, 280);
+      }, 180);
     }
 
     onFocusOut(event) {
@@ -458,58 +492,6 @@
     }
   });
 
-  /* ------------------------------------------------- product recommendations */
-
-  /*
-   * Shopify only computes recommendations on a request to the recommendations
-   * endpoint, so the section renders empty in the product page's own response
-   * and the real markup is fetched and swapped in here.
-   *
-   * The fetch waits until the section is close to the viewport. On a product
-   * page most visitors never scroll past the accordions, and there is no point
-   * spending a request on a band nobody reaches. If the fetch fails the section
-   * simply stays empty — it is a merchandising extra, never a dependency.
-   */
-  customElements.define('pinafore-recommendations', class extends HTMLElement {
-    connectedCallback() {
-      var url = this.dataset.url;
-      if (!url) return;
-
-      if (!('IntersectionObserver' in window)) {
-        this.load(url);
-        return;
-      }
-
-      var self = this;
-      var observer = new IntersectionObserver(
-        function (entries) {
-          if (!entries[0].isIntersecting) return;
-          observer.disconnect();
-          self.load(url);
-        },
-        { rootMargin: '400px' }
-      );
-      observer.observe(this);
-    }
-
-    load(url) {
-      var self = this;
-      fetch(url)
-        .then(function (response) {
-          if (!response.ok) throw new Error('recommendations unavailable');
-          return response.text();
-        })
-        .then(function (html) {
-          var parsed = new DOMParser().parseFromString(html, 'text/html');
-          var fresh = parsed.querySelector('pinafore-recommendations');
-          if (!fresh) return;
-          var markup = fresh.innerHTML.trim();
-          if (markup) self.innerHTML = markup;
-        })
-        .catch(function () { /* leave the band empty */ });
-    }
-  });
-
   /* ----------------------------------------------------------- sticky ATC */
 
   customElements.define('pinafore-sticky-atc', class extends HTMLElement {
@@ -715,6 +697,57 @@
     show(html) {
       this.results.innerHTML = html;
       this.input.setAttribute('aria-expanded', 'true');
+    }
+  });
+
+  /**
+   * Country -> province pairing in the address book.
+   *
+   * `country_option_tags` puts each country's subdivisions on the <option> as
+   * a `data-provinces` JSON array, so the whole behaviour is local: no fetch,
+   * and no dependency on Shopify's own country selector script, which is a
+   * remote file this theme would otherwise be the only reason to load.
+   *
+   * The province field is hidden rather than emptied for countries that have
+   * none — an empty labelled <select> reads to a screen reader as a control
+   * that failed to load.
+   */
+  define('pinafore-address', class extends HTMLElement {
+    connectedCallback() {
+      this.querySelectorAll('[data-address-country]').forEach(function (country) {
+        var province = this.querySelector('#' + country.dataset.provinceTarget);
+        var wrap = this.querySelector('#' + country.dataset.provinceWrap);
+        if (!province || !wrap) return;
+
+        // Restore the saved country before wiring up, so the province list is
+        // built from the right country on first paint.
+        if (country.dataset.default) country.value = country.dataset.default;
+
+        var sync = function () {
+          var option = country.options[country.selectedIndex];
+          var values = [];
+          try {
+            values = JSON.parse(option.getAttribute('data-provinces') || '[]');
+          } catch (e) { /* malformed attribute: treat as no provinces */ }
+
+          province.innerHTML = '';
+          if (!values.length) {
+            wrap.hidden = true;
+            return;
+          }
+          values.forEach(function (pair) {
+            var opt = document.createElement('option');
+            opt.value = pair[0];
+            opt.textContent = pair[1];
+            province.appendChild(opt);
+          });
+          wrap.hidden = false;
+          if (province.dataset.default) province.value = province.dataset.default;
+        };
+
+        sync();
+        country.addEventListener('change', sync);
+      }, this);
     }
   });
 })();

@@ -1,0 +1,74 @@
+{% doc %}
+  One labelled form control, with its error message wired to it.
+
+  Exists so that login, register, the address book and the contact form cannot
+  drift apart in markup. The label/input association and the aria-describedby
+  link to the error are the parts most easily got wrong by hand, and they are
+  the parts a screen reader depends on entirely.
+
+  @param {string} name - The `name` attribute, e.g. 'customer[email]'.
+  @param {string} label - Visible label text, already translated.
+  @param {string} id - Unique id; the label's `for` and the input's `id`.
+  @param {string} [type] - Input type. Defaults to 'text'. Use 'textarea' for a textarea.
+  @param {string} [value] - Prefilled value.
+  @param {string} [autocomplete] - Autocomplete token, e.g. 'email', 'address-line1'.
+  @param {boolean} [required] - Marks the field required. Defaults to false.
+  @param {string} [error] - Error message. Present means the field is invalid.
+  @param {string} [placeholder] - Placeholder text.
+
+  @example
+  {% render 'form-field',
+    id: 'RegisterEmail',
+    name: 'customer[email]',
+    label: 'Email',
+    type: 'email',
+    autocomplete: 'email',
+    required: true
+  %}
+{% enddoc %}
+
+{%- liquid
+  assign field_type = type | default: 'text'
+  assign error_id = id | append: '-error'
+-%}
+
+<div class="field">
+  <label class="field__label" for="{{ id }}">
+    {{ label }}
+    {%- unless required -%}
+      <span class="field__optional">({{ 'general.optional' | t }})</span>
+    {%- endunless -%}
+  </label>
+
+  {%- if field_type == 'textarea' -%}
+    <textarea
+      class="field__input"
+      id="{{ id }}"
+      name="{{ name }}"
+      {% if required %}required aria-required="true"{% endif %}
+      {% if error != blank %}aria-invalid="true" aria-describedby="{{ error_id }}"{% endif %}
+      {% if placeholder != blank %}placeholder="{{ placeholder }}"{% endif %}
+      {% if autocomplete != blank %}autocomplete="{{ autocomplete }}"{% endif %}
+    >{{ value }}</textarea>
+  {%- else -%}
+    <input
+      class="field__input"
+      type="{{ field_type }}"
+      id="{{ id }}"
+      name="{{ name }}"
+      {% if value != blank %}value="{{ value | escape }}"{% endif %}
+      {% if required %}required aria-required="true"{% endif %}
+      {% if error != blank %}aria-invalid="true" aria-describedby="{{ error_id }}"{% endif %}
+      {% if placeholder != blank %}placeholder="{{ placeholder }}"{% endif %}
+      {% if autocomplete != blank %}autocomplete="{{ autocomplete }}"{% endif %}
+    >
+  {%- endif -%}
+
+  {%- if error != blank -%}
+    {%- comment -%}
+      role="alert" so the message is announced when it appears after a failed
+      submit, not only when the field is focused.
+    {%- endcomment -%}
+    <p class="field__error" id="{{ error_id }}" role="alert">{{ error }}</p>
+  {%- endif -%}
+</div>
