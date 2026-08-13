@@ -239,10 +239,10 @@
     {%- if forloop.first %}:root,{% endif %}
     .color-{{ scheme.id }} {
       {% if bg_lightness > 50 -%}
-        --color-media-plate: #ffffff;
+        --color-media-plate: #fffbf7;
         --color-media-plate-border: rgb({{ scheme.settings.text.red }} {{ scheme.settings.text.green }} {{ scheme.settings.text.blue }} / 0.08);
       {%- else -%}
-        --color-media-plate: #f6f1ea;
+        --color-media-plate: #f4e7de;
         --color-media-plate-border: rgb(255 255 255 / 0.12);
       {%- endif %}
 

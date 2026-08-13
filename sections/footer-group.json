@@ -43,14 +43,21 @@
           }
         }
       },
-      "block_order": ["shop", "help", "about", "newsletter"],
+      "block_order": [
+        "shop",
+        "help",
+        "about",
+        "newsletter"
+      ],
       "settings": {
         "show_payment_icons": true,
         "show_policy_links": true,
         "show_powered_by": false,
-        "color_scheme": "scheme_2"
+        "color_scheme": "scheme_3"
       }
     }
   },
-  "order": ["footer"]
+  "order": [
+    "footer"
+  ]
 }

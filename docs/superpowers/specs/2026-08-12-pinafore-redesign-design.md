@@ -311,6 +311,39 @@ Delete `hello-world.liquid`. Audit `custom-section.liquid` for scaffold status.
 Replace the hardcoded values in `collection-tiles.liquid` and `critical.css`
 with tokens.
 
+## Revision — palette replaced with "Sugar" (2026-08-12)
+
+D2 and D3 above describe the cream/navy palette as originally shipped. It was
+correct on its own terms — 72% warm cream, one accent — but reviewed as too
+reserved for the shop's audience. Five genuinely distinct directions were put up
+side by side on real product photography; **Sugar** was chosen. The reasoning
+above is kept rather than rewritten, because the diagnosis it records (one
+radius language, one accent hue, no cream/white adjacency) still governs — only
+the hues changed.
+
+| token | page | tinted band |
+|---|---|---|
+| background | `#FFF4EC` peach cream | `#F6CFC2` strawberry |
+| text | `#3E2622` | `#40241E` |
+| accent / sale | `#B4402F` cherry | `#A5382A` |
+| plate | `#FFFBF7` | — |
+
+Structural consequences:
+
+- **No band is dark.** The hero moves from `scheme_2` to `scheme_1` and the
+  footer from `scheme_2` to `scheme_3`. The ink schemes remain defined and
+  contrast-valid but are unused on the storefront — removing the dark mass is
+  most of what makes this palette read warm.
+- **Accent and sale collapse to one warm red family.** The navy/chambray split
+  is gone. Nothing cool remains anywhere in the theme, including the dynamic
+  checkout button, which inherits the accent.
+- **The plate warms** from `#FFFFFF` to `#FFFBF7`. This deliberately accepts a
+  small amount of the vendor-photo mismatch described in D4: brands shooting on
+  true white now show a faint rectangle. At a 0/4/8 per-channel delta it is
+  barely perceptible, and it was judged worth it to stop the grid reading as
+  clinical. If it ever grates, `--color-media-plate` is a one-line revert.
+- Contrast revalidated: 45 pairings across 5 schemes, all passing.
+
 ## Scope
 
 In scope: token layer, homepage bands, collection/PLP, product/PDP, cart drawer,
