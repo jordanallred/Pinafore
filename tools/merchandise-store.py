@@ -33,26 +33,58 @@ from shopify_api import Store  # noqa: E402
 
 TARGET = 'pinafore-bv80ud01.myshopify.com'
 
-# Rules rewritten against tags and types the catalog actually carries. Counts
-# in the comments are what each matched when this was written.
-SMART_RULES = {
-    'sale': [('TAG', 'EQUALS', 'final sale')],                   # 7
-    'girls': [('TAG', 'EQUALS', 'girls')],                       # 93
-    'boys': [('TAG', 'EQUALS', 'boys')],                         # 94
-    'baby': [('TAG', 'EQUALS', 'baby')],                         # 24
-    'shoes': [('TAG', 'EQUALS', 'shoes')],                       # 13
-    'tween': [('TAG', 'EQUALS', 'tween')],                       # 61
+# Structure comes from the Shopify taxonomy category, not from tags.
+#
+# Tags are free text typed by whoever loaded the product, and this catalog
+# proves how badly that fails: 48 products are footwear by category, and 13 of
+# them carry the `shoes` tag. Petit Jolie's nine shoes carry it zero times,
+# Salt Water's six likewise. A `TAG EQUALS shoes` collection therefore showed a
+# quarter of the shoe department and looked entirely correct doing it.
+#
+# Category is assigned on 351 of 351 products, it is a controlled vocabulary,
+# and `PRODUCT_CATEGORY_ID_WITH_DESCENDANTS` means a rule written against
+# "Baby & Toddler Shoes" keeps working when a sandal is added underneath it.
+CAT = 'PRODUCT_CATEGORY_ID_WITH_DESCENDANTS'
 
-    # Conjunctive: a tag AND a real, singular product type.
-    'girls-dresses': [('TAG', 'EQUALS', 'girls'), ('TYPE', 'EQUALS', 'Dress')],
-    'girls-tops': [('TAG', 'EQUALS', 'girls'), ('TYPE', 'EQUALS', 'Top')],
-    'girls-skirts': [('TAG', 'EQUALS', 'girls'), ('TYPE', 'EQUALS', 'Skirt')],
-    'boys-shirts': [('TAG', 'EQUALS', 'boys'), ('TYPE', 'EQUALS', 'Shirt')],
-    'boys-shorts': [('TAG', 'EQUALS', 'boys'), ('TYPE', 'EQUALS', 'Shorts')],
-    'boys-tees': [('TAG', 'EQUALS', 'boys'), ('TYPE', 'EQUALS', 'T-Shirt')],
-    'baby-rompers': [('TAG', 'EQUALS', 'baby'), ('TYPE', 'EQUALS', 'Romper')],
-    'sandals': [('TYPE', 'EQUALS', 'Sandals')],                  # 19
-    'sneakers': [('TYPE', 'EQUALS', 'Sneakers')],                # 13
+SMART_RULES = {
+    # Footwear. 48 by category against 13 by tag.
+    'shoes': {'rules': [(CAT, 'EQUALS', 'aa-8-2')]},
+    'sandals': {'rules': [(CAT, 'EQUALS', 'aa-8-2-2')]},
+    'sneakers': {'rules': [(CAT, 'EQUALS', 'aa-8-2-5')]},
+    'boots': {'rules': [(CAT, 'EQUALS', 'aa-8-2-1')]},
+
+    # Clothing, by garment rather than by who it is for.
+    'dresses': {'any': True, 'rules': [
+        (CAT, 'EQUALS', 'aa-1-2-3'), (CAT, 'EQUALS', 'aa-1-4')]},
+    'tops': {'any': True, 'rules': [
+        (CAT, 'EQUALS', 'aa-1-2-9'), (CAT, 'EQUALS', 'aa-1-13')]},
+    'bottoms': {'any': True, 'rules': [
+        (CAT, 'EQUALS', 'aa-1-2-1'), (CAT, 'EQUALS', 'aa-1-14'),
+        (CAT, 'EQUALS', 'aa-1-15')]},
+    'outfit-sets': {'rules': [(CAT, 'EQUALS', 'aa-1-2-5')]},
+    'sleepwear': {'any': True, 'rules': [
+        (CAT, 'EQUALS', 'aa-1-2-6'), (CAT, 'EQUALS', 'aa-1-17')]},
+    'swim': {'rules': [(CAT, 'EQUALS', 'aa-1-2-8')]},
+    'bags': {'any': True, 'rules': [
+        (CAT, 'EQUALS', 'lb-1'), (CAT, 'EQUALS', 'lb-6'),
+        (CAT, 'EQUALS', 'lb-13'), (CAT, 'EQUALS', 'aa-5-4')]},
+    'accessories': {'any': True, 'rules': [
+        (CAT, 'EQUALS', 'aa-2'), (CAT, 'EQUALS', 'hg-11-3-7')]},
+
+    # Price-driven, and the only one that needs no vocabulary at all.
+    'sale': {'rules': [('IS_PRICE_REDUCED', 'IS_SET', 'true')]},
+
+    # Gender stays on tags because the taxonomy does not encode it -- there is
+    # no "girls' dress" node, only "dress". These are therefore known to be
+    # incomplete: 148 of 351 products carry no girls/boys/baby tag at all, so
+    # the nav built on them hides two fifths of the shop. Recorded here rather
+    # than quietly widened, because inferring a garment's gender from its
+    # title or vendor is exactly the brittle guessing this file exists to
+    # avoid. The BigCommerce export carries the shop's own gender tree.
+    'girls': {'rules': [('TAG', 'EQUALS', 'girls')]},            # 93 of ~?
+    'boys': {'rules': [('TAG', 'EQUALS', 'boys')]},              # 94 of ~?
+    'baby': {'rules': [('TAG', 'EQUALS', 'baby')]},              # 24 of ~?
+    'tween': {'rules': [('TAG', 'EQUALS', 'tween')]},            # 61
 }
 
 # Collections that had no data behind them at all. Rather than leave a dead
@@ -62,6 +94,75 @@ REPURPOSE = {
     'collegiate': ('Sandals', 'sandals'),
     'preorder': ('Sneakers', 'sneakers'),
 }
+
+# Products whose first image is a size chart rather than the product.
+#
+# Every Chus product leads with one: two are literally named CHUS_SIZE_CHART,
+# and the rest are the same 386x290 export under a numeric filename. Their
+# actual photographs are 386x257, 386x386, 386x219 or 386x286 — never 386x290.
+# That makes the chart identifiable *for this vendor* without guessing.
+#
+# Deliberately not generalised to "landscape images are charts". Native's shoe
+# photographs are 2:1 side profiles and are exactly right as the lead image; a
+# ratio rule would have demoted four good photos to fix one bad one.
+CHART_FIXES = {
+    'Chus': {'width': 386, 'height': 290},
+}
+
+PRODUCT_MEDIA = """
+query ($cursor: String, $query: String!) {
+  products(first: 50, after: $cursor, query: $query) {
+    pageInfo { hasNextPage endCursor }
+    nodes {
+      id title vendor
+      media(first: 12) { nodes { ... on MediaImage { id image { url width height } } } }
+    }
+  }
+}
+"""
+
+REORDER = """
+mutation ($id: ID!, $moves: [MoveInput!]!) {
+  productReorderMedia(id: $id, moves: $moves) {
+    userErrors { field message }
+  }
+}
+"""
+
+
+def demote_charts(store):
+    """Push each size chart to the end so the product leads with itself."""
+    fixed = 0
+    for vendor, size in CHART_FIXES.items():
+        cursor = None
+        while True:
+            page = store(PRODUCT_MEDIA, {
+                'cursor': cursor, 'query': f'vendor:"{vendor}"',
+            })['products']
+            for product in page['nodes']:
+                media = [m for m in product['media']['nodes']
+                         if m and m.get('image')]
+                if len(media) < 2:
+                    continue
+                lead = media[0]['image']
+                if (lead.get('width'), lead.get('height')) != (size['width'], size['height']):
+                    continue
+                result = store(REORDER, {
+                    'id': product['id'],
+                    'moves': [{'id': media[0]['id'],
+                               'newPosition': str(len(media) - 1)}],
+                })['productReorderMedia']
+                if result['userErrors']:
+                    print(f'  chart  {product["title"]}: {result["userErrors"]}')
+                else:
+                    fixed += 1
+                    print(f'  chart  {vendor} — {product["title"][:38]}: '
+                          f'size chart moved off the front')
+            if not page['pageInfo']['hasNextPage']:
+                break
+            cursor = page['pageInfo']['endCursor']
+    return fixed
+
 
 BY_HANDLE = """
 query ($handle: String!) {
@@ -165,12 +266,26 @@ def curated_pick(pool, count, exclude_ids):
     return chosen
 
 
-def rule_input(rules):
+def rule_input(spec):
+    """
+    Build a rule set. `any: True` unions the rules instead of intersecting
+    them, which is what a department spanning several taxonomy nodes needs --
+    dresses live under both "Baby & Toddler Dresses" and plain "Dresses".
+    """
     return {
-        'appliedDisjunctively': False,
+        'appliedDisjunctively': bool(spec.get('any')),
         'rules': [
-            {'column': column, 'relation': relation, 'condition': condition}
-            for column, relation, condition in rules
+            {
+                'column': column,
+                'relation': relation,
+                # Category rules want the full gid; the bare handle is
+                # rejected with "Enter value for Category is equal to".
+                'condition': (
+                    f'gid://shopify/TaxonomyCategory/{condition}'
+                    if column.startswith('PRODUCT_CATEGORY') else condition
+                ),
+            }
+            for column, relation, condition in spec['rules']
         ],
     }
 
@@ -187,6 +302,10 @@ def main():
         ['publications']['nodes'] if p['name'] == 'Online Store'
     )
 
+    # 0. Products leading with a size chart instead of the product.
+    if not args.dry_run:
+        demote_charts(store)
+
     # 1. Retitle the dead handles onto something real.
     for handle, (title, _) in REPURPOSE.items():
         existing = store(BY_HANDLE, {'handle': handle})['collectionByIdentifier']
@@ -197,9 +316,9 @@ def main():
             store(UPDATE_RULES, {'input': {'id': existing['id'], 'title': title}})
 
     # 2. Repair or create every smart collection.
-    for handle, rules in SMART_RULES.items():
+    for handle, spec in SMART_RULES.items():
         existing = store(BY_HANDLE, {'handle': handle})['collectionByIdentifier']
-        payload = {'ruleSet': rule_input(rules)}
+        payload = {'ruleSet': rule_input(spec)}
         if existing:
             payload['id'] = existing['id']
             if args.dry_run:
@@ -254,8 +373,35 @@ def main():
 
     for handle, picks in (('best-sellers', best), ('new-arrivals', fresh)):
         target = store(BY_HANDLE, {'handle': handle})['collectionByIdentifier']
+
+        # A smart collection cannot be turned into a manual one. Passing
+        # `ruleSet: null` is accepted and silently ignored, which left
+        # new-arrivals holding its old `TAG EQUALS fall-winter` rule *plus*
+        # the twelve curated products — 51 items where 12 were intended. The
+        # only way across is to delete and rebuild on the same handle.
+        if target:
+            has_rules = store(
+                'query($h:String!){collectionByIdentifier(identifier:{handle:$h})'
+                '{ruleSet{rules{column}}}}', {'h': handle}
+            )['collectionByIdentifier']['ruleSet']
+            if has_rules:
+                store('mutation($input:CollectionDeleteInput!)'
+                      '{collectionDelete(input:$input){deletedCollectionId '
+                      'userErrors{message}}}', {'input': {'id': target['id']}})
+                target = None
+                print(f'  rebuild {handle}: was smart, recreating as manual')
+
         if not target:
-            continue
+            created = store(CREATE, {'input': {
+                'title': handle.replace('-', ' ').title(),
+                'handle': handle,
+            }})['collectionCreate']
+            if created['userErrors']:
+                print(f'  FAILED {handle}: {created["userErrors"]}')
+                continue
+            target = {'id': created['collection']['id']}
+            store(PUBLISH, {'id': target['id'],
+                            'input': [{'publicationId': online}]})
         current = store(
             'query($h:String!){collectionByIdentifier(identifier:{handle:$h})'
             '{products(first:100){nodes{id}}}}', {'h': handle}
