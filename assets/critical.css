@@ -196,6 +196,47 @@ a {
   text-underline-offset: 0.2em;
 }
 
+/* --------------------------------------------------------- Rich text */
+
+/**
+ * Merchant-authored HTML: product descriptions, accordion bodies, article and
+ * page content.
+ *
+ * The reset zeroes every margin and nothing ever put spacing back, so a
+ * three-paragraph description rendered as one unbroken slab — as did every
+ * accordion and every blog post. Spacing is applied between siblings only, so
+ * a single paragraph contributes nothing and the block still sits flush inside
+ * whatever container it is given.
+ */
+.rte > * + * {
+  margin-block-start: var(--space-sm);
+}
+
+.rte > :is(h2, h3, h4) + * {
+  margin-block-start: var(--space-2xs);
+}
+
+.rte > * + :is(h2, h3, h4) {
+  margin-block-start: var(--space-md);
+}
+
+.rte :is(ul, ol) {
+  padding-inline-start: 1.2em;
+}
+
+.rte li + li {
+  margin-block-start: var(--space-3xs);
+}
+
+.rte a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.rte img {
+  border-radius: var(--radius-media);
+}
+
 /* ------------------------------------------------------------- A11y */
 
 /*
