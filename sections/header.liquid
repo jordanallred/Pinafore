@@ -267,10 +267,16 @@
     display: none;
   }
 
+  /*
+   * No flex gap. A gap belongs to no element, so a pointer travelling between
+   * two nav items passes over dead space and fires pointerleave — the panel
+   * then closes under a hand that never actually left the menu. The same
+   * spacing is applied as padding inside each label instead, so the hit areas
+   * are contiguous and the row has no dead zone to cross.
+   */
   .header__nav-list {
     display: flex;
     align-items: center;
-    gap: var(--space-md);
   }
 
   .nav-item {
@@ -282,7 +288,7 @@
     align-items: center;
     gap: 0.2rem;
     min-height: var(--tap-target);
-    padding-inline: 0.15rem;
+    padding-inline: calc(var(--space-md) / 2);
     font-size: var(--text-xs);
     font-weight: 600;
     letter-spacing: 0.09em;
@@ -301,8 +307,8 @@
   .nav-item__label::after {
     content: '';
     position: absolute;
-    left: 0;
-    right: 0;
+    left: calc(var(--space-md) / 2);
+    right: calc(var(--space-md) / 2);
     bottom: 1rem;
     height: 1px;
     background-color: currentcolor;

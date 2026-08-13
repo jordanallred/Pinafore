@@ -134,21 +134,56 @@
       var item = event.target.closest ? event.target.closest('[data-menu]') : null;
       if (!item || !this.contains(item)) return;
       clearTimeout(this.closeTimer);
-      // Short delay so dragging the pointer across the nav doesn't flash
-      // every panel on the way to the intended one.
-      this.openTimer = setTimeout(function () {
-        this.closeAll(item);
-        item.open = true;
-      }.bind(this), 90);
+      clearTimeout(this.openTimer);
+
+      // Already showing: nothing to schedule. Re-running the open path here
+      // would let a pointer moving *within* an open panel restart the timer.
+      if (item.open) return;
+
+      /*
+       * A panel is much wider than the item that opens it, so its outer links
+       * sit underneath the *neighbouring* nav items — "Bags" under "Girls"
+       * renders directly below "Boys". Reaching them means crossing a sibling,
+       * and the sibling's own pointerenter used to steal the panel on the way
+       * past. That is why the menu only survived a perfect straight-down path.
+       *
+       * Geometry rules out the usual "safe triangle": the panel's top edge sits
+       * above the nav row's bottom edge, so there is no corridor between them
+       * to protect — the crossing happens at the same height as the trigger.
+       *
+       * So intent is measured by dwell instead. Switching away from an open
+       * panel demands a longer pause, and — the part that actually fixes it —
+       * the pointer must still be on the item when the timer fires. A pointer
+       * merely passing over a sibling has moved on by then and nothing
+       * switches. Opening from nothing stays quick.
+       */
+      var somethingOpen = this.querySelector('[data-menu][open]');
+      var delay = somethingOpen ? 260 : 90;
+
+      this.openTimer = setTimeout(
+        function () {
+          if (typeof item.matches === 'function' && !item.matches(':hover')) return;
+          this.closeAll(item);
+          item.open = true;
+        }.bind(this),
+        delay
+      );
     }
 
     onLeave(event) {
       var item = event.target.closest ? event.target.closest('[data-menu]') : null;
       if (!item) return;
       clearTimeout(this.openTimer);
+      /*
+       * Nav items are separated by a ~24px gap that belongs to neither of
+       * them, so a pointer crossing it is briefly over nothing at all. The
+       * grace period has to outlast that crossing or the panel closes under a
+       * hand that never left the menu. Matched to the switch dwell above so
+       * the whole interaction has one tolerance rather than two.
+       */
       this.closeTimer = setTimeout(function () {
         item.open = false;
-      }, 180);
+      }, 280);
     }
 
     onFocusOut(event) {
